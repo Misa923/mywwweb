@@ -2,147 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>c23m9</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to bottom, #f0f4f8, #ffffff);
-      color: #333;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-image: url('https://www.transparenttextures.com/patterns/watercolor.png');
-      opacity: 0.08;
-      z-index: -1;
-    }
-
-    header {
-      text-align: center;
-      padding: 3rem 1rem 2rem;
-      background: rgba(255, 255, 255, 0.75);
-    }
-
-    header h1 {
-      font-size: clamp(2rem, 5vw, 3rem);
-      color: #5b4b8a;
-      margin-bottom: 0.5rem;
-    }
-
-    header p {
-      font-style: italic;
-      color: #666;
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
-    }
-
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      padding: 2rem 1rem;
-      max-width: 1200px;
-      margin: auto;
-    }
-
-    .image-card {
-      position: relative;
-      overflow: hidden;
-      border-radius: 10px;
-    }
-
-    .image-card img {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 10px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease, opacity 0.3s ease;
-      opacity: 0;
-    }
-
-    .image-card:hover img {
-      transform: scale(1.03);
-    }
-
-    .caption {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
-      color: #fff;
-      padding: 1rem 0.5rem;
-      text-align: center;
-      font-size: 1rem;
-      font-weight: 500;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-    }
-
-    .image-card:hover .caption {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    footer {
-      text-align: center;
-      padding: 2rem 1rem;
-      background-color: #f2f2f2;
-      color: #555;
-      font-size: 0.95rem;
-    }
-
-    .email-link {
-      color: #5b4b8a;
-      font-weight: 600;
-      text-decoration: none;
-    }
-
-    .email-link:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 600px) {
-      .gallery {
-        grid-template-columns: 1fr;
-      }
-
-      header {
-        padding: 2rem 1rem;
-      }
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Futuristic Art Gallery</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header>
-    <h1>Visual Art In Watercolor</h1>
+    <h1 class="glitch" data-text="Visual Art In Watercolor">Visual Art In Watercolor</h1>
     <p>Welcome to Tz'inkin Jay'</p>
   </header>
 
   <section class="gallery">
-    <div class="image-card">
-      <img src="images/Master.jpg" alt="The Master" />
-      <div class="caption">"The Master is a piece that captures the movement of the universe, with a lifetime unfolding through space and time."</div>
+    <!-- Card 1 -->
+    <div class="flip-card">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <img src="images/Master.jpg" alt="The Master" />
+          <div class="hover-caption">The Master</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="caption">
+            <p><strong>Size:</strong> 18" x 24"</p>
+            <p><strong>Materials:</strong> Watercolor on cold press paper</p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="image-card">
-      <img src="images/Protector.jpg" alt="Protector" />
-      <div class="caption">Protector</div>
+
+    <!-- Card 2 -->
+    <div class="flip-card">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <img src="images/Protector.jpg" alt="Protector" />
+          <div class="hover-caption">Protector</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="caption">
+            <p><strong>Size:</strong> 16" x 20"</p>
+            <p><strong>Materials:</strong> Watercolor and ink</p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="image-card">
-      <img src="images/Ix.jpg" alt="Ix" />
-      <div class="caption">Ix</div>
+
+    <!-- Card 3 -->
+    <div class="flip-card">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <img src="images/Ix.jpg" alt="Ix" />
+          <div class="hover-caption">Ix</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="caption">
+            <p><strong>Size:</strong> 12" x 16"</p>
+            <p><strong>Materials:</strong> Watercolor and graphite</p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="image-card">
-      <img src="images/Butterfly.jpg" alt="Butterfly" />
-      <div class="caption">Butterfly</div>
+
+    <!-- Card 4 -->
+    <div class="flip-card">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <img src="images/Butterfly.jpg" alt="Butterfly" />
+          <div class="hover-caption">Butterfly</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="caption">
+            <p><strong>Size:</strong> 11" x 14"</p>
+            <p><strong>Materials:</strong> Watercolor</p>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -151,25 +83,6 @@
     <p>&copy; 2025 Watercolors by Misa | <a href="https://c23m9.com">c23m9.com</a></p>
   </footer>
 
-  <script>
-    // Fade in gallery images on scroll
-    window.addEventListener('scroll', () => {
-      document.querySelectorAll('.gallery img').forEach((img) => {
-        const rect = img.getBoundingClientRect();
-        if (rect.top < window.innerHeight) {
-          img.style.opacity = '1';
-          img.style.transform = 'scale(1)';
-        }
-      });
-    });
-
-    // Initial fade on load
-    window.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.gallery img').forEach((img) => {
-        img.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        img.style.opacity = '1';
-      });
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
