@@ -1,38 +1,9 @@
-<!-- File: /index.html
-
-PSEUDOCODE PLAN (high-level, step-by-step)
-1) Goal: Build a modern, trust-first portfolio website for a web & database developer using pure HTML/CSS/JS.
-2) Brand & Trust: Clean typography, accessible color system, light/dark theme, strong hero, social proof, secure/devops credibility.
-3) Navigation: Sticky header with glassmorphism, skip-link, mobile drawer, active section highlight.
-4) Sections:
-   - Hero: Clear value prop + CTAs.
-   - Trust bar: Company/stack logos (SVG placeholders).
-   - Services: Web dev, DB architecture, APIs, Cloud/DevOps, Performance, Security.
-   - Case Studies: 3 projects, metrics, tags, cards.
-   - Skills/Stack: Grid of tech with inline SVG icons.
-   - Interactive SQL Query Explorer: In-browser demo with tiny mock DB, limited safe SQL (SELECT ... FROM ... WHERE ... AND ...). Table results + timing.
-   - Mini Performance Dashboard: Canvas chart animating throughput/latency to showcase observability mindset.
-   - Process: 5-step timeline.
-   - Testimonials: 3 quotes.
-   - Contact: Validated form (name/email/budget/message), honeypot, copy-email + mailto fallback.
-5) JS Infrastructure:
-   - Theme: Toggle + localStorage persistence, respects prefers-color-scheme.
-   - IntersectionObserver reveals; counters animate on view.
-   - Mobile nav toggle; focus trap basics.
-   - SQL parser: Minimal grammar; sanitize inputs; graceful errors.
-   - Chart: Lightweight canvas line chart; no libraries.
-   - Form: Client validation; structured payload; fake post (console) + mailto.
-6) Accessibility: Landmarks, aria labels, keyboard nav, reduced-motion respect, focus states, color contrast.
-7) SEO: Meta, OpenGraph/Twitter, JSON-LD (Person), canonical.
-8) Performance: Single file, inline SVG, CSS variables, contain/layout, prefers-reduced-motion guards.
--->
-
 <!doctype html>
 <html lang="en" data-theme="auto">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Alex Rivera — Web & Database Engineer</title>
+  <title>c23m9 Web & Database Engineer</title>
   <meta name="description" content="I design and build trustworthy, scalable websites, APIs, and databases. From schema design to cloud deployment—fast, secure, and maintainable." />
   <link rel="canonical" href="https://example.dev/" />
   <meta name="theme-color" content="#0f172a" />
@@ -221,7 +192,7 @@ PSEUDOCODE PLAN (high-level, step-by-step)
     <div class="container nav" role="navigation" aria-label="Primary">
       <a class="brand" href="#home" aria-label="Go to home">
         <svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--brand)"/><stop offset="100%" stop-color="var(--brand-2)"/></linearGradient></defs><path fill="url(#g)" d="M32 6c12 0 22 4 22 10v20c0 6-10 10-22 10S10 42 10 36V16c0-6 10-10 22-10zm0 8c-9.9 0-18 3-18 6s8.1 6 18 6 18-3 18-6-8.1-6-18-6zm0 16c-9.9 0-18-3-18-6v6c0 3 8.1 6 18 6s18-3 18-6v-6c0 3-8.1 6-18 6z"/></svg>
-        <span>Alex Rivera</span>
+        <span>c23m9</span>
       </a>
       <nav class="nav-controls">
         <ul class="primary" aria-label="Sections">
@@ -515,7 +486,7 @@ type Query { products(sku: String): [Product]! }
 
   <footer>
     <div class="container center-between">
-      <div>© <span id="year"></span> Alex Rivera. All rights reserved.</div>
+      <div>© <span id="year"></span> c23m9. All rights reserved.</div>
       <div class="flex" style="gap:.6rem;">
         <a class="pill" href="#" aria-label="GitHub">GitHub</a>
         <a class="pill" href="#" aria-label="LinkedIn">LinkedIn</a>
@@ -526,9 +497,9 @@ type Query { products(sku: String): [Product]! }
 
   <!-- JSON-LD for SEO -->
   <script type="application/ld+json">{
-    "@context":"https://schema.org",
+    "@context":"https://c23m9.com",
     "@type":"Person",
-    "name":"Alex Rivera",
+    "name":" Misael Ramirez",
     "jobTitle":"Web & Database Developer",
     "url":"https://example.dev/",
     "sameAs":["https://github.com/yourhandle","https://www.linkedin.com/in/yourhandle"],
@@ -704,7 +675,7 @@ type Query { products(sku: String): [Product]! }
     const form = document.getElementById('contactForm');
     const formStatus = document.getElementById('formStatus');
     document.getElementById('copyEmail')?.addEventListener('click', async ()=>{
-      try{ await navigator.clipboard.writeText('alex@example.dev'); toast('Email copied'); }catch{ toast('Unable to copy'); }
+      try{ await navigator.clipboard.writeText('misa@c23m9.com'); toast('Email copied'); }catch{ toast('Unable to copy'); }
     });
     form?.addEventListener('submit', (e)=>{
       e.preventDefault();
@@ -718,7 +689,7 @@ type Query { products(sku: String): [Product]! }
       if(!data.message || data.message.length < 12) errors.push('Add a short project brief.');
       if(errors.length){ formStatus.textContent = errors.join(' '); return; }
       // Mailto fallback so users can send context via their client.
-      const mail = new URL('mailto:alex@example.dev');
+      const mail = new URL('mailto:misa@c23m9.com');
       mail.searchParams.set('subject', 'New project inquiry');
       mail.searchParams.set('body', `Name: ${data.name}\nEmail: ${data.email}\nBudget: ${data.budget}\nTimeline: ${data.timeline}\n\n${data.message}`);
       window.location.href = mail.toString();
