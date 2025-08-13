@@ -69,10 +69,6 @@
     .kpi .big{margin-top:6px;font-size:1.8rem;font-weight:700;letter-spacing:.4px}
     .list{margin:0;padding-left:18px;font-size:.94rem}.list li{margin:4px 0}
 
-    
-
-
-
     .grid{display:grid;gap:16px;grid-template-columns:2fr 1fr}
     .panel{background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
       border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 12px 16px;min-height:260px}
@@ -102,7 +98,6 @@
     <!-- Filter Bar -->
     <section class="filterbar" aria-label="Filters">
       <div class="filter-row">
-        <!-- Date Mode DROPDOWN (blank by default) -->
         <div class="field" style="min-width:220px">
           <label for="filterType">Date Mode</label>
           <select id="filterType" autocomplete="off">
@@ -113,7 +108,7 @@
           </select>
         </div>
 
-        <!-- Range fields (STRICT hidden until .show is applied) -->
+        <!-- Range -->
         <div class="field mode-range">
           <label for="startDate">Start</label>
           <input type="date" id="startDate" autocomplete="off"/>
@@ -123,7 +118,7 @@
           <input type="date" id="endDate" autocomplete="off"/>
         </div>
 
-        <!-- Month fields -->
+        <!-- Month -->
         <div class="field mode-month">
           <label for="monthDropdown">Month</label>
           <select id="monthDropdown" autocomplete="off">
@@ -139,7 +134,7 @@
           <select id="monthYearDropdown" autocomplete="off"></select>
         </div>
 
-        <!-- Quarter fields -->
+        <!-- Quarter -->
         <div class="field mode-quarter">
           <label for="quarterSelect">Quarter</label>
           <select id="quarterSelect" autocomplete="off">
@@ -185,12 +180,10 @@
     <section class="kpis" aria-label="Summary">
       <div class="kpi"><h3>Unique Case Numbers</h3><div class="big" id="uniqueCases">0</div></div>
       <div class="kpi"><h3>Total Services Provided</h3><div class="big" id="totalServices">0</div></div>
-<div class="kpi">
-  <h3>Most Recent Interaction</h3>
-  <div class="big" id="mostRecentInteraction">—</div>
-</div>
-
-
+      <div class="kpi">
+        <h3>Most Recent Interaction</h3>
+        <div class="big" id="mostRecentInteraction">—</div>
+      </div>
       <div class="kpi" style="grid-column: span 6 / span 6">
         <h3>Top 5 Most Common Services</h3>
         <ol class="list" id="mostCommonService"></ol>
@@ -241,38 +234,16 @@
       btnExportXlsx: document.getElementById('btnExportXlsx'),
     };
 
-    /* ===== Visibility controller (CSS class toggle) ===== */
+    /* ===== Visibility controller ===== */
     function toggleDateInputs(){
-      const mode = els.filterType.value; // '', 'range', 'month', 'quarter'
-      // Hide all
-      document.querySelectorAll('.mode-range,.mode-month,.mode-quarter')
-        .forEach(el => el.classList.remove('show'));
-      // Show selected
-      if(mode === 'range'){
-        document.querySelectorAll('.mode-range').forEach(el => el.classList.add('show'));
-      } else if(mode === 'month'){
-        document.querySelectorAll('.mode-month').forEach(el => el.classList.add('show'));
-      } else if(mode === 'quarter'){
-        document.querySelectorAll('.mode-quarter').forEach(el => el.classList.add('show'));
-      }
+      const mode = els.filterType.value;
+      document.querySelectorAll('.mode-range,.mode-month,.mode-quarter').forEach(el => el.classList.remove('show'));
+      if(mode === 'range') document.querySelectorAll('.mode-range').forEach(el => el.classList.add('show'));
+      else if(mode === 'month') document.querySelectorAll('.mode-month').forEach(el => el.classList.add('show'));
+      else if(mode === 'quarter') document.querySelectorAll('.mode-quarter').forEach(el => el.classList.add('show'));
     }
 
     /* ===== Helpers ===== */
-    function parseExcelDateCell(cell){
-      if(!cell) return null;
-      if(cell.t === 'n'){
-        const p = XLSX.SSF.parse_date_code(cell.v);
-        if(!p) return null;
-        return new Date(Date.UTC(p.y,(p.m||1)-1,p.d||1,p.H||0,p.M||0,p.S||0));
-      }
-      if(cell.t === 's' || cell.t === 'str'){
-        const d = new Date(cell.v);
-        return isNaN(d) ? null : d;
-      }
-      return null;
-    }
-
-    // Only remember user/service selections; DO NOT restore date mode/fields
     function persistSelections(){
       const state = {
         users: userChoices ? userChoices.getValue(true) : [],
@@ -289,7 +260,6 @@
         if(Array.isArray(s.services)) serviceChoices.setChoiceByValue(s.services);
       }catch(e){}
     }
-
     function monthEnd(y,m){ return new Date(y, m+1, 0, 23,59,59,999); }
     function computeDateRange(){
       const mode = els.filterType.value;
@@ -311,81 +281,50 @@
       return { startDate, endDate };
     }
 
+    // Read the "Interaction date" from each row robustly
+    function getInteractionDateFromRow(row) {
+      if (!row) return null;
+      const key = Object.keys(row).find(k => {
+        const s = k.trim().toLowerCase().replace(/\s+|_/g, '');
+        return s === 'interactiondate';
+      });
+      const v = key ? row[key] : null;
 
-
-function getInteractionDateFromRow(row) {
-  if (!row) return null;
-
-  // find the "Interaction date" column (case/space tolerant)
-  const key = Object.keys(row).find(k => {
-    const s = k.trim().toLowerCase().replace(/\s+|_/g, '');
-    return s === 'interactiondate';
-  });
-
-  const v = key ? row[key] : null;
-
-  // Already a Date?
-  if (v instanceof Date && !isNaN(v)) return v;
-
-  // Excel serial number
-  if (typeof v === 'number') {
-    const p = XLSX.SSF.parse_date_code(v);
-    if (p) return new Date(Date.UTC(p.y, (p.m || 1) - 1, p.d || 1, p.H || 0, p.M || 0, p.S || 0));
-  }
-
-  // String fallback
-  if (typeof v === 'string') {
-    const t = v.trim();
-    const d1 = new Date(t);
-    if (!isNaN(d1)) return d1;
-    const mdy = t.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
-    if (mdy) {
-      let mm = parseInt(mdy[1], 10) - 1;
-      let dd = parseInt(mdy[2], 10);
-      let yy = parseInt(mdy[3], 10);
-      if (yy < 100) yy += 2000;
-      return new Date(yy, mm, dd);
+      if (v instanceof Date && !isNaN(v)) return v;      // already a Date
+      if (typeof v === 'number') {                      // Excel serial
+        const p = XLSX.SSF.parse_date_code(v);
+        if (p) return new Date(Date.UTC(p.y,(p.m||1)-1,p.d||1,p.H||0,p.M||0,p.S||0));
+      }
+      if (typeof v === 'string') {                      // parse string
+        const t = v.trim();
+        const d1 = new Date(t);
+        if (!isNaN(d1)) return d1;
+        const mdy = t.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
+        if (mdy) {
+          let mm = parseInt(mdy[1],10)-1, dd = parseInt(mdy[2],10), yy = parseInt(mdy[3],10);
+          if (yy < 100) yy += 2000;
+          return new Date(yy, mm, dd);
+        }
+      }
+      return null;
     }
-  }
-
-  return null;
-}
-
-
-
 
     /* ===== File load ===== */
     els.fileInput.addEventListener('change', handleFile);
     function handleFile(e){
-  const file = e.target.files[0]; if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(ev){
-    try{
-      const data = new Uint8Array(ev.target.result);
-      // NOTE: put cellDates:true on XLSX.read (not on sheet_to_json)
-      const workbook = XLSX.read(data, { type:'array', cellDates: true });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const file = e.target.files[0]; if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        try{
+          const data = new Uint8Array(ev.target.result);
+          const workbook = XLSX.read(data, { type:'array', cellDates:true });
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
 
-      // Get rows with raw values so dates stay as Date/number
-      const json = XLSX.utils.sheet_to_json(sheet, { defval:'', raw:true });
+          // Keep raw so dates are Date/number; defval:'' to keep columns consistent
+          const json = XLSX.utils.sheet_to_json(sheet, { defval:'', raw:true });
 
-      // Build _parsedDate directly from the "Interaction date" column on each row
-      rawData = json.map(row => ({ ...row, _parsedDate: getInteractionDateFromRow(row) }));
-
-      filteredData = rawData.slice();
-      populateDropdowns(rawData);
-      updateDashboard(filteredData);
-      persistSelections && persistSelections();
-    }catch(err){
-      alert("Couldn't read the file. Please ensure it's a valid .xlsx/.xls/.csv");
-      console.error(err);
-    }
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-
-
+          // Attach parsed date directly from the row's Interaction date
+          rawData = json.map(row => ({ ...row, _parsedDate: getInteractionDateFromRow(row) }));
 
           filteredData = rawData.slice();
           populateDropdowns(rawData);
@@ -446,17 +385,13 @@ function getInteractionDateFromRow(row) {
     }
 
     function clearFilters(){
-      // Reset date mode fully (so all fields stay hidden)
       els.filterType.value = '';
       toggleDateInputs();
-      // Clear date inputs
       els.startDate.value = ''; els.endDate.value = '';
       els.monthDropdown.selectedIndex = 0; els.monthYearDropdown.selectedIndex = 0;
       els.quarterSelect.value = 'Q1'; els.quarterYear.value = '';
-      // Clear multi-selects
       if(userChoices) userChoices.removeActiveItems();
       if(serviceChoices) serviceChoices.removeActiveItems();
-      // Reset data
       filteredData = rawData.slice();
       updateDashboard(filteredData);
       persistSelections();
@@ -468,37 +403,35 @@ function getInteractionDateFromRow(row) {
     els.btnExportCsv.addEventListener('click', exportToCSV);
     els.btnExportXlsx.addEventListener('click', exportToExcel);
 
-   
- function formatDateShort(d) {
-  return (d instanceof Date && !isNaN(d))
-    ? d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
-    : '—';
-}
+    // Formatting + latest date helpers
+    function formatDateShort(d) {
+      return (d instanceof Date && !isNaN(d))
+        ? d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+        : '—';
+    }
+    function mostRecentInteractionDate(data) {
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);          // end of today (local time)
+  const MIN_YEAR = 1990;                    // sanity floor (adjust if needed)
+  const MAX_YEAR = today.getFullYear() + 1; // ignore far-future typos like 3023
 
-// Pick the max date from `_parsedDate` (falls back to "Interaction date" text if needed)
-function mostRecentInteractionDate(data) {
-  let best = null;
+  let bestPast = null;  // newest date <= today
+  let bestAny  = null;  // fallback: newest date overall
+
   for (const row of (data || [])) {
-    let d = row?._parsedDate;
-    if (!(d instanceof Date) || isNaN(d)) {
-      // fallback if _parsedDate missing
-      const raw = row && (row['Interaction date'] ?? row['interaction date'] ?? row['Interaction Date']);
-      if (raw) {
-        const tryD = new Date(raw);
-        if (!isNaN(tryD)) d = tryD;
-      }
-    }
-    if (d instanceof Date && !isNaN(d)) {
-      if (!best || d > best) best = d;
-    }
+    const d = row._parsedDate;
+    if (!(d instanceof Date) || isNaN(d)) continue;
+
+    const y = d.getFullYear();
+    if (y < MIN_YEAR || y > MAX_YEAR) continue; // drop unrealistic years
+
+    if (!bestAny || d > bestAny) bestAny = d;   // track absolute max
+    if (d <= today && (!bestPast || d > bestPast)) bestPast = d; // track latest in the past
   }
-  return best;
+  return bestPast || bestAny || null;  // prefer past; fallback to absolute max if all are future
 }
 
 
-   
-   
-   
     /* ===== Dashboard ===== */
     function updateDashboard(data){
       const uniqueCases=new Set(), serviceCount=new Map(), userCount=new Map();
@@ -521,11 +454,9 @@ function mostRecentInteractionDate(data) {
 
       drawServiceChart(sortedServices);
 
-// --- Most recent Interaction date (from column B) ---
-const latest = mostRecentInteractionDate(data); // uses currently filtered rows
-document.getElementById('mostRecentInteraction').textContent = formatDateShort(latest);
-
-
+      // Most recent Interaction date (from column "Interaction date")
+      const latest = mostRecentInteractionDate(data);
+      document.getElementById('mostRecentInteraction').textContent = formatDateShort(latest);
 
       const sortedUsers = [...userCount.entries()].sort((a,b)=>b[1]-a[1]);
       els.userRankingList.innerHTML='';
@@ -534,8 +465,6 @@ document.getElementById('mostRecentInteraction').textContent = formatDateShort(l
         li.innerHTML=`<span>${i+1}. ${u || '<span class="muted">Unknown</span>'}</span><span class="muted">${c.toLocaleString()}</span>`;
         els.userRankingList.appendChild(li);
       });
-
-
     }
 
     function drawServiceChart(services){
@@ -575,7 +504,6 @@ document.getElementById('mostRecentInteraction').textContent = formatDateShort(l
     }
 
     /* ===== Init ===== */
-    // Force-hide all date fields on load (no restore of mode)
     els.filterType.value = '';
     toggleDateInputs();
   </script>
