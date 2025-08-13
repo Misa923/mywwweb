@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>c23m9Dev — Service Interaction Dashboard</title>
+
+  <!-- Libs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
+
+  <style>
+    :root{
+      --bg:#0b1020; --panel:#0f152b; --panel-2:#131a35;
+      --text:#e9eef6; --muted:#a9b0c2; --line:rgba(255,255,255,0.08);
+      --glow:#23c9b9; --radius:16px; --shadow:0 8px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background: radial-gradient(1200px 1200px at 20% -10%, rgba(35,201,185,.15), transparent 60%), var(--bg);
+      color:var(--text);
+    }
+
+    header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.2) blur(10px);
+      background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));border-bottom:1px solid var(--line)}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px}
+    .brand{display:flex;gap:10px;align-items:center}
+    .badge{width:36px;height:36px;border-radius:10px;background:conic-gradient(from 210deg,var(--glow),#7adcd2 25%,#1d9d8f 60%,var(--glow));box-shadow:0 0 24px rgba(35,201,185,.35)}
+    h1{margin:0;font-size:1.05rem;letter-spacing:.3px}
+
+    main{padding:22px;display:grid;gap:18px;max-width:1200px;margin:0 auto}
+
+    .btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;font-size:.92rem}
+    .btn.primary{background:linear-gradient(180deg,#23c9b9,#1aa998);color:#061016;border-color:transparent}
+    .btn:hover{filter:brightness(1.05)} .btn:disabled{opacity:.6;cursor:not-allowed}
+
+    .filterbar{display:grid;gap:14px;grid-template-columns:1fr;padding:14px;border-radius:var(--radius);
+      background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
+      border:1px solid var(--line);box-shadow:var(--shadow)}
+    .filter-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+    .field{display:flex;flex-direction:column;gap:6px;min-width:180px}
+    .field label{font-size:.78rem;color:var(--muted)}
+
+    /* High-contrast inputs */
+    select,input[type="date"],input[type="number"],input[type="file"]{
+      background:var(--panel-2)!important;color:var(--text)!important;border:1px solid var(--line)!important;
+      border-radius:10px!important;padding:8px 10px!important;min-height:38px!important;appearance:none}
+    select:focus,input:focus{outline:2px solid rgba(35,201,185,.5)}
+    ::placeholder{color:var(--muted);opacity:.9}
+
+    /* Choices.js (dark) */
+    .choices__inner{background:var(--panel-2)!important;color:var(--text)!important;border:1px solid var(--line)!important;border-radius:10px!important;min-height:38px!important}
+    .choices__list--dropdown,.choices__list[aria-expanded]{background:var(--panel-2)!important;border:1px solid var(--line)!important;color:var(--text)!important}
+    .choices__list--multiple .choices__item{background:#1a7f77;border-color:#1a7f77}
+    .choices__item--selectable.is-highlighted{background:var(--panel)!important}
+    .choices__input{background:transparent!important;color:var(--text)!important}
+
+    /* STRICT default hidden for all date-mode sections */
+    .mode-range, .mode-month, .mode-quarter { display: none; }
+    .mode-range.show, .mode-month.show, .mode-quarter.show { display: flex; }
+
+    .kpis{display:grid;gap:16px;grid-template-columns:repeat(12,minmax(0,1fr))}
+    .kpi{grid-column:span 3 / span 3;background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
+      border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+    .kpi h3{margin:0;font-size:.9rem;color:var(--muted)}
+    .kpi .big{margin-top:6px;font-size:1.8rem;font-weight:700;letter-spacing:.4px}
+    .list{margin:0;padding-left:18px;font-size:.94rem}.list li{margin:4px 0}
+
+    
+
+
+
+    .grid{display:grid;gap:16px;grid-template-columns:2fr 1fr}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
+      border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 12px 16px;min-height:260px}
+    .panel h4{margin:8px 8px 12px;color:var(--muted)}
+    .chart-wrap{height:460px;position:relative;padding:8px}
+    canvas{width:100%!important;height:100%!important}
+    .ranking{max-height:420px;overflow:auto;margin:0;padding:0;list-style:none}
+    .ranking li{display:flex;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);margin:6px 8px}
+    .empty{text-align:center;padding:40px 10px;color:var(--muted)}
+
+    @media (max-width:1200px){.kpi{grid-column:span 4 / span 4}}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}.kpi{grid-column:span 6 / span 6}}
+    @media (max-width:600px){.kpi{grid-column:span 12 / span 12}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <div class="badge" aria-hidden="true"></div>
+        <h1>c23m9Dev — Service Interaction Dashboard</h1>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Filter Bar -->
+    <section class="filterbar" aria-label="Filters">
+      <div class="filter-row">
+        <!-- Date Mode DROPDOWN (blank by default) -->
+        <div class="field" style="min-width:220px">
+          <label for="filterType">Date Mode</label>
+          <select id="filterType" autocomplete="off">
+            <option value="">— Select —</option>
+            <option value="range">Date Range</option>
+            <option value="month">Month</option>
+            <option value="quarter">Quarter</option>
+          </select>
+        </div>
+
+        <!-- Range fields (STRICT hidden until .show is applied) -->
+        <div class="field mode-range">
+          <label for="startDate">Start</label>
+          <input type="date" id="startDate" autocomplete="off"/>
+        </div>
+        <div class="field mode-range">
+          <label for="endDate">End</label>
+          <input type="date" id="endDate" autocomplete="off"/>
+        </div>
+
+        <!-- Month fields -->
+        <div class="field mode-month">
+          <label for="monthDropdown">Month</label>
+          <select id="monthDropdown" autocomplete="off">
+            <option value="">— Select —</option>
+            <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+            <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+            <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+            <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+          </select>
+        </div>
+        <div class="field mode-month">
+          <label for="monthYearDropdown">Year</label>
+          <select id="monthYearDropdown" autocomplete="off"></select>
+        </div>
+
+        <!-- Quarter fields -->
+        <div class="field mode-quarter">
+          <label for="quarterSelect">Quarter</label>
+          <select id="quarterSelect" autocomplete="off">
+            <option value="Q1">Jan–Mar</option>
+            <option value="Q2">Apr–Jun</option>
+            <option value="Q3">Jul–Sep</option>
+            <option value="Q4">Oct–Dec</option>
+          </select>
+        </div>
+        <div class="field mode-quarter">
+          <label for="quarterYear">Year</label>
+          <input type="number" id="quarterYear" min="2000" max="2100" placeholder="2025" autocomplete="off"/>
+        </div>
+
+        <!-- Multi-selects -->
+        <div class="field" style="min-width:260px">
+          <label for="userFilter">User</label>
+          <select id="userFilter" multiple></select>
+        </div>
+        <div class="field" style="min-width:260px">
+          <label for="serviceFilter">Service</label>
+          <select id="serviceFilter" multiple></select>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <div class="field" style="min-width:260px">
+          <label for="fileInput">Upload Data</label>
+          <input type="file" id="fileInput" accept=".xlsx,.xls,.csv"/>
+        </div>
+        <div style="display:flex; gap:10px; align-items:end; flex-wrap:wrap">
+          <button class="btn primary" id="btnApply">Apply Filters</button>
+          <button class="btn" id="btnClear">Clear</button>
+          <button class="btn" id="btnExportCsv">Export CSV</button>
+          <button class="btn" id="btnExportXlsx">Export Excel</button>
+        </div>
+      </div>
+
+      <small class="muted">Pick a date mode first; only its fields will appear.</small>
+    </section>
+
+    <!-- KPIs -->
+    <section class="kpis" aria-label="Summary">
+      <div class="kpi"><h3>Unique Case Numbers</h3><div class="big" id="uniqueCases">0</div></div>
+      <div class="kpi"><h3>Total Services Provided</h3><div class="big" id="totalServices">0</div></div>
+<div class="kpi">
+  <h3>Most Recent Interaction</h3>
+  <div class="big" id="mostRecentInteraction">—</div>
+</div>
+
+
+      <div class="kpi" style="grid-column: span 6 / span 6">
+        <h3>Top 5 Most Common Services</h3>
+        <ol class="list" id="mostCommonService"></ol>
+      </div>
+    </section>
+
+    <!-- Content -->
+    <section class="grid">
+      <div class="panel">
+        <h4>All Services Provided</h4>
+        <div class="chart-wrap">
+          <canvas id="serviceChart" aria-label="Services frequency chart" role="img"></canvas>
+          <div id="chartEmpty" class="empty" hidden>No data yet. Upload a file or adjust filters.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <h4>👥 Users by Interactions</h4>
+        <ul class="ranking" id="userRankingList"></ul>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* ===== State ===== */
+    let chartInstance, rawData=[], filteredData=[];
+    let userChoices, serviceChoices;
+
+    const els = {
+      filterType: document.getElementById('filterType'),
+      fileInput: document.getElementById('fileInput'),
+      userFilter: document.getElementById('userFilter'),
+      serviceFilter: document.getElementById('serviceFilter'),
+      uniqueCases: document.getElementById('uniqueCases'),
+      totalServices: document.getElementById('totalServices'),
+      serviceList: document.getElementById('mostCommonService'),
+      userRankingList: document.getElementById('userRankingList'),
+      serviceChart: document.getElementById('serviceChart'),
+      chartEmpty: document.getElementById('chartEmpty'),
+      startDate: document.getElementById('startDate'),
+      endDate: document.getElementById('endDate'),
+      monthDropdown: document.getElementById('monthDropdown'),
+      monthYearDropdown: document.getElementById('monthYearDropdown'),
+      quarterSelect: document.getElementById('quarterSelect'),
+      quarterYear: document.getElementById('quarterYear'),
+      btnApply: document.getElementById('btnApply'),
+      btnClear: document.getElementById('btnClear'),
+      btnExportCsv: document.getElementById('btnExportCsv'),
+      btnExportXlsx: document.getElementById('btnExportXlsx'),
+    };
+
+    /* ===== Visibility controller (CSS class toggle) ===== */
+    function toggleDateInputs(){
+      const mode = els.filterType.value; // '', 'range', 'month', 'quarter'
+      // Hide all
+      document.querySelectorAll('.mode-range,.mode-month,.mode-quarter')
+        .forEach(el => el.classList.remove('show'));
+      // Show selected
+      if(mode === 'range'){
+        document.querySelectorAll('.mode-range').forEach(el => el.classList.add('show'));
+      } else if(mode === 'month'){
+        document.querySelectorAll('.mode-month').forEach(el => el.classList.add('show'));
+      } else if(mode === 'quarter'){
+        document.querySelectorAll('.mode-quarter').forEach(el => el.classList.add('show'));
+      }
+    }
+
+    /* ===== Helpers ===== */
+    function parseExcelDateCell(cell){
+      if(!cell) return null;
+      if(cell.t === 'n'){
+        const p = XLSX.SSF.parse_date_code(cell.v);
+        if(!p) return null;
+        return new Date(Date.UTC(p.y,(p.m||1)-1,p.d||1,p.H||0,p.M||0,p.S||0));
+      }
+      if(cell.t === 's' || cell.t === 'str'){
+        const d = new Date(cell.v);
+        return isNaN(d) ? null : d;
+      }
+      return null;
+    }
+
+    // Only remember user/service selections; DO NOT restore date mode/fields
+    function persistSelections(){
+      const state = {
+        users: userChoices ? userChoices.getValue(true) : [],
+        services: serviceChoices ? serviceChoices.getValue(true) : []
+      };
+      localStorage.setItem('c23m9.selections', JSON.stringify(state));
+    }
+    function restoreSelections(){
+      const raw = localStorage.getItem('c23m9.selections');
+      if(!raw) return;
+      try{
+        const s = JSON.parse(raw);
+        if(Array.isArray(s.users)) userChoices.setChoiceByValue(s.users);
+        if(Array.isArray(s.services)) serviceChoices.setChoiceByValue(s.services);
+      }catch(e){}
+    }
+
+    function monthEnd(y,m){ return new Date(y, m+1, 0, 23,59,59,999); }
+    function computeDateRange(){
+      const mode = els.filterType.value;
+      let startDate, endDate;
+      if(mode === 'range'){
+        if(els.startDate.value) startDate = new Date(els.startDate.value);
+        if(els.endDate.value){ endDate = new Date(els.endDate.value); endDate.setHours(23,59,59,999); }
+      } else if(mode === 'month'){
+        const m = els.monthDropdown.value, y = els.monthYearDropdown.value;
+        if(m !== '' && y !== ''){ startDate = new Date(+y, +m, 1); endDate = monthEnd(+y, +m); }
+      } else if(mode === 'quarter'){
+        const q = els.quarterSelect.value; const y = parseInt(els.quarterYear.value,10);
+        if(y){
+          const map = {Q1:[0,2],Q2:[3,5],Q3:[6,8],Q4:[9,11]};
+          const [sm,em] = map[q] || [0,2];
+          startDate = new Date(y, sm, 1); endDate = monthEnd(y, em);
+        }
+      }
+      return { startDate, endDate };
+    }
+
+    /* ===== File load ===== */
+    els.fileInput.addEventListener('change', handleFile);
+    function handleFile(e){
+      const file = e.target.files[0]; if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        try{
+          const data = new Uint8Array(ev.target.result);
+          const workbook = XLSX.read(data, { type:'array' });
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+          const json = XLSX.utils.sheet_to_json(sheet, { defval:'', raw:false });
+
+          const range = XLSX.utils.decode_range(sheet['!ref']);
+          const startRow = range.s.r;
+          const datesByRow = {};
+          for(let R=startRow+1; R<=range.e.r; ++R){
+            const ref = XLSX.utils.encode_cell({ r:R, c:1 }); // column B
+            const d = parseExcelDateCell(sheet[ref]);
+            if(d) datesByRow[R] = d;
+          }
+
+          rawData = json.map((row,i)=>({...row,_parsedDate:datesByRow[startRow+1+i]||null}));
+          filteredData = rawData.slice();
+          populateDropdowns(rawData);
+          updateDashboard(filteredData);
+          persistSelections();
+        }catch(err){
+          alert("Couldn't read the file. Please ensure it's a valid .xlsx/.xls/.csv");
+          console.error(err);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function initYearDropdown(){
+      if(!els.monthYearDropdown.options.length){
+        const currentYear = new Date().getFullYear();
+        for(let y=currentYear-10; y<=currentYear+5; y++){
+          const opt = document.createElement('option'); opt.value = y; opt.textContent = y;
+          els.monthYearDropdown.appendChild(opt);
+        }
+      }
+    }
+    initYearDropdown();
+
+    function populateDropdowns(data){
+      const users = Array.from(new Set(data.map(r => (r['User']||'').trim()).filter(Boolean))).sort();
+      const services = Array.from(new Set(data.map(r => (r['Service']||'').trim()).filter(Boolean))).sort();
+      els.userFilter.innerHTML=''; els.serviceFilter.innerHTML='';
+      users.forEach(u=>{const o=document.createElement('option');o.value=u;o.textContent=u;els.userFilter.appendChild(o);});
+      services.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;els.serviceFilter.appendChild(o);});
+
+      if(userChoices) userChoices.destroy(); if(serviceChoices) serviceChoices.destroy();
+      userChoices = new Choices(els.userFilter,{removeItemButton:true,placeholder:true,placeholderValue:'All users'});
+      serviceChoices = new Choices(els.serviceFilter,{removeItemButton:true,placeholder:true,placeholderValue:'All services'});
+
+      restoreSelections();
+    }
+
+    /* ===== Actions ===== */
+    function applyFilters(){
+      const { startDate, endDate } = computeDateRange();
+      const selectedUsers = userChoices ? userChoices.getValue(true) : [];
+      const selectedServices = serviceChoices ? serviceChoices.getValue(true) : [];
+
+      filteredData = rawData.filter(row=>{
+        const d = row._parsedDate;
+        const user = (row['User']||'').trim();
+        const service = (row['Service']||'').trim();
+        const dateMatch = (!startDate || !d || isNaN(d)) ? true : (d >= startDate && (!endDate || d <= endDate));
+        const userMatch = selectedUsers.length===0 || selectedUsers.includes(user);
+        const serviceMatch = selectedServices.length===0 || selectedServices.includes(service);
+        return dateMatch && userMatch && serviceMatch;
+      });
+
+      updateDashboard(filteredData);
+      if(filteredData.length===0) alert("No results found with the selected filters.");
+      persistSelections();
+    }
+
+    function clearFilters(){
+      // Reset date mode fully (so all fields stay hidden)
+      els.filterType.value = '';
+      toggleDateInputs();
+      // Clear date inputs
+      els.startDate.value = ''; els.endDate.value = '';
+      els.monthDropdown.selectedIndex = 0; els.monthYearDropdown.selectedIndex = 0;
+      els.quarterSelect.value = 'Q1'; els.quarterYear.value = '';
+      // Clear multi-selects
+      if(userChoices) userChoices.removeActiveItems();
+      if(serviceChoices) serviceChoices.removeActiveItems();
+      // Reset data
+      filteredData = rawData.slice();
+      updateDashboard(filteredData);
+      persistSelections();
+    }
+
+    els.filterType.addEventListener('change', toggleDateInputs);
+    els.btnApply.addEventListener('click', applyFilters);
+    els.btnClear.addEventListener('click', clearFilters);
+    els.btnExportCsv.addEventListener('click', exportToCSV);
+    els.btnExportXlsx.addEventListener('click', exportToExcel);
+
+   
+ function formatDateShort(d) {
+  return (d instanceof Date && !isNaN(d))
+    ? d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+    : '—';
+}
+
+// Pick the max date from `_parsedDate` (falls back to "Interaction date" text if needed)
+function mostRecentInteractionDate(data) {
+  let best = null;
+  for (const row of (data || [])) {
+    let d = row?._parsedDate;
+    if (!(d instanceof Date) || isNaN(d)) {
+      // fallback if _parsedDate missing
+      const raw = row && (row['Interaction date'] ?? row['interaction date'] ?? row['Interaction Date']);
+      if (raw) {
+        const tryD = new Date(raw);
+        if (!isNaN(tryD)) d = tryD;
+      }
+    }
+    if (d instanceof Date && !isNaN(d)) {
+      if (!best || d > best) best = d;
+    }
+  }
+  return best;
+}
+
+
+   
+   
+   
+    /* ===== Dashboard ===== */
+    function updateDashboard(data){
+      const uniqueCases=new Set(), serviceCount=new Map(), userCount=new Map();
+      for(const row of data){
+        const cn=(row['Case number']||'').toString().trim();
+        const sv=(row['Service']||'').toString().trim();
+        const us=(row['User']||'').toString().trim();
+        if(cn) uniqueCases.add(cn);
+        if(sv) serviceCount.set(sv,(serviceCount.get(sv)||0)+1);
+        if(us) userCount.set(us,(userCount.get(us)||0)+1);
+      }
+      els.uniqueCases.textContent = uniqueCases.size.toLocaleString();
+      els.totalServices.textContent = data.length.toLocaleString();
+
+      const sortedServices = [...serviceCount.entries()].sort((a,b)=>b[1]-a[1]);
+      els.serviceList.innerHTML='';
+      sortedServices.slice(0,5).forEach(([n,c])=>{
+        const li=document.createElement('li'); li.textContent=`${n} (${c.toLocaleString()})`; els.serviceList.appendChild(li);
+      });
+
+      drawServiceChart(sortedServices);
+
+// --- Most recent Interaction date (from column B) ---
+const latest = mostRecentInteractionDate(data); // uses currently filtered rows
+document.getElementById('mostRecentInteraction').textContent = formatDateShort(latest);
+
+
+
+      const sortedUsers = [...userCount.entries()].sort((a,b)=>b[1]-a[1]);
+      els.userRankingList.innerHTML='';
+      sortedUsers.forEach(([u,c],i)=>{
+        const li=document.createElement('li');
+        li.innerHTML=`<span>${i+1}. ${u || '<span class="muted">Unknown</span>'}</span><span class="muted">${c.toLocaleString()}</span>`;
+        els.userRankingList.appendChild(li);
+      });
+
+
+    }
+
+    function drawServiceChart(services){
+      if(chartInstance){ chartInstance.destroy(); chartInstance=null; }
+      const labels = services.map(([k])=>k);
+      const values = services.map(([,v])=>v);
+      if(values.length===0){ els.chartEmpty.hidden=false; return; }
+      els.chartEmpty.hidden=true;
+      chartInstance = new Chart(els.serviceChart.getContext('2d'),{
+        type:'bar',
+        data:{ labels, datasets:[{ label:'Service frequency', data:values, borderWidth:1.5,
+          backgroundColor: values.map(()=> 'rgba(35,201,185,0.28)'),
+          borderColor: values.map(()=> 'rgba(35,201,185,0.9)'),
+          maxBarThickness:40 }]},
+        options:{ responsive:true, maintainAspectRatio:false, animation:{duration:600,easing:'easeOutQuart'},
+          plugins:{ legend:{display:false} },
+          scales:{ x:{ticks:{autoSkip:true,maxRotation:0},grid:{color:'rgba(255,255,255,0.05)'}},
+                   y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'}} } }
+      });
+    }
+
+    /* ===== Export ===== */
+    function exportToCSV(){
+      if(!filteredData.length){ alert('No data to export.'); return; }
+      const headers = Object.keys(filteredData[0]).filter(k=>k!=='_parsedDate');
+      const rows = filteredData.map(r=> headers.map(k=>`"${(r[k]??'').toString().replace(/"/g,'""')}"`).join(','));
+      const csv = [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='filtered_data.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+    function exportToExcel(){
+      if(!filteredData.length){ alert('No data to export.'); return; }
+      const exportData = filteredData.map(({_parsedDate,...rest})=> rest);
+      const ws=XLSX.utils.json_to_sheet(exportData), wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Filtered Data'); XLSX.writeFile(wb, 'filtered_data.xlsx');
+    }
+
+    /* ===== Init ===== */
+    // Force-hide all date fields on load (no restore of mode)
+    els.filterType.value = '';
+    toggleDateInputs();
+  </script>
+</body>
+</html>
