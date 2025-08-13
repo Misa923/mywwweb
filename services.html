@@ -311,28 +311,82 @@
       return { startDate, endDate };
     }
 
+
+
+function getInteractionDateFromRow(row) {
+  if (!row) return null;
+
+  // find the "Interaction date" column (case/space tolerant)
+  const key = Object.keys(row).find(k => {
+    const s = k.trim().toLowerCase().replace(/\s+|_/g, '');
+    return s === 'interactiondate';
+  });
+
+  const v = key ? row[key] : null;
+
+  // Already a Date?
+  if (v instanceof Date && !isNaN(v)) return v;
+
+  // Excel serial number
+  if (typeof v === 'number') {
+    const p = XLSX.SSF.parse_date_code(v);
+    if (p) return new Date(Date.UTC(p.y, (p.m || 1) - 1, p.d || 1, p.H || 0, p.M || 0, p.S || 0));
+  }
+
+  // String fallback
+  if (typeof v === 'string') {
+    const t = v.trim();
+    const d1 = new Date(t);
+    if (!isNaN(d1)) return d1;
+    const mdy = t.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
+    if (mdy) {
+      let mm = parseInt(mdy[1], 10) - 1;
+      let dd = parseInt(mdy[2], 10);
+      let yy = parseInt(mdy[3], 10);
+      if (yy < 100) yy += 2000;
+      return new Date(yy, mm, dd);
+    }
+  }
+
+  return null;
+}
+
+
+
+
     /* ===== File load ===== */
     els.fileInput.addEventListener('change', handleFile);
     function handleFile(e){
-      const file = e.target.files[0]; if(!file) return;
-      const reader = new FileReader();
-      reader.onload = function(ev){
-        try{
-          const data = new Uint8Array(ev.target.result);
-          const workbook = XLSX.read(data, { type:'array' });
-          const sheet = workbook.Sheets[workbook.SheetNames[0]];
-          const json = XLSX.utils.sheet_to_json(sheet, { defval:'', raw:false });
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      const data = new Uint8Array(ev.target.result);
+      // NOTE: put cellDates:true on XLSX.read (not on sheet_to_json)
+      const workbook = XLSX.read(data, { type:'array', cellDates: true });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
 
-          const range = XLSX.utils.decode_range(sheet['!ref']);
-          const startRow = range.s.r;
-          const datesByRow = {};
-          for(let R=startRow+1; R<=range.e.r; ++R){
-            const ref = XLSX.utils.encode_cell({ r:R, c:1 }); // column B
-            const d = parseExcelDateCell(sheet[ref]);
-            if(d) datesByRow[R] = d;
-          }
+      // Get rows with raw values so dates stay as Date/number
+      const json = XLSX.utils.sheet_to_json(sheet, { defval:'', raw:true });
 
-          rawData = json.map((row,i)=>({...row,_parsedDate:datesByRow[startRow+1+i]||null}));
+      // Build _parsedDate directly from the "Interaction date" column on each row
+      rawData = json.map(row => ({ ...row, _parsedDate: getInteractionDateFromRow(row) }));
+
+      filteredData = rawData.slice();
+      populateDropdowns(rawData);
+      updateDashboard(filteredData);
+      persistSelections && persistSelections();
+    }catch(err){
+      alert("Couldn't read the file. Please ensure it's a valid .xlsx/.xls/.csv");
+      console.error(err);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+
+
+
           filteredData = rawData.slice();
           populateDropdowns(rawData);
           updateDashboard(filteredData);
