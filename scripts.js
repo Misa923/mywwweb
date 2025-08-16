@@ -27,7 +27,15 @@
       work:{ title:'Recent wins', kicker:'Ask for case study details' },
       pg:{ title:'Social Media Insights (demo)', kicker:'Filter and sort — sourced, rounded figures', metric:'Metric', filter2b:'MAU ≥ 2B', filterROI:'Marketer ROI leaders', reset:'Reset', th:{ platform:'Platform', mau:'MAU (B)', ad:'Ad reach (B)', news:'US news (%)', roi:'ROI leader' }},
       contact:{ kicker:'Tell us about your project', name:'Name', email:'Email', budget:'Budget', timeline:'Timeline', brief:'Project brief', send:'Send inquiry', copy:'Copy email', resume:'Download résumé', sla:'We reply within one business day.', budgetChoose:'Select a range', timelineChoose:'Choose', trust:{ privacy:'Privacy-first', nda:'NDA-friendly', sla:'1-business-day reply', ssl:'Backups & SSL' }},
-      home:{ cta:'Get a quote' }, ui:{ hide:'Hide', show:'Show', spiderTip:'Try spider theme' }
+      home:{
+        availability:'Available for Q4',
+        role:'Web & Database Engineers',
+        h1a:'Build once.', h1b:'Scale safely.', h1c:'Ship websites, databases &', h1d:'APIs with confidence.',
+        sub:'We design clean schemas, ship robust web apps, and automate cloud deployments. Security-first. Documented. Observable.',
+        cta:'Get a quote',
+        highlights:'Highlights'
+      },
+      ui:{ hide:'Hide', show:'Show', spiderTip:'Try spider theme' }
     },
     es: { nav:{services:'Servicios',work:'Proyectos',playground:'Insights',dash:'Panel',contact:'Contacto'},
       services:{ title:'Servicios simples que reducen el riesgo', kicker:'De la idea al lanzamiento — y después', items:{
@@ -40,7 +48,15 @@
       work:{ title:'Resultados recientes', kicker:'Pide detalles de los casos' },
       pg:{ title:'Insights de redes sociales (demo)', kicker:'Filtra y ordena — cifras con fuentes y redondeadas', metric:'Métrica', filter2b:'MAU ≥ 2B', filterROI:'Plataformas con mejor ROI', reset:'Reiniciar', th:{ platform:'Plataforma', mau:'MAU (B)', ad:'Alcance publicitario (B)', news:'Noticias en EE. UU. (%)', roi:'Líder en ROI' }},
       contact:{ kicker:'Cuéntanos sobre tu proyecto', name:'Nombre', email:'Correo', budget:'Presupuesto', timeline:'Plazo', brief:'Resumen del proyecto', send:'Enviar consulta', copy:'Copiar correo', resume:'Descargar CV', sla:'Respondemos en un día hábil.', budgetChoose:'Selecciona un rango', timelineChoose:'Elegir', trust:{ privacy:'Privacidad primero', nda:'Compatible con NDA', sla:'Respuesta en 1 día hábil', ssl:'Backups y SSL' }},
-      home:{ cta:'Pide una cotización' }, ui:{ hide:'Ocultar', show:'Mostrar', spiderTip:'Prueba el tema Spider' }
+      home:{
+        availability:'Disponible en Q4',
+        role:'Ingenieros de Web y Bases de Datos',
+        h1a:'Construye una vez.', h1b:'Escala con seguridad.', h1c:'Lanza sitios, bases de datos y', h1d:'APIs con confianza.',
+        sub:'Diseñamos esquemas claros, enviamos apps robustas y automatizamos despliegues en la nube. Seguridad primero. Documentado. Observable.',
+        cta:'Pide una cotización',
+        highlights:'Destacados'
+      },
+      ui:{ hide:'Ocultar', show:'Mostrar', spiderTip:'Prueba el tema Spider' }
     }
   };
 
@@ -124,7 +140,12 @@
 
   // Language change (persist)
   langSelect?.addEventListener('change', (e)=>{ LANG = e.target.value || 'en'; saveLang(); applyI18n(); });
-  document.addEventListener('DOMContentLoaded', ()=>{ applyI18n(); });
+  document.addEventListener('DOMContentLoaded', ()=>{ 
+    // Ensure header is sticky even if class missing
+    const hdr = document.querySelector('header');
+    if (hdr && !hdr.classList.contains('site-header')) hdr.classList.add('site-header');
+    applyI18n(); 
+  });
 
   // Remove any legacy menu/drawer artifacts if present
   $('#menuBtn')?.remove(); $('#drawer')?.remove();

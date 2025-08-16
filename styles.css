@@ -1,4 +1,21 @@
+/* Responsive container paddings */
+.container{ width: min(1600px, 100% - 64px); margin-inline:auto; }
+@media (max-width: 1024px){
+  .container{ width: min(1400px, 100% - 40px); }
+}
+@media (max-width: 640px){
+  .container{ width: min(1200px, 100% - 24px); }
+}
+
+/* Section vertical rhythm */
+section{ padding-block: 3.5rem; }
+@media (max-width: 640px){
+  section{ padding-block: 2.5rem; }
+}
+
+
 /* /styles.css — updated: spider scuttle + tooltip + stronger light theme */
+
 :root{
   --bg:#0b1221; --panel:#0f172a; --muted:#94a3b8; --text:#e2e8f0; --brand:#22d3ee; --brand-2:#a78bfa;
   --card:#0b1328; --line:#1e293b; --ok:#10b981; --warn:#f59e0b; --err:#ef4444;
