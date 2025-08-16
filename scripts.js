@@ -1,260 +1,196 @@
-/* ------------ i18n (same minimal dictionary as before) ------------ */
-const I18N = {
-  en: {
-    nav:{services:"Services",work:"Work",stack:"Stack",playground:"Playground",dash:"Dashboards",contact:"Contact"},
-    home:{
-      availability:"Available for Q4", role:"Web & Database Engineer",
-      h1a:"Build once.", h1b:"Scale safely.", h1c:"Ship websites, databases &", h1d:"APIs with confidence.",
-      sub:"I help teams design clean schemas, ship robust web apps, and automate cloud deployments. Security-first. Documented. Observable.",
-      cta2:"Get a quote", highlights:"Highlights"
-    },
-    services:{title:"Services that reduce risk and increase velocity", kicker:"From Figma to production & beyond"},
-    work:{title:"Selected case studies",cta:"Request detailed write-ups"},
-    stack:{title:"Preferred stack",kicker:"Pragmatic picks with great ecosystems"},
-    pg:{
-      title:"SQL Query Explorer", kicker:"Try a safe demo — no real data",
-      run:"Run Query", label:"SQL (supports: <code>SELECT cols FROM table [WHERE a='x' AND b='y']</code>)",
-      sample:{choose:"Choose sample"}, ds:{default:"Default dataset", ecomm:"E-commerce", support:"Support"},
-      quests:{title:"Quests (try these):"},
-      chart:{kicker:"Mini performance dashboard", title:"Throughput & latency (simulated)"}
-    },
-    contact:{kicker:"Tell me about your project", name:"Name", email:"Email", budget:"Budget", budgetChoose:"Select a range",
-      timeline:"Timeline", timelineChoose:"Choose", brief:"Project brief", send:"Send inquiry", copy:"Copy email", resume:"Download résumé", sla:"I reply within one business day."
-    },
-    footer:{rights:"All rights reserved."}
-  },
-  es: {
-    nav:{services:"Servicios",work:"Proyectos",stack:"Stack",playground:"Playground",dash:"Dashboards",contact:"Contacto"},
-    home:{
-      availability:"Disponible para Q4", role:"Ingeniero Web & Bases de Datos",
-      h1a:"Construye una vez.", h1b:"Escala con seguridad.", h1c:"Entrega sitios, bases de datos y", h1d:"APIs con confianza.",
-      sub:"Ayudo a diseñar esquemas limpios, publicar apps web robustas y automatizar despliegues en la nube. Seguridad primero. Documentado. Observable.",
-      cta2:"Solicitar cotización", highlights:"Destacados"
-    },
-    services:{title:"Servicios que reducen riesgo y aumentan velocidad", kicker:"De Figma a producción y más allá"},
-    work:{title:"Casos de estudio seleccionados",cta:"Solicitar documentos detallados"},
-    stack:{title:"Stack preferido",kicker:"Elecciones pragmáticas con gran ecosistema"},
-    pg:{
-      title:"Explorador de Consultas SQL", kicker:"Demo segura — sin datos reales",
-      run:"Ejecutar consulta", label:"SQL (soporta: <code>SELECT columnas FROM tabla [WHERE a='x' Y b='y']</code>)",
-      sample:{choose:"Elegir ejemplo"}, ds:{default:"Dataset por defecto", ecomm:"E-commerce", support:"Soporte"},
-      quests:{title:"Retos (prueba estos):"},
-      chart:{kicker:"Mini panel de rendimiento", title:"Throughput y latencia (simulado)"}
-    },
-    contact:{kicker:"Cuéntame de tu proyecto", name:"Nombre", email:"Correo", budget:"Presupuesto", budgetChoose:"Selecciona un rango",
-      timeline:"Plazo", timelineChoose:"Elige", brief:"Resumen del proyecto", send:"Enviar consulta", copy:"Copiar correo", resume:"Descargar CV", sla:"Respondo en un día hábil."
-    },
-    footer:{rights:"Todos los derechos reservados."}
-  }
-};
+(() => {
+  const $ = (sel, ctx=document) => ctx.querySelector(sel);
+  const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
 
-function applyI18n(lang){
-  const dict = I18N[lang] || I18N.en;
-  document.documentElement.lang = lang;
-  document.querySelectorAll('[data-i18n]').forEach(el=>{
-    const path = el.getAttribute('data-i18n').split('.');
-    let val = dict; for(const k of path){ val = val?.[k]; if(val==null) break; }
-    if(val!=null){ if(/<code>/.test(val)) el.innerHTML = val; else el.textContent = val; }
+  // Year
+  $('#year')?.append(String(new Date().getFullYear()));
+
+  // Theme toggle
+  $('#themeToggle')?.addEventListener('click', () => {
+    const html = document.documentElement;
+    html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
   });
-  localStorage.setItem('site_lang', lang);
-}
-const langSelect = document.getElementById('langSelect');
-langSelect?.addEventListener('change', ()=>applyI18n(langSelect.value));
-applyI18n(localStorage.getItem('site_lang') || 'en');
 
-/* ------------ Theme ------------ */
-const root = document.documentElement;
-const themeToggle = document.getElementById('themeToggle');
-const savedTheme = localStorage.getItem('theme');
-const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-function applyTheme(mode){
-  if(mode==='light'||mode==='dark'){ root.setAttribute('data-theme', mode); localStorage.setItem('theme', mode); }
-  else { root.setAttribute('data-theme', prefersDark ? 'dark' : 'light'); localStorage.removeItem('theme'); }
-}
-applyTheme(savedTheme || 'auto');
-themeToggle?.addEventListener('click', ()=>{ const cur=root.getAttribute('data-theme'); applyTheme(cur==='dark'?'light':'dark'); });
-
-/* ------------ Mobile drawer (built once from desktop nav) ------------ */
-const drawer = document.getElementById('drawer');
-const menuBtn = document.getElementById('menuBtn');
-const desktopNav = document.getElementById('desktopNav');
-let drawerBuilt = false;
-function buildDrawerFromDesktopOnce(){
-  if(drawerBuilt) return;
-  desktopNav?.querySelectorAll('a').forEach(a=>{
-    const link = document.createElement('a');
-    link.href = a.getAttribute('href');
-    link.setAttribute('data-i18n', a.getAttribute('data-i18n') || '');
-    link.textContent = a.textContent;
-    drawer.appendChild(link);
+  // Mobile menu
+  const drawer = $('#drawer');
+  $('#menuBtn')?.addEventListener('click', (e) => {
+    const open = e.currentTarget.getAttribute('aria-expanded') === 'true';
+    e.currentTarget.setAttribute('aria-expanded', String(!open));
+    drawer.innerHTML = !open
+      ? `<nav class="drawer-nav">
+           <a href="#services">Services</a>
+           <a href="#work">Work</a>
+           <a href="#playground">Playground</a>
+           <a href="#contact">Contact</a>
+         </nav>`
+      : '';
+    drawer.classList.toggle('open');
   });
-  drawerBuilt = true;
-}
-menuBtn?.addEventListener('click', ()=>{
-  buildDrawerFromDesktopOnce();
-  const open = drawer.classList.toggle('open');
-  menuBtn.setAttribute('aria-expanded', String(open));
-});
-drawer?.addEventListener('click', e=>{
-  if(e.target.matches('a')){ drawer.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); }
-});
 
-/* ------------ Reveal on view ------------ */
-const io = new IntersectionObserver((entries)=>{ for(const e of entries){ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target);} } }, {threshold:.12});
-document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-
-/* ------------ Hero counters ------------ */
-function animateNumber(el,to,suffix=''){ const start=0; const dur=900; const t0=performance.now();
-  function step(t){ const k=Math.min(1,(t-t0)/dur); const val=Math.round(start+(to-start)*(1-Math.pow(1-k,3))); el.textContent=val+suffix; if(k<1) requestAnimationFrame(step);}
-  requestAnimationFrame(step);
-}
-window.addEventListener('load', ()=>{ animateNumber(document.getElementById('m1'),120); animateNumber(document.getElementById('m2'),99,'%'); animateNumber(document.getElementById('m3'),5); });
-
-/* ------------ Playground demo (same as before) ------------ */
-const datasets = {
-  default:{ customers:[{id:1,name:'Ava Chen',email:'ava@exa.com',plan:'pro',active:'true'},{id:2,name:'Mark Diaz',email:'mark@exa.com',plan:'free',active:'true'},{id:3,name:'Nora Lee',email:'nora@exa.com',plan:'pro',active:'false'},{id:4,name:'Ibrahim A.',email:'ibra@exa.com',plan:'business',active:'true'}],
-    orders:[{id:101,customer_id:1,total:129.90,status:'paid'},{id:102,customer_id:2,total:0.00,status:'free'},{id:103,customer_id:1,total:59.00,status:'refunded'},{id:104,customer_id:4,total:399.00,status:'paid'}],
-    products:[{id:201,name:'Laptop',price:899,stock:'12'},{id:202,name:'Mouse',price:29,stock:'0'},{id:203,name:'Keyboard',price:99,stock:'5'}]},
-  ecomm:{ customers:[{id:10,name:'Priya M',email:'priya@exa.com',plan:'business',active:'true'},{id:11,name:'Tom K',email:'tom@exa.com',plan:'pro',active:'true'},{id:12,name:'Jae',email:'jae@exa.com',plan:'free',active:'false'}],
-    orders:[{id:501,customer_id:10,total:799.00,status:'paid'},{id:502,customer_id:11,total:25.00,status:'paid'},{id:503,customer_id:12,total:0.00,status:'free'}],
-    products:[{id:601,name:'Phone',price:699,stock:'7'},{id:602,name:'Case',price:19,stock:'34'},{id:603,name:'Charger',price:29,stock:'0'}]},
-  support:{ tickets:[{id:9001,summary:'Login fails SSO',status:'open',priority:'high'},{id:9002,summary:'Password reset loop',status:'open',priority:'low'},{id:9003,summary:'API rate limits',status:'closed',priority:'high'}],
-    customers:[{id:88,name:'Acme Inc',email:'ops@acme.com',plan:'business',active:'true'}], orders:[] }
-};
-let db = structuredClone(datasets.default);
-
-function parseSQL(sql){
-  const clean = sql.trim().replace(/;+\s*$/, '');
-  const m = clean.match(/^SELECT\s+([\w\s,\*]+)\s+FROM\s+(\w+)(?:\s+WHERE\s+(.+))?$/i);
-  if(!m) throw new Error('Only SELECT ... FROM ... [WHERE ...] is supported.');
-  const [, colsRaw, table, whereRaw] = m;
-  const cols = colsRaw.split(',').map(s=>s.trim());
-  const where = [];
-  if(whereRaw){
-    const parts = whereRaw.split(/\s+AND\s+/i);
-    for(const p of parts){
-      const mw = p.match(/^(\w+)\s*=\s*'([^']*)'$/);
-      if(!mw) throw new Error('WHERE only supports = with single-quoted strings.');
-      where.push({ col: mw[1], val: mw[2] });
+  // Get a quote scroll
+  $('#scrollToContact')?.addEventListener('click', (e) => {
+    if (location.hash !== '#contact') {
+      const el = $('#contact');
+      if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth' }); }
     }
-  }
-  return { cols, table, where };
-}
-function runQuery(ast){
-  const data = db[ast.table];
-  if(!data) throw new Error(`Unknown table: ${ast.table}`);
-  let rows = data;
-  for(const cond of ast.where){ rows = rows.filter(r => String(r[cond.col]) === cond.val); }
-  const selected = rows.map(r=>{
-    if(ast.cols.length===1 && ast.cols[0]==='*') return r;
-    const o={}; for(const c of ast.cols){ o[c]=(c in r)?r[c]:undefined; } return o;
   });
-  return selected;
-}
-function escapeHtml(s){ return s.replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
-function renderTable(rows){
-  if(!rows.length) return '<div class="status">No rows.</div>';
-  const headers = Object.keys(rows[0]);
-  let html = '<table><thead><tr>' + headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('') + '</tr></thead><tbody>';
-  for(const r of rows){ html += '<tr>' + headers.map(h=>`<td>${escapeHtml(String(r[h]))}</td>`).join('') + '</tr>'; }
-  html += '</tbody></table>'; return html;
-}
 
-const sqlInput = document.getElementById('sqlInput');
-const runBtn = document.getElementById('runBtn');
-const statusEl = document.getElementById('status');
-const resultEl = document.getElementById('resultTable');
-const sampleSel = document.getElementById('sampleQueries');
-const datasetSel = document.getElementById('datasetSelect');
-const xpFill = document.getElementById('xpFill');
-const xpLabel = document.getElementById('xpLabel');
-let xp=0, streak=0;
+  // Per-section hide/unhide
+  $$('.section-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const section = btn.closest('section');
+      if (!section) return;
+      section.classList.toggle('collapsed');
+      const isOpen = !section.classList.contains('collapsed');
+      btn.setAttribute('aria-expanded', String(isOpen));
+      const label = btn.dataset.label || 'Section';
+      btn.querySelector('span')?.replaceChildren(document.createTextNode(isOpen ? 'Hide' : 'Show'));
+      btn.setAttribute('title', (isOpen ? 'Hide ' : 'Show ') + label);
+    });
+  });
 
-function bumpXP(amount){
-  xp = Math.max(0, xp + amount);
-  streak = Math.min(99, streak + 1);
-  xpFill.style.width = Math.min(100, (xp % 100)) + '%';
-  xpLabel.textContent = `XP ${xp} • Streak ${streak}`;
-}
+  // Staggered effects so cards don't animate in sync
+  const period = 15; // seconds
+  $$('.fx-shine, .fx-wiggle').forEach(el => { el.style.animationDelay = `${Math.random()*period}s`; });
 
-function execute(){
-  const t0 = performance.now();
-  try{
-    const ast = parseSQL(sqlInput.value);
-    const rows = runQuery(ast);
-    const html = renderTable(rows);
-    const ms = Math.max(1, Math.round(performance.now() - t0));
-    resultEl.innerHTML = html;
-    statusEl.textContent = `Returned ${rows.length} row(s) in ${ms} ms.`;
-    injectPerf(rows.length);
-    bumpXP(5 + Math.min(20, rows.length));
-  }catch(err){
-    resultEl.innerHTML = '';
-    statusEl.textContent = `Error: ${err.message}`;
-    injectPerf(0, true);
-    streak = 0; xpLabel.textContent = `XP ${xp} • Streak ${streak}`;
-  }
-}
+  // Copy email helper
+  $('#copyEmail')?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText('misa@c23m9.com');
+      const s = $('#formStatus'); if (s) { s.textContent = 'Email copied to clipboard.'; setTimeout(()=> s.textContent = 'I reply within one business day.', 2500); }
+    } catch {}
+  });
 
-runBtn?.addEventListener('click', execute);
-sampleSel?.addEventListener('change', e=>{ if(e.target.value){ sqlInput.value=e.target.value; execute(); }});
-datasetSel?.addEventListener('change', e=>{ const key=e.target.value; db = structuredClone(datasets[key]||datasets.default); bumpXP(3); });
-document.querySelectorAll('.quest').forEach(btn=>btn.addEventListener('click', ()=>{ sqlInput.value=btn.dataset.q; execute(); bumpXP(7); }));
-document.addEventListener('keydown', e=>{
-  const mod = e.ctrlKey || e.metaKey;
-  if(mod && e.key.toLowerCase()==='enter'){ e.preventDefault(); execute(); }
-  if(mod && e.key.toLowerCase()==='l'){ e.preventDefault(); sqlInput.value=''; resultEl.innerHTML=''; statusEl.textContent='Cleared.'; }
-  if(mod && e.key==='/'){ e.preventDefault(); sampleSel.focus(); }
-});
+  // --- Insights data (demo) ---
+  const data = [
+    { platform: 'YouTube',  mau_bil: 2.7,  ad_aud_bil: 2.53, us_news_pct: 32, roi_top: true },
+    { platform: 'Facebook', mau_bil: 3.1,  ad_aud_bil: 2.28, us_news_pct: 30, roi_top: false },
+    { platform: 'Instagram',mau_bil: 2.0,  ad_aud_bil: 2.0,  us_news_pct: 16, roi_top: true },
+    { platform: 'WhatsApp', mau_bil: 2.95, ad_aud_bil: 0.0,  us_news_pct: 0,  roi_top: false },
+    { platform: 'TikTok',   mau_bil: 1.59, ad_aud_bil: 1.6,  us_news_pct: 12, roi_top: true },
+    { platform: 'LinkedIn', mau_bil: 1.15, ad_aud_bil: 1.0,  us_news_pct: 4,  roi_top: true }
+  ];
 
-/* Chart */
-const canvas = document.getElementById('chart');
-const ctx = canvas?.getContext('2d');
-const N=80; const pts = Array.from({length:N},(_,i)=>({x:i,qps:40+Math.random()*40,p95:60+Math.random()*80}));
+  const state = { metric: 'mau_bil', filter2b: false, filterROI: false, sortKey: 'platform', sortDir: 1 };
+  const table = $('#dataTable tbody');
+  const metricSel = $('#metricSelect');
+  const chk2b = $('#filter2b');
+  const chkROI = $('#filterROI');
+  const resetBtn = $('#resetFilters');
+  const canvas = $('#barChart');
+  const ctx = canvas?.getContext('2d');
 
-function draw(){
-  if(!canvas || !ctx) return;
-  const w=canvas.clientWidth, h=canvas.clientHeight;
-  canvas.width=w*devicePixelRatio; canvas.height=h*devicePixelRatio; ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
-  ctx.clearRect(0,0,w,h);
-  ctx.globalAlpha=.15; ctx.strokeStyle='#9aa4b2'; ctx.lineWidth=1;
-  for(let y=0;y<=4;y++){ ctx.beginPath(); ctx.moveTo(0,(h/4)*y); ctx.lineTo(w,(h/4)*y); ctx.stroke(); }
-  ctx.globalAlpha=1;
-  const pad=12; const qw=Math.max(...pts.map(p=>p.qps)); const pw=Math.max(...pts.map(p=>p.p95));
-  const sx=i=>pad+(w-pad*2)*(i/(N-1));
-  const sy=(v,max)=>h-pad-(h-pad*2)*(v/max);
-  // qps
-  ctx.beginPath();
-  for(let i=0;i<N;i++){ const y=sy(pts[i].qps,Math.max(120,qw)); if(i) ctx.lineTo(sx(i),y); else ctx.moveTo(sx(i),y); }
-  ctx.strokeStyle='#22d3ee'; ctx.lineWidth=2; ctx.stroke();
-  // p95
-  ctx.beginPath();
-  for(let i=0;i<N;i++){ const y=sy(pts[i].p95,Math.max(200,pw)); if(i) ctx.lineTo(sx(i),y); else ctx.moveTo(sx(i),y); }
-  ctx.strokeStyle='#7c5cff'; ctx.lineWidth=2; ctx.stroke();
-}
-function injectPerf(rows,isError=false){
-  const last=pts.at(-1);
-  const next={ x:last.x+1,
-    qps:Math.max(20,Math.min(140,(isError?last.qps*0.9:last.qps*0.95+rows*2+Math.random()*5))),
-    p95:Math.max(40,Math.min(220,(isError?last.p95*1.1:last.p95*0.95-rows*0.5+Math.random()*6)))
+  const applyFilters = (rows) => rows.filter(r => {
+    if (state.filter2b && !(r.mau_bil >= 2)) return false;
+    if (state.filterROI && !r.roi_top) return false;
+    return true;
+  });
+  const sortRows = (rows) => rows.sort((a,b)=>{
+    const k = state.sortKey; const dir = state.sortDir; const av = a[k]; const bv = b[k];
+    if (typeof av === 'number' && typeof bv === 'number') return dir*(av-bv);
+    return dir*String(av).localeCompare(String(bv));
+  });
+  const renderTable = () => {
+    const rows = sortRows(applyFilters([...data]));
+    table.innerHTML = rows.map(r => `
+      <tr>
+        <td>${r.platform}</td>
+        <td>${r.mau_bil.toFixed(2)}</td>
+        <td>${r.ad_aud_bil.toFixed(2)}</td>
+        <td>${r.us_news_pct}</td>
+        <td>${r.roi_top ? '✔' : '—'}</td>
+      </tr>`).join('');
   };
-  pts.push(next); pts.shift(); draw();
-  document.getElementById('qps')?.textContent = Math.round(next.qps);
-  document.getElementById('p95')?.textContent = Math.round(next.p95);
-}
-function tick(){ injectPerf(0); if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches) requestAnimationFrame(()=>setTimeout(tick,650)); }
-window.addEventListener('resize', draw); draw(); tick();
+  const drawChart = () => {
+    if (!ctx || !canvas) return;
+    const rows = sortRows(applyFilters([...data]));
+    const metric = state.metric; const labels = rows.map(r=>r.platform);
+    const values = rows.map(r=> Number(r[metric]||0));
+    const w = canvas.width = canvas.clientWidth; const h = canvas.height = 280;
+    const pad = 40; const gw = w - pad*2; const gh = h - pad*2;
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = '#cbd5e1'; ctx.font = '12px Inter, system-ui, sans-serif';
+    ctx.fillText(metric === 'mau_bil' ? 'Monthly active users (billions)' : metric === 'ad_aud_bil' ? 'Ad reach (billions)' : 'US adults getting news (%)', pad, 18);
+    const max = Math.max(...values, metric==='us_news_pct'?50:3.2);
+    ctx.strokeStyle = 'rgba(255,255,255,.08)'; ctx.lineWidth = 1;
+    for (let i=0;i<=4;i++){ const y = pad + (gh/4)*i; ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(w-pad,y); ctx.stroke(); }
+    const bw = gw/Math.max(1, values.length) * .7;
+    values.forEach((v,i)=>{
+      const x = pad + i*(gw/values.length) + (gw/values.length - bw)/2;
+      const hpx = (v/max)*gh; const y = pad + gh - hpx;
+      const grad = ctx.createLinearGradient(0,y,0,y+hpx); grad.addColorStop(0,'#22d3ee'); grad.addColorStop(1,'#a78bfa');
+      ctx.fillStyle = grad; ctx.fillRect(x,y,bw,hpx);
+      ctx.fillStyle = '#94a3b8'; ctx.fillText(labels[i], x, h - 8);
+    });
+  };
+  const renderAll = () => { renderTable(); drawChart(); };
+  metricSel?.addEventListener('change', ()=>{ state.metric = metricSel.value; renderAll(); });
+  chk2b?.addEventListener('change', ()=>{ state.filter2b = chk2b.checked; renderAll(); });
+  chkROI?.addEventListener('change', ()=>{ state.filterROI = chkROI.checked; renderAll(); });
+  resetBtn?.addEventListener('click', ()=>{
+    state.metric='mau_bil'; state.filter2b=false; state.filterROI=false; state.sortKey='platform'; state.sortDir=1;
+    metricSel.value=state.metric; chk2b.checked=false; chkROI.checked=false; renderAll();
+  });
+  $$('#dataTable thead th').forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.getAttribute('data-key'); if (!key) return;
+      if (state.sortKey === key) state.sortDir *= -1; else { state.sortKey = key; state.sortDir = 1; }
+      renderAll();
+    });
+  });
+  renderAll();
 
-/* Contact helpers */
-function toast(msg){
-  const el=document.createElement('div');
-  el.textContent=msg; el.style.cssText='position:fixed;left:50%;top:1rem;transform:translateX(-50%);background:var(--card);border:1px solid '+getComputedStyle(document.body).getPropertyValue('--ring')+';padding:.6rem .8rem;border-radius:12px;z-index:2000;box-shadow:var(--shadow)';
-  document.body.append(el); setTimeout(()=>el.remove(),1600);
-}
-document.getElementById('budgetPills')?.addEventListener('click', (e)=>{
-  if(e.target.matches('button.pill')){ document.getElementById('budget').value = e.target.dataset.val; }
-});
-document.getElementById('copyEmail')?.addEventListener('click', async ()=>{
-  try{ await navigator.clipboard.writeText('misa@c23m9.com'); toast('Email copied'); }catch{ toast('Unable to copy'); }
-});
-document.getElementById('year').textContent = new Date().getFullYear();
+  // ---- Live effectiveness panel ----
+  const el = {
+    reply: $('#lmReply'), uptime: $('#lmUptime'), p95: $('#lmP95'), deploys: $('#lmDeploys'), incidents: $('#lmIncidents'), ab: $('#lmAB'),
+    spark: $('#liveSpark'), svc: $('#svcHealth'), sla: $('#slaBadge')
+  };
+  if (el.spark) {
+    const ctx = el.spark.getContext('2d');
+    const points = Array.from({length:60}, ()=> 180 + Math.random()*120);
+    let deploys = 3, incidents = 0, uptime = 99.98, ab = 7.4, replyMin = 22;
+
+    const drawSpark = () => {
+      const w = el.spark.width = el.spark.clientWidth; const h = el.spark.height = 70; const pad = 6;
+      ctx.clearRect(0,0,w,h);
+      ctx.strokeStyle = 'rgba(255,255,255,.15)';
+      ctx.beginPath();
+      points.forEach((v,i)=>{
+        const x = pad + (i/(points.length-1)) * (w - pad*2);
+        const y = h - pad - (v/600) * (h - pad*2);
+        i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+      });
+      ctx.stroke();
+    };
+
+    const paint = () => {
+      el.reply.textContent = String(Math.max(8, Math.round(replyMin + (Math.random()*4-2))));
+      el.uptime.textContent = uptime.toFixed(2);
+      el.p95.textContent = String(Math.max(80, Math.round(points[points.length-1])));
+      el.deploys.textContent = String(deploys);
+      el.incidents.textContent = String(incidents);
+      el.ab.textContent = ab.toFixed(1);
+      drawSpark();
+    };
+
+    setInterval(()=>{
+      const last = points[points.length-1];
+      const next = Math.max(60, Math.min(520, last + (Math.random()*40-20)));
+      points.push(next); points.shift();
+      paint();
+    }, 1000);
+
+    $('#simulateSpike')?.addEventListener('click', ()=>{
+      el.svc.textContent = 'Degraded'; el.svc.classList.remove('ok');
+      for (let i=0;i<8;i++){ points[points.length-1-i] = 450 + Math.random()*100; }
+      replyMin = 28; uptime -= 0.01; paint();
+      setTimeout(()=>{ el.svc.textContent='Healthy'; el.svc.classList.add('ok'); replyMin = 20; }, 5000);
+    });
+
+    $('#simulateDeploy')?.addEventListener('click', ()=>{
+      deploys += 1; ab = Math.min(18, ab + (Math.random()*2+0.5)); paint();
+    });
+
+    paint();
+  }
+})();
