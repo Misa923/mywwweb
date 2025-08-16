@@ -1,3 +1,4 @@
+/* /styles.css — updated: spider scuttle + tooltip + stronger light theme */
 :root{
   --bg:#0b1221; --panel:#0f172a; --muted:#94a3b8; --text:#e2e8f0; --brand:#22d3ee; --brand-2:#a78bfa;
   --card:#0b1328; --line:#1e293b; --ok:#10b981; --warn:#f59e0b; --err:#ef4444;
@@ -5,58 +6,91 @@
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background:linear-gradient(180deg,#0b1221,#0f172a 40%,#0b1221);color:var(--text);font:16px/1.55 Inter,system-ui,Arial,sans-serif}
-/* WIDTH (closer to original) */
+
+/* Light theme: stronger contrast */
+[data-theme='light']{
+  --bg:#f8fafc; --panel:#ffffff; --card:#ffffff; --line:#cbd5e1; --muted:#334155; --text:#0b1b2b; --brand:#0ea5e9; --brand-2:#8b5cf6;
+}
+[data-theme='light'] body{background:linear-gradient(180deg,#f8fafc,#eef2f7 40%,#f8fafc)}
+[data-theme='light'] .btn.ghost{background:#e2e8f0;color:#0b1b2b}
+[data-theme='light'] .btn{border-color:#cbd5e1;color:#0b1b2b}
+[data-theme='light'] .pill{background:linear-gradient(90deg,rgba(14,165,233,.15),rgba(139,92,246,.15));color:#0b1b2b}
+[data-theme='light'] .terminal{background:#ffffff;color:#0b1b2b}
+[data-theme='light'] .card{background:linear-gradient(180deg,#ffffff,#f8fafc)}
+[data-theme='light'] select,[data-theme='light'] .select,[data-theme='light'] input,[data-theme='light'] textarea{background:#ffffff;color:#0b1b2b;border-color:#cbd5e1}
+[data-theme='light'] ::placeholder{color:#64748b}
+[data-theme='light'] .primary a,[data-theme='light'] .brand{color:#0b1b2b}
+
+/* Width */
 .container{width:min(1600px,100% - 64px);margin-inline:auto}
 @media(min-width:1800px){.container{width:min(1680px,100% - 80px)}}
 .container.full{width:100%;padding-inline:0}
 
-/* NAV */
+/* Nav */
 .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
 .brand{display:flex;align-items:center;gap:.5rem;color:var(--text);text-decoration:none;font-weight:700}
 .brand svg{width:28px}
 .primary{display:flex;gap:1rem;list-style:none;margin:0;padding:0;flex-wrap:wrap}
-.primary a{color:var(--text);text-decoration:none;opacity:.9}
+.primary a{color:var(--text);text-decoration:none;opacity:.95}
 .nav-controls{display:flex;gap:.5rem;align-items:center}
-.select, input, textarea, select{background:#0b152c;border:1px solid var(--line);color:var(--text);padding:.6rem .75rem;border-radius:.75rem;width:100%}
+.select, input, textarea, select{background:var(--input-bg, #0b152c);border:1px solid var(--line);color:var(--text);padding:.6rem .75rem;border-radius:.75rem;width:100%}
+select option{color:inherit;background:var(--panel)}
+::placeholder{color:rgba(148,163,184,.8)}
 .btn{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--line);background:#0b152c;color:var(--text);padding:.65rem .9rem;border-radius:999px;text-decoration:none;cursor:pointer;transition:transform .06s ease, box-shadow .2s}
 .btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(34,211,238,.12)}
-.btn.primary{background:linear-gradient(90deg,var(--brand),var(--brand-2));border-color:transparent;color:#041221}
+.btn.primary{background:linear-gradient(90deg,var(--brand),var(--brand-2));border-color:transparent;color:#041221;box-shadow:0 10px 30px rgba(167,139,250,.22),0 6px 18px rgba(34,211,238,.18)}
+.btn.primary:hover{box-shadow:0 14px 36px rgba(167,139,250,.28),0 10px 22px rgba(34,211,238,.22)}
 .btn.ghost{background:#0b152c}
 .pill{display:inline-flex;align-items:center;gap:.25rem;padding:.25rem .6rem;border-radius:999px;background:linear-gradient(90deg,rgba(34,211,238,.15),rgba(167,139,250,.15));border:1px solid var(--line)}
 .pill.ok{background:linear-gradient(90deg,rgba(16,185,129,.2),rgba(34,197,94,.15))}
 .pill.active{outline:2px solid var(--brand)}
 
-/* DRAWER (mobile) */
+/* Drawer */
 .drawer{position:fixed;inset:0 0 auto 0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:none}
 .drawer.open{display:block}
 .drawer-nav{background:#0b152c;border-top:1px solid var(--line);padding:1rem;display:grid;gap:.6rem}
 .drawer a{color:var(--text);text-decoration:none}
 
-/* HERO */
+/* Hero */
 .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:4vw;align-items:center;padding:2.5rem 0 1.25rem}
 .headline{font-size:clamp(32px,4.8vw,72px);line-height:1.03;margin:0 0 .5rem}
+.headline .accent{background:linear-gradient(90deg,var(--brand),var(--brand-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.headline .burst{background:linear-gradient(90deg,var(--brand),var(--brand-2));-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:burstShift 6s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){.headline .burst{animation:none}}
+@keyframes burstShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 .eyebrow{display:flex;align-items:center;gap:.6rem;color:var(--muted)}
 .sub{color:var(--muted);max-width:none}
 .terminal{background:radial-gradient(1200px 400px at -100px -200px,rgba(34,211,238,.2),transparent),#050e21;border:1px solid var(--line);border-radius:16px;padding:1rem;box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
 .metrics{display:flex;gap:1rem;margin-top:.4rem;flex-wrap:wrap}
 .metric{background:#0b152c;border:1px solid var(--line);border-radius:999px;padding:.25rem .6rem;color:var(--muted)}
 
-/* SECTION */
-.section-title{display:flex;align-items:end;justify-content:space-between;margin:2rem 0 1rem}
-.section-title h2{margin:0}
+/* Sections */
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin:2rem 0 1rem}
+.section-title h2{margin:0;position:relative}
+.section-title h2::after{content:"";display:block;width:64px;height:3px;margin-top:.45rem;background:linear-gradient(90deg,var(--brand),var(--brand-2));border-radius:999px}
 .kicker{color:var(--muted)}
 .grid{display:grid;gap:1rem}
 .grid.cols-3{grid-template-columns:repeat(3,1fr)}
 .grid.cols-2{grid-template-columns:repeat(2,1fr)}
 .card{position:relative;background:linear-gradient(180deg,#0b152c,#091324);border:1px solid var(--line);border-radius:16px;padding:1rem;overflow:hidden}
-
-/* Section Hide/Show */
-.section-toggle{display:inline-flex;align-items:center;gap:.4rem;border-radius:999px;border:1px solid var(--line);padding:.45rem .85rem;background:linear-gradient(90deg,rgba(34,211,238,.18),rgba(167,139,250,.18));color:var(--text);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.card::before{
+  content:"";position:absolute;inset:0;padding:1px;border-radius:16px;
+  background:linear-gradient(135deg,rgba(34,211,238,.35),rgba(167,139,250,.35));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none;
+}
+.section-block{position:relative;padding:1rem 0 1.5rem}
+.section-block::before{content:"";position:absolute;inset:0;z-index:-1;background:
+  radial-gradient(1000px 220px at 10% -80px,rgba(34,211,238,.08),transparent),
+  radial-gradient(1000px 220px at 90% -80px,rgba(167,139,250,.08),transparent),
+  repeating-linear-gradient(0deg,rgba(148,163,184,.06) 0 1px,transparent 1px 24px),
+  repeating-linear-gradient(90deg,rgba(148,163,184,.04) 0 1px,transparent 1px 24px)}
+.section-toggle{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-width:108px;font-weight:600;border-radius:999px;border:1px solid var(--line);padding:.45rem .95rem;background:linear-gradient(90deg,rgba(34,211,238,.18),rgba(167,139,250,.18));color:var(--text);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.2)}
 .section-toggle:hover{transform:translateY(-1px)}
-.section-toggle.anchor{position:absolute;right:8px;top:8px}
 section.collapsed > :not(.section-title){display:none}
 
-/* FUNKY EFFECTS */
+/* Effects */
 .fx-shine::after{content:"";position:absolute;inset:-1px;background:linear-gradient(120deg,transparent 45%,rgba(255,255,255,.16) 50%,transparent 55%);transform:skewX(-15deg) translateX(-200%);animation:shine 15s ease-in-out infinite;pointer-events:none;border-radius:inherit}
 @keyframes shine{0%,95%{transform:skewX(-15deg) translateX(-200%)}98%,100%{transform:skewX(-15deg) translateX(200%)}}
 .fx-wiggle{animation:wig 15s infinite}
@@ -64,6 +98,7 @@ section.collapsed > :not(.section-title){display:none}
 
 /* Insights */
 .insights .controls{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:.5rem 0 1rem}
+#playground .insights{padding-inline:clamp(16px,2vw,32px)}
 .table{width:100%;border-collapse:collapse}
 .table th,.table td{border-bottom:1px solid var(--line);padding:.5rem;text-align:left}
 .table th{cursor:pointer}
@@ -71,6 +106,8 @@ section.collapsed > :not(.section-title){display:none}
 
 /* Live panel */
 .contact-grid{align-items:start}
+.trust-strip{display:flex;gap:.5rem;flex-wrap:wrap;margin:.2rem 0 1rem}
+.pill.trust{border-color:rgba(148,163,184,.3);}
 .live .center-between{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
 .live-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin:.6rem 0}
 .lm{background:#0b152c;border:1px solid var(--line);border-radius:12px;padding:.6rem}
@@ -86,11 +123,408 @@ footer{padding:2rem 0}
 .hp{position:absolute !important;left:-9999px !important}
 
 /* Responsive */
-@media(max-width:1200px){
-  .hero{grid-template-columns:1fr;gap:1.2rem}
-}
+@media(max-width:1200px){.hero{grid-template-columns:1fr;gap:1.2rem}}
 @media(max-width:960px){
   .grid.cols-3{grid-template-columns:1fr}
   .grid.cols-2{grid-template-columns:1fr}
   .live-metrics{grid-template-columns:repeat(2,1fr)}
+}
+
+/* Spider-Man variant */
+html[data-variant="spidey"]{
+  --bg:#0a0d1a; --panel:#0d1428; --card:#0c1326; --line:#1c2a45; --text:#f9fafb; --muted:#9aa7bd;
+  --brand:#e11d2a; --brand-2:#1e3a8a;
+}
+html[data-variant="spidey"] body{
+  background:
+    radial-gradient(1200px 420px at 8% -120px, rgba(225,29,42,.10), transparent 60%),
+    radial-gradient(1200px 420px at 92% -140px, rgba(30,58,138,.16), transparent 60%),
+    #0a0d1a;
+}
+html[data-variant="spidey"] .section-block::before{
+  background:
+    repeating-radial-gradient(circle at 20% -60%, rgba(255,255,255,.035) 0 22px, transparent 22px 44px),
+    repeating-radial-gradient(circle at 80% -60%, rgba(255,255,255,.035) 0 22px, transparent 22px 44px),
+    repeating-linear-gradient(0deg,  rgba(255,255,255,.035) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(60deg, rgba(255,255,255,.03)  0 1px, transparent 1px 26px),
+    repeating-linear-gradient(-60deg,rgba(255,255,255,.03)  0 1px, transparent 1px 26px),
+    radial-gradient(1000px 220px at 10% -80px, rgba(225,29,42,.10), transparent),
+    radial-gradient(1000px 220px at 90% -80px, rgba(30,58,138,.12), transparent);
+}
+html[data-variant="spidey"] .card::before{
+  background:linear-gradient(135deg, rgba(225,29,42,.45), rgba(30,58,138,.45));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+html[data-variant="spidey"] .btn.primary{
+  background:linear-gradient(90deg,var(--brand),var(--brand-2));
+  border-color:transparent; color:#051227;
+  box-shadow:0 10px 30px rgba(30,58,138,.28), 0 6px 18px rgba(225,29,42,.22);
+}
+html[data-variant="spidey"] .btn.primary:hover{
+  box-shadow:0 14px 36px rgba(30,58,138,.34), 0 10px 22px rgba(225,29,42,.28);
+}
+html[data-variant="spidey"] .pill{background:linear-gradient(90deg, rgba(225,29,42,.18), rgba(30,58,138,.18));border-color:rgba(255,255,255,.12)}
+html[data-variant="spidey"] .terminal{background:#0a1022;border-color:#1c2a45}
+html[data-variant="spidey"] .headline .accent,
+html[data-variant="spidey"] .headline .burst{
+  background:linear-gradient(90deg, #ff2736 0%, #1e3a8a 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+
+/* Spider button: moves + tooltip + sparkles */
+#spideyToggle{
+  font-size:32px; line-height:1; position:relative;
+  transform-origin:50% 50%;
+  animation: spiderWander 8s ease-in-out infinite;
+}
+@keyframes spiderWander{
+  0%{transform:translate(0,0) rotate(0deg)}
+  10%{transform:translate(-2px,2px) rotate(-4deg)}
+  20%{transform:translate(3px,0) rotate(3deg)}
+  30%{transform:translate(-3px,-2px) rotate(-2deg)}
+  35%{transform:translate(-3px,-2px) rotate(-2deg)}
+  50%{transform:translate(2px,1px) rotate(2deg)}
+  60%{transform:translate(-1px,3px) rotate(-3deg)}
+  70%{transform:translate(2px,-1px) rotate(2deg)}
+  80%{transform:translate(-2px,1px) rotate(-1deg)}
+  100%{transform:translate(0,0) rotate(0deg)}
+}
+/* Hover scuttle (faster, twitchy) */
+#spideyToggle:hover,
+#spideyToggle.spider-hover{animation: spiderScuttle 1.4s cubic-bezier(.37,.01,.2,1) infinite}
+@keyframes spiderScuttle{
+  0%{transform:translate(0,0) rotate(0deg)}
+  20%{transform:translate(4px,-2px) rotate(6deg)}
+  40%{transform:translate(-6px,2px) rotate(-8deg)}
+  60%{transform:translate(6px,2px) rotate(5deg) scale(1.03)}
+  80%{transform:translate(-4px,-1px) rotate(-4deg)}
+  100%{transform:translate(0,0) rotate(0deg)}
+}
+/* Colorful sparkles every 5s */
+#spideyToggle::after{
+  content:""; position:absolute; inset:-8px; border-radius:50%;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255,64,64,.85) 0 3px, transparent 4px),
+    radial-gradient(circle at 70% 25%, rgba(64,160,255,.80) 0 3px, transparent 4px),
+    radial-gradient(circle at 30% 70%, rgba(255,64,192,.75) 0 3px, transparent 4px),
+    radial-gradient(circle at 80% 65%, rgba(255,208,64,.75) 0 3px, transparent 4px),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.70) 0 2px, transparent 3px);
+  filter: drop-shadow(0 0 10px rgba(255,255,255,.30));
+  opacity:0; transform:scale(.25) rotate(0deg); pointer-events:none;
+  animation: spiderSparkle 5s ease-out infinite, sparkleHue 10s linear infinite;
+}
+@keyframes spiderSparkle{
+  0%{opacity:0; transform:scale(.25) rotate(0deg)}
+  3%{opacity:1; transform:scale(1) rotate(25deg)}
+  6%{opacity:0; transform:scale(1.4) rotate(55deg)}
+  100%{opacity:0; transform:scale(1.4) rotate(55deg)}
+}
+@keyframes sparkleHue{from{filter:hue-rotate(0deg) drop-shadow(0 0 10px rgba(255,255,255,.30))}to{filter:hue-rotate(360deg) drop-shadow(0 0 10px rgba(255,255,255,.30))}}
+#spideyToggle:hover::after{animation-duration:2.5s; opacity:1}
+
+/* Tooltip: “Try spider theme” */
+#spideyToggle[data-tip]{position:relative}
+#spideyToggle[data-tip]:hover::before{
+  content:""; position:absolute; left:50%; top:130%;
+  transform:translateX(-50%); width:0; height:0;
+  border:6px solid transparent; border-bottom-color:var(--panel);
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.2));
+}
+#spideyToggle[data-tip]:hover::after{
+  content:attr(data-tip); position:absolute; left:50%; top:calc(130% + 12px);
+  transform:translateX(-50%); white-space:nowrap;
+  background:var(--panel); color:var(--text); border:1px solid var(--line);
+  padding:.35rem .55rem; border-radius:.5rem; font-size:.85rem;
+  filter:drop-shadow(0 6px 20px rgba(0,0,0,.25));
+}
+
+/* Web-thread drop on click */
+#spideyToggle.web-drop::before{
+  content:""; position:absolute; left:50%; top:-120px; width:1.5px; height:120px;
+  transform:translateX(-50%); background:linear-gradient(to bottom, rgba(255,255,255,.7), rgba(255,255,255,.1));
+}
+#spideyToggle.web-drop{animation:webDrop 1.6s cubic-bezier(.22,.68,0,1.02)}
+@keyframes webDrop{
+  0%{transform:translateY(-120px) rotate(0deg)}
+  60%{transform:translateY(0) rotate(2deg)}
+  75%{transform:translateY(-12px) rotate(-2deg)}
+  100%{transform:translateY(0) rotate(0deg)}
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  #spideyToggle{animation:none}
+  #spideyToggle::after{animation:none}
+  #spideyToggle.web-drop{animation:none}
+}
+
+/* --- 1) Make the text shine effect slower + more visible --- */
+.fx-shine::after{
+  animation: shineLong 10s ease-in-out infinite; /* was 15s w/ ultra-short pass */
+  opacity: 0;
+}
+@keyframes shineLong{
+  0%,60% { transform: skewX(-15deg) translateX(-220%); opacity: 0; }
+  70%    { opacity: .26; }                               /* glow in */
+  90%    { transform: skewX(-15deg) translateX(220%); opacity: 0; } /* long pass */
+  100%   { opacity: 0; }
+}
+/* On hover, run a faster, bolder pass so users can actually see it */
+.fx-shine:hover::after{
+  animation-duration: 4s;
+  opacity: .3;
+}
+
+/* Optional: headline accent pop on hover for clarity */
+.headline .accent:hover,
+.headline .burst:hover{
+  text-shadow: 0 0 18px rgba(167,139,250,.35), 0 0 10px rgba(34,211,238,.25);
+}
+
+/* --- 2) Stronger contrast in Spider theme --- */
+html[data-variant="spidey"]{
+  --text:#ffffff;         /* brighter body text */
+  --muted:#cbd5e1;        /* clearer muted text */
+  --line:#27406b;         /* slightly brighter borders */
+}
+
+/* Inputs & pills readable on dark Spidey bg */
+html[data-variant="spidey"] select,
+html[data-variant="spidey"] input,
+html[data-variant="spidey"] textarea{
+  background:#0d172e;
+  color:var(--text);
+  border-color:var(--line);
+}
+html[data-variant="spidey"] ::placeholder{ color:rgba(203,213,225,.9) }
+
+html[data-variant="spidey"] .btn.ghost{
+  background:#0d172e;
+  color:var(--text);
+  border-color:var(--line);
+}
+html[data-variant="spidey"] .pill{
+  background:linear-gradient(90deg, rgba(225,29,42,.28), rgba(30,58,138,.28));
+  border-color:rgba(255,255,255,.22);
+  color:var(--text);
+}
+html[data-variant="spidey"] .terminal{
+  background:#0a1022;
+  color:#e5e7eb;          /* ensure code text is readable */
+  border-color:#1c2a45;
+}
+html[data-variant="spidey"] .kicker{ color:#d1d9e8 }    /* section subtitles */
+html[data-variant="spidey"] .table th,
+html[data-variant="spidey"] .table td{ color:#e6edf7 }   /* table text pop */
+
+/* Headline readability in Spidey */
+html[data-variant="spidey"] .headline .accent,
+html[data-variant="spidey"] .headline .burst{
+  text-shadow: 0 0 14px rgba(255,39,54,.18), 0 0 10px rgba(30,58,138,.18);
+}
+
+/* === 1) Spider tooltip/shine: keep visible while hovering === */
+
+/* expand hit area so hover doesn't drop while it moves */
+#spideyToggle{ padding: 4px 6px }
+
+/* stop the twitchy hover animation so the cursor stays on it */
+#spideyToggle:hover{ animation: spiderWander 8s ease-in-out infinite }
+
+/* keep sparkle visible + steady while hovered/focused */
+#spideyToggle:hover::after,
+#spideyToggle:focus-visible::after{
+  animation: none;
+  opacity: .45;
+  transform: scale(1);
+}
+
+/* tooltip stays up (the spider no longer shakes away from hover) */
+#spideyToggle[data-tip]:hover::after,
+#spideyToggle[data-tip]:focus-visible::after{
+  /* already shows via existing rules; ensure strong contrast */
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+/* text shine: slow pass + HOLD on hover so users can actually see it */
+.fx-shine::after{
+  animation: shineHold 12s ease-in-out infinite;
+  opacity: 0;
+}
+.fx-shine:hover::after{
+  animation: none;                /* stop running */
+  opacity: .38;                   /* leave a clear glow while hovered */
+  transform: skewX(-12deg) translateX(0);
+}
+@keyframes shineHold{
+  0%,60% { transform: skewX(-15deg) translateX(-220%); opacity: 0; }
+  70%    { opacity: .26; }
+  92%    { transform: skewX(-15deg) translateX(220%); opacity: 0; }
+  100%   { opacity: 0; }
+}
+
+/* === 2) Spider theme + LIGHT mode: strong readable palette === */
+html[data-variant="spidey"][data-theme="light"]{
+  --bg:#f6f8fb;
+  --panel:#ffffff;
+  --card:#ffffff;
+  --line:#cbd5e1;
+  --text:#0b1b2b;     /* DARK text (no more white) */
+  --muted:#334155;
+  --brand:#e11d2a;    /* red */
+  --brand-2:#1e3a8a;  /* blue */
+}
+
+/* text & links */
+html[data-variant="spidey"][data-theme="light"] body,
+html[data-variant="spidey"][data-theme="light"] .primary a,
+html[data-variant="spidey"][data-theme="light"] .brand{
+  color: var(--text);
+}
+
+/* inputs/pills/buttons readable on bright bg */
+html[data-variant="spidey"][data-theme="light"] select,
+html[data-variant="spidey"][data-theme="light"] input,
+html[data-variant="spidey"][data-theme="light"] textarea{
+  background:#ffffff; color:var(--text); border:1px solid var(--line);
+}
+html[data-variant="spidey"][data-theme="light"] .pill{
+  background:linear-gradient(90deg, rgba(225,29,42,.08), rgba(30,58,138,.08));
+  color:var(--text); border:1px solid var(--line);
+}
+html[data-variant="spidey"][data-theme="light"] .btn.ghost{
+  background:#eef2f7; color:var(--text); border:1px solid var(--line);
+}
+html[data-variant="spidey"][data-theme="light"] .terminal{
+  background:#ffffff; color:#0b1b2b; border-color:#cbd5e1;
+}
+html[data-variant="spidey"][data-theme="light"] .card{
+  background:linear-gradient(180deg,#ffffff,#f6f8fb);
+  color:var(--text);
+}
+html[data-variant="spidey"][data-theme="light"] .kicker{ color:#475569 }
+html[data-variant="spidey"][data-theme="light"] .table th,
+html[data-variant="spidey"][data-theme="light"] .table td{ color:#0b1b2b }
+
+/* === Spider LIGHT theme: readable colors for Playground + Contact === */
+html[data-variant="spidey"][data-theme="light"]{
+  --bg:#f6f8fb;
+  --panel:#ffffff;
+  --card:#ffffff;
+  --line:#cbd5e1;
+  --text:#0b1b2b;     /* dark body text */
+  --muted:#475569;    /* darker muted */
+  --brand:#d61f2c;    /* vivid red */
+  --brand-2:#1e3a8a;  /* navy */
+}
+
+/* Page background + section grid faint web pattern */
+html[data-variant="spidey"][data-theme="light"] body{
+  background:
+    radial-gradient(1000px 300px at 10% -100px, rgba(214,31,44,.08), transparent 60%),
+    radial-gradient(1000px 300px at 90% -120px, rgba(30,58,138,.10), transparent 60%),
+    #f6f8fb;
+}
+html[data-variant="spidey"][data-theme="light"] .section-block::before{
+  background:
+    repeating-linear-gradient(0deg, rgba(30,58,138,.05) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(90deg,rgba(214,31,44,.05) 0 1px, transparent 1px 22px);
+}
+
+/* Cards / headings / accents */
+html[data-variant="spidey"][data-theme="light"] .card{
+  background:linear-gradient(180deg,#ffffff,#f7f9fc);
+  color:var(--text);
+  border-color:#d8e0ea;
+}
+html[data-variant="spidey"][data-theme="light"] .section-title h2::after{
+  background:linear-gradient(90deg,var(--brand),var(--brand-2));
+}
+
+/* Buttons, pills, inputs */
+html[data-variant="spidey"][data-theme="light"] .btn{border-color:#d1dae6;color:#0b1b2b}
+html[data-variant="spidey"][data-theme="light"] .btn.ghost{background:#eef2f7}
+html[data-variant="spidey"][data-theme="light"] .btn.primary{color:#071426}
+html[data-variant="spidey"][data-theme="light"] .pill{
+  background:linear-gradient(90deg, rgba(214,31,44,.10), rgba(30,58,138,.10));
+  color:var(--text); border:1px solid #d4deea;
+}
+html[data-variant="spidey"][data-theme="light"] input,
+html[data-variant="spidey"][data-theme="light"] textarea,
+html[data-variant="spidey"][data-theme="light"] select{
+  background:#ffffff; color:#0b1b2b; border:1px solid #cbd5e1;
+}
+html[data-variant="spidey"][data-theme="light"] ::placeholder{color:#64748b}
+
+/* HERO terminal readable */
+html[data-variant="spidey"][data-theme="light"] .terminal{
+  background:#ffffff; border-color:#d6dfeb; color:#0b1b2b;
+}
+
+/* -------- Playground (Insights) -------- */
+html[data-variant="spidey"][data-theme="light"] #playground .card.chart-card{
+  background:#ffffff; border-color:#dbe4ef;
+}
+html[data-variant="spidey"][data-theme="light"] .insights .controls .pill{
+  background:linear-gradient(90deg, rgba(214,31,44,.08), rgba(30,58,138,.08));
+  border-color:#d4deea; color:#0b1b2b;
+}
+html[data-variant="spidey"][data-theme="light"] .table-wrap{border-color:#d4deea;background:#ffffff}
+html[data-variant="spidey"][data-theme="light"] .table th{
+  background:#f0f4fa; color:#0b1b2b; border-bottom:1px solid #d4deea;
+}
+html[data-variant="spidey"][data-theme="light"] .table td{color:#0b1b2b}
+html[data-variant="spidey"][data-theme="light"] #dataTable tbody tr:nth-child(even){
+  background:rgba(30,58,138,.05); /* gentle zebra */
+}
+
+/* Chart canvas frame hint for light bg */
+html[data-variant="spidey"][data-theme="light"] #barChart{
+  border-radius:12px; outline:1px solid #e3eaf2; outline-offset:0;
+}
+
+/* -------- Contact section -------- */
+html[data-variant="spidey"][data-theme="light"] #contact .card{
+  background:#ffffff; border-color:#dbe4ef;
+}
+html[data-variant="spidey"][data-theme="light"] #contact label{color:#0b1b2b}
+html[data-variant="spidey"][data-theme="light"] #formStatus{color:#334155}
+html[data-variant="spidey"][data-theme="light"] .pill.trust{
+  background:linear-gradient(90deg, rgba(214,31,44,.10), rgba(30,58,138,.10));
+  border-color:#d4deea; color:#0b1b2b;
+}
+html[data-variant="spidey"][data-theme="light"] .lm{
+  background:#f8fbff; border-color:#e0e7f1;
+}
+html[data-variant="spidey"][data-theme="light"] .lm-label{color:#475569}
+html[data-variant="spidey"][data-theme="light"] .lm-value{color:#0b1b2b}
+
+/* Headline readability in Spider Light */
+html[data-variant="spidey"][data-theme="light"] .headline .accent,
+html[data-variant="spidey"][data-theme="light"] .headline .burst{
+  text-shadow: 0 0 8px rgba(214,31,44,.12), 0 0 8px rgba(30,58,138,.12);
+  -webkit-text-stroke: .4px rgba(7,20,38,.08);
+}
+
+/* Nav links contrast in Spider Light */
+html[data-variant="spidey"][data-theme="light"] .primary a,
+html[data-variant="spidey"][data-theme="light"] .brand{color:#0b1b2b}
+
+site-header{
+  position: sticky; top: 0; z-index: 1000;
+  backdrop-filter: blur(6px);
+  background: rgba(11,18,33,.72);
+  border-bottom: 1px solid rgba(148,163,184,.18);
+}
+[data-theme='light'] .site-header{
+  background: rgba(255,255,255,.85);
+  border-bottom-color: rgba(2,6,23,.10);
+}
+html[data-variant="spidey"][data-theme="light"] .site-header{
+  background: rgba(246,248,251,.92);
+  border-bottom-color: #dbe4ef;
 }

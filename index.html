@@ -1,57 +1,53 @@
+<!doctype html>
 <html lang="en" data-theme="auto">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>c23m9 — Web & Database Engineer</title>
-  <meta name="description" content="Websites, databases, and APIs that just work. I plan, build, and maintain dependable systems so you can grow without drama." />
+  <meta name="description" content="Websites, databases, and APIs that just work. We plan, build, and maintain dependable systems so you can grow without drama." />
   <meta name="theme-color" content="#0f172a" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="styles.css" />
   <style>html{scroll-behavior:smooth}</style>
 </head>
 <body>
-  <header>
-    <div class="container nav" role="navigation" aria-label="Primary">
-      <a class="brand" href="#home" aria-label="Go to home">
-        <svg viewBox="0 0 64  64" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--brand)"/><stop offset="100%" stop-color="var(--brand-2)"/></linearGradient></defs><path fill="url(#g)" d="M32 6c12 0 22 4 22 10v20c0 6-10 10-22 10S10 42 10 36V16c0-6 10-10 22-10zm0 8c-9.9 0-18 3-18 6s8.1 6 18 6 18-3 18-6-8.1-6-18-6zm0 16c-9.9 0-18-3-18-6v6c0 3 8.1 6 18 6s18-3 18-6v-6c0 3-8.1 6-18 6z"/></svg>
-        <span>c23m9</span>
-      </a>
+  <header class="site-header">
+  <div class="container nav" role="navigation" aria-label="Primary">
+    <a class="brand" href="#home" aria-label="Go to home">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--brand)"/><stop offset="100%" stop-color="var(--brand-2)"/></linearGradient></defs><path fill="url(#g)" d="M32 6c12 0 22 4 22 10v20c0 6-10 10-22 10S10 42 10 36V16c0-6 10-10 22-10zm0 8c-9.9 0-18 3-18 6s8.1 6 18 6 18-3 18-6-8.1-6-18-6zm0 16c-9.9 0-18-3-18-6v6c0 3 8.1 6 18 6s18-3 18-6v-6c0 3-8.1 6-18 6z"/></svg>
+      <span>c23m9</span>
+    </a>
 
-      <ul class="primary" id="desktopNav" aria-label="Sections">
-        <li><a data-i18n="nav.services" href="#services">Services</a></li>
-        <li><a data-i18n="nav.work" href="#work">Work</a></li>
-        <li><a data-i18n="nav.playground" href="#playground">Playground</a></li>
-        <li><a data-i18n="nav.dash" href="/services.html" target="_blank" rel="noopener">Dashboard ↗</a></li>
-        <li><a data-i18n="nav.contact" href="#contact">Contact</a></li>
-      </ul>
+    <ul class="primary" id="desktopNav" aria-label="Sections">
+      <li><a data-i18n="nav.services" href="#services">Services</a></li>
+      <li><a data-i18n="nav.work" href="#work">Work</a></li>
+      <li><a data-i18n="nav.playground" href="#playground">Playground</a></li>
+      <li><a data-i18n="nav.dash" href="#dashboard">Dashboard</a></li>
+      <li><a data-i18n="nav.contact" href="#contact">Contact</a></li>
+    </ul>
 
-      <nav class="nav-controls">
-        <select id="langSelect" class="select" aria-label="Language">
-          <option value="en">EN</option>
-          <option value="es">ES</option>
-        </select>
-        <button class="btn ghost" id="themeToggle" aria-label="Toggle theme">🌓</button>
-        <button class="btn ghost menu-btn" id="menuBtn" aria-expanded="false" aria-controls="drawer" aria-label="Open menu">☰</button>
-      </nav>
-    </div>
-    <div id="drawer" class="drawer" role="dialog" aria-modal="true" aria-label="Mobile Menu"></div>
-  </header>
+    <nav class="nav-controls">
+      <select id="langSelect" class="select" aria-label="Language">
+        <option value="en">EN</option>
+        <option value="es">ES</option>
+      </select>
+      <button class="btn ghost" id="themeToggle" aria-label="Toggle theme">🌓</button>
+      <button class="btn ghost" id="spideyToggle" aria-label="Spider theme" data-tip="Try spider theme">🕷️</button>
+    </nav>
+  </div>
+</header>
 
   <main id="main">
-    <!-- HERO (wide) -->
+    <!-- HERO -->
     <section id="home" class="hero container" style="position:relative;">
-      <button class="section-toggle anchor" aria-expanded="true" data-label="Hero" title="Hide hero">
-        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 13a5.5 5.5 0 1 1 0-11a5.5 5.5 0 0 1 0 11z"/></svg>
-        <span>Hide</span>
-      </button>
       <div>
         <span class="eyebrow"><span class="pill" data-i18n="home.availability">Available for Q4</span> <span data-i18n="home.role">Web & Database Engineer</span></span>
         <h1 class="headline">
-          <span class="accent" data-i18n="home.h1a">Build once.</span> <span data-i18n="home.h1b">Scale safely.</span><br/>
-          <span data-i18n="home.h1c">Ship websites, databases &</span> <span class="accent" data-i18n="home.h1d">APIs with confidence.</span>
+          <span class="accent">Websites & databases</span> that don’t break.<br/>
+          <span class="burst">Fast. Secure. Documented.</span>
         </h1>
-        <p class="sub" data-i18n="home.sub">I help teams design clean schemas, ship robust web apps, and automate cloud deployments. Security‑first. Documented. Observable.</p>
-        <div class="cta"><a class="btn primary" href="#contact" id="scrollToContact">Get a quote</a></div>
+        <p class="sub" data-i18n="home.sub">We help teams design clean schemas, ship robust web apps, and automate cloud deployments. Security‑first. Documented. Observable.</p>
+        <div class="cta"><a class="btn primary" href="#contact" id="scrollToContact"><span data-i18n="home.cta">Get a quote</span></a></div>
       </div>
       <div class="hero-visual fx-shine">
         <div class="terminal notranslate">
@@ -72,46 +68,46 @@
     <section id="services" class="container section-block">
       <div class="section-title">
         <div>
-          <h2>Services that reduce risk and increase velocity</h2>
-          <span class="kicker">From Figma to production & beyond</span>
+          <h2 data-i18n="services.title">Simple services that reduce risk</h2>
+          <span class="kicker" data-i18n="services.kicker">From idea to launch — and after</span>
         </div>
-        <button class="section-toggle" aria-expanded="true" data-label="Services">Hide</button>
+        <button class="section-toggle" aria-expanded="true" data-label="Services" data-label-i18n="nav.services" data-i18n="ui.hide">Hide</button>
       </div>
       <div class="grid cols-3">
         <article class="card service fx-shine fx-wiggle">
           <div class="pill">Web Applications</div>
-          <h3>Front‑to‑back engineering</h3>
-          <p>Type‑safe APIs, component libraries, CI/CD pipelines, and robust testing for maintainable codebases.</p>
+          <h3 data-i18n="services.items.web.h3">Build it right</h3>
+          <p data-i18n="services.items.web.p">We build modern, accessible websites and apps that load fast and are easy to update.</p>
           <div class="badge-row"><span class="pill">Accessibility</span><span class="pill">SSR/SPA</span><span class="pill">Testing</span></div>
         </article>
         <article class="card service fx-shine fx-wiggle">
           <div class="pill">Database Architecture</div>
-          <h3>Schema & performance design</h3>
-          <p>Relational & NoSQL schema design, migrations, indexing, partitioning, and query optimization.</p>
+          <h3 data-i18n="services.items.db.h3">Clean data, quick answers</h3>
+          <p data-i18n="services.items.db.p">We design schemas that make sense, queries that fly, and backups you can trust.</p>
           <div class="badge-row"><span class="pill">PostgreSQL</span><span class="pill">MySQL</span><span class="pill">MongoDB</span></div>
         </article>
         <article class="card service fx-shine fx-wiggle">
           <div class="pill">APIs</div>
-          <h3>Contract‑first design</h3>
-          <p>REST/GraphQL APIs with strong typing, authN/authZ, rate limiting, and observability built‑in.</p>
+          <h3 data-i18n="services.items.api.h3">Connect your tools</h3>
+          <p data-i18n="services.items.api.p">We ship stable, well-documented APIs so your product plays nicely with others.</p>
           <div class="badge-row"><span class="pill">OpenAPI</span><span class="pill">GraphQL</span><span class="pill">gRPC</span></div>
         </article>
         <article class="card service fx-shine fx-wiggle">
           <div class="pill">Cloud & DevOps</div>
-          <h3>From laptop to cloud</h3>
-          <p>Infrastructure as code, containerization, blue/green deploys, rollbacks, and autoscaling.</p>
+          <h3 data-i18n="services.items.devops.h3">Launch with confidence</h3>
+          <p data-i18n="services.items.devops.p">We automate deploys, provide rollbacks, and monitor so downtime isn’t a surprise.</p>
           <div class="badge-row"><span class="pill">AWS</span><span class="pill">Docker</span><span class="pill">Terraform</span></div>
         </article>
         <article class="card service fx-shine fx-wiggle">
           <div class="pill">Performance</div>
-          <h3>Measure, then optimize</h3>
-          <p>APM, tracing, caching, and capacity planning to keep latency low under real‑world load.</p>
+          <h3 data-i18n="services.items.perf.h3">Fast where it matters</h3>
+          <p data-i18n="services.items.perf.p">We measure, then optimize. Real users, real speed, real impact.</p>
           <div class="badge-row"><span class="pill">p95</span><span class="pill">RUM</span><span class="pill">Caching</span></div>
         </article>
         <article class="card service fx-shine fx-wiggle">
           <div class="pill">Security</div>
-          <h3>Defense in depth</h3>
-          <p>Threat modeling, secure defaults, least privilege, and dependency hygiene.</p>
+          <h3 data-i18n="services.items.sec.h3">Safe by default</h3>
+          <p data-i18n="services.items.sec.p">We apply least privilege, keep dependencies clean, and do practical threat modeling.</p>
           <div class="badge-row"><span class="pill">OWASP</span><span class="pill">CSP</span><span class="pill">SAST/DAST</span></div>
         </article>
       </div>
@@ -121,10 +117,10 @@
     <section id="work" class="container section-block">
       <div class="section-title">
         <div>
-          <h2>Selected case studies</h2>
-          <span class="kicker">Request detailed write‑ups</span>
+          <h2 data-i18n="work.title">Recent wins</h2>
+          <span class="kicker" data-i18n="work.kicker">Ask for case study details</span>
         </div>
-        <button class="section-toggle" aria-expanded="true" data-label="Work">Hide</button>
+        <button class="section-toggle" aria-expanded="true" data-label="Work" data-label-i18n="nav.work" data-i18n="ui.hide">Hide</button>
       </div>
       <div class="grid cols-2">
         <article class="card case fx-shine">
@@ -165,37 +161,37 @@ type Query { products(sku: String): [Product]! }
     </section>
 
     <!-- PLAYGROUND (insights) -->
-    <section id="playground" class="container section-block notranslate">
+    <section id="playground" class="container section-block full notranslate">
       <div class="section-title">
         <div>
-          <h2>Playground</h2>
-          <span class="kicker">Social Media Insights (demo)</span>
+          <h2 data-i18n="pg.title">Social Media Insights (demo)</h2>
+          <span class="kicker" data-i18n="pg.kicker">Filter and sort — sourced, rounded figures</span>
         </div>
-        <button class="section-toggle" aria-expanded="true" data-label="Playground">Hide</button>
+        <button class="section-toggle" aria-expanded="true" data-label="Playground" data-label-i18n="nav.playground" data-i18n="ui.hide">Hide</button>
       </div>
       <div class="insights">
         <div class="controls">
-          <label>Metric
+          <label><span data-i18n="pg.metric">Metric</span>
             <select id="metricSelect" class="pill">
               <option value="mau_bil">Monthly active users (B)</option>
               <option value="ad_aud_bil">Ad reach (B)</option>
               <option value="us_news_pct">U.S. adults who get news (%)</option>
             </select>
           </label>
-          <label class="chk"><input type="checkbox" id="filter2b"> MAU ≥ 2B</label>
-          <label class="chk"><input type="checkbox" id="filterROI"> Marketer ROI leaders</label>
-          <button class="btn ghost" id="resetFilters">Reset</button>
+          <label class="chk"><input type="checkbox" id="filter2b"> <span data-i18n="pg.filter2b">MAU ≥ 2B</span></label>
+          <label class="chk"><input type="checkbox" id="filterROI"> <span data-i18n="pg.filterROI">Marketer ROI leaders</span></label>
+          <button class="btn ghost" id="resetFilters" data-i18n="pg.reset">Reset</button>
         </div>
         <canvas id="barChart" height="280" aria-label="Platforms bar chart" role="img"></canvas>
         <div class="table-wrap">
           <table id="dataTable" class="table">
             <thead>
               <tr>
-                <th data-key="platform">Platform</th>
-                <th data-key="mau_bil">MAU (B)</th>
-                <th data-key="ad_aud_bil">Ad reach (B)</th>
-                <th data-key="us_news_pct">US news (%)</th>
-                <th data-key="roi_top">ROI leader</th>
+                <th data-key="platform" data-i18n="pg.th.platform">Platform</th>
+                <th data-key="mau_bil" data-i18n="pg.th.mau">MAU (B)</th>
+                <th data-key="ad_aud_bil" data-i18n="pg.th.ad">Ad reach (B)</th>
+                <th data-key="us_news_pct" data-i18n="pg.th.news">US news (%)</th>
+                <th data-key="roi_top" data-i18n="pg.th.roi">ROI leader</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -213,39 +209,40 @@ type Query { products(sku: String): [Product]! }
             <span class="accent-text">Let’s build something dependable</span>
             <span class="pill" aria-hidden="true">→</span>
           </h2>
-          <span class="kicker">Tell me about your project</span>
+          <span class="kicker" data-i18n="contact.kicker">Tell us about your project</span>
         </div>
-        <button class="section-toggle" aria-expanded="true" data-label="Contact">Hide</button>
       </div>
+
+      <div class="trust-strip"><span class="pill trust"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1l7 4v6c0 5-3.8 9.7-7 11c-3.2-1.3-7-6-7-11V5l7-4Z"/></svg> <span data-i18n="contact.trust.privacy">Privacy‑first</span></span><span class="pill trust"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2l9 4l-9 4l-9-4l9-4Zm0 6l9 4l-9 4l-9-4l9-4Zm0 8l9 4l-9 4l-9-4l9-4Z"/></svg> <span data-i18n="contact.trust.nda">NDA‑friendly</span></span><span class="pill trust"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="m9 16l-3-3l1.5-1.5L9 13l7.5-7.5L18 7l-9 9Z"/></svg> <span data-i18n="contact.trust.sla">1‑business‑day reply</span></span><span class="pill trust"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 1 0 18a9 9 0 0 1 0-18Zm1 4v5l4 2l-1 1l-5-3V7h2Z"/></svg> <span data-i18n="contact.trust.ssl">Backups & SSL</span></span></div>
 
       <div class="grid cols-2 contact-grid">
         <!-- Form -->
         <div class="card" style="display:grid; gap:1rem;">
-          <p style="margin:0; color:var(--muted)">Quick brief below and I’ll reply within one business day.</p>
+          <p style="margin:0; color:var(--muted)">Quick brief below and we’ll reply within one business day.</p>
 
           <form id="contactForm" action="https://formsubmit.co/431afb18b6d29330088207e6478cadc5" method="POST">
             <input type="hidden" name="_subject" value="New Website Inquiry (Contact form)" />
             <input type="hidden" name="_template" value="table" />
             <input type="hidden" name="_blacklist" value="viagra, crypto, investment, guest post, seo package" />
             <input type="hidden" name="form_name" value="Contact" />
-            <input type="hidden" name="_autoresponse" value="Thanks for the message — you’ll hear from me within one business day. – c23m9" />
+            <input type="hidden" name="_autoresponse" value="Thanks for the message — you’ll hear from us within one business day. – c23m9" />
 
             <div class="grid cols-2" style="gap:.8rem">
               <div>
-                <label for="name">Name</label>
+                <label for="name" data-i18n="contact.name">Name</label>
                 <input id="name" name="name" required autocomplete="name" placeholder="Your name" />
               </div>
               <div>
-                <label for="email">Email</label>
+                <label for="email" data-i18n="contact.email">Email</label>
                 <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@company.com" />
               </div>
             </div>
 
             <div class="grid cols-2" style="gap:.8rem">
               <div>
-                <label for="budget">Budget</label>
+                <label for="budget" data-i18n="contact.budget">Budget</label>
                 <select id="budget" name="budget" class="pill" required>
-                  <option value="">Select a range</option>
+                  <option value="" data-i18n="contact.budgetChoose">Select a range</option>
                   <option value="under-10k">Under $10k</option>
                   <option value="10-25k">$10k – $25k</option>
                   <option value="25-50k">$25k – $50k</option>
@@ -253,9 +250,9 @@ type Query { products(sku: String): [Product]! }
                 </select>
               </div>
               <div>
-                <label for="timeline">Timeline</label>
+                <label for="timeline" data-i18n="contact.timeline">Timeline</label>
                 <select id="timeline" name="timeline" class="pill" required>
-                  <option value="">Choose</option>
+                  <option value="" data-i18n="contact.timelineChoose">Choose</option>
                   <option value="asap">ASAP</option>
                   <option value="4-8w">4–8 weeks</option>
                   <option value="2-3m">2–3 months</option>
@@ -265,18 +262,18 @@ type Query { products(sku: String): [Product]! }
             </div>
 
             <div>
-              <label for="message">Project brief</label>
+              <label for="message" data-i18n="contact.brief">Project brief</label>
               <textarea id="message" name="message" rows="6" placeholder="What are we building? Goals, users, integrations…" required></textarea>
             </div>
 
             <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
 
             <div class="flex" style="gap:.6rem; flex-wrap: wrap;">
-              <button class="btn primary" type="submit">Send inquiry</button>
-              <button class="btn ghost" type="button" id="copyEmail">Copy email</button>
-              <a href="/resume.pdf" class="btn ghost">Download résumé</a>
+              <button class="btn primary" type="submit" data-i18n="contact.send">Send inquiry</button>
+              <button class="btn ghost" type="button" id="copyEmail" data-i18n="contact.copy">Copy email</button>
+              <a href="/resume.pdf" class="btn ghost" data-i18n="contact.resume">Download résumé</a>
             </div>
-            <div class="status" id="formStatus" aria-live="polite">I reply within one business day.</div>
+            <div class="status" id="formStatus" aria-live="polite" data-i18n="contact.sla">We reply within one business day.</div>
           </form>
         </div>
 
@@ -325,6 +322,6 @@ type Query { products(sku: String): [Product]! }
     </div>
   </footer>
 
-  <script src="/scripts.js"></script>
+  <script src="scripts.js"></script>
 </body>
 </html>
