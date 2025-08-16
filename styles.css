@@ -528,3 +528,15 @@ html[data-variant="spidey"][data-theme="light"] .site-header{
   background: rgba(246,248,251,.92);
   border-bottom-color: #dbe4ef;
 }
+
+/* Mobile-friendly Playground */
+.insights .controls{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; gap:.5rem}
+.insights .controls > *{flex:0 0 auto}
+.table-wrap{overflow:auto; -webkit-overflow-scrolling:touch}
+.table{font-size:0.95rem}
+@media(max-width:640px){
+  .table th,.table td{padding:.45rem}
+  .table{font-size:0.875rem}
+}
+.table th{position:sticky; top:0; z-index:1; background:var(--panel)}
+#barChart{display:block; width:100%; max-width:100%}
