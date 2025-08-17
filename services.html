@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>c23m9 Web&Database Engineer</title>
+  <meta name="color-scheme" content="light dark">
+
+  <title>Web & Database</title>
 
   <!-- Libs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -19,16 +21,25 @@
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    body{
+      margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
       background: radial-gradient(1200px 1200px at 20% -10%, rgba(35,201,185,.15), transparent 60%), var(--bg);
       color:var(--text);
     }
 
-    header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.2) blur(10px);
-      background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));border-bottom:1px solid var(--line)}
+    header{
+      position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.2) blur(10px);
+      background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));
+      border-bottom:1px solid var(--line)
+    }
     .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px}
+    
     .brand{display:flex;gap:10px;align-items:center}
-    .badge{width:36px;height:36px;border-radius:10px;background:conic-gradient(from 210deg,var(--glow),#7adcd2 25%,#1d9d8f 60%,var(--glow));box-shadow:0 0 24px rgba(35,201,185,.35)}
+    .badge{
+      width:36px;height:36px;border-radius:10px;
+      background:conic-gradient(from 210deg,var(--glow),#7adcd2 25%,#1d9d8f 60%,var(--glow));
+      box-shadow:0 0 24px rgba(35,201,185,.35)
+    }
     h1{margin:0;font-size:1.05rem;letter-spacing:.3px}
 
     main{padding:22px;display:grid;gap:18px;max-width:1200px;margin:0 auto}
@@ -37,9 +48,11 @@
     .btn.primary{background:linear-gradient(180deg,#23c9b9,#1aa998);color:#061016;border-color:transparent}
     .btn:hover{filter:brightness(1.05)} .btn:disabled{opacity:.6;cursor:not-allowed}
 
-    .filterbar{display:grid;gap:14px;grid-template-columns:1fr;padding:14px;border-radius:var(--radius);
+    .filterbar{
+      display:grid;gap:14px;grid-template-columns:1fr;padding:14px;border-radius:var(--radius);
       background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
-      border:1px solid var(--line);box-shadow:var(--shadow)}
+      border:1px solid var(--line);box-shadow:var(--shadow)
+    }
     .filter-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
     .field{display:flex;flex-direction:column;gap:6px;min-width:180px}
     .field label{font-size:.78rem;color:var(--muted)}
@@ -47,7 +60,8 @@
     /* High-contrast inputs */
     select,input[type="date"],input[type="number"],input[type="file"]{
       background:var(--panel-2)!important;color:var(--text)!important;border:1px solid var(--line)!important;
-      border-radius:10px!important;padding:8px 10px!important;min-height:38px!important;appearance:none}
+      border-radius:10px!important;padding:8px 10px!important;min-height:38px!important;appearance:none
+    }
     select:focus,input:focus{outline:2px solid rgba(35,201,185,.5)}
     ::placeholder{color:var(--muted);opacity:.9}
 
@@ -63,15 +77,19 @@
     .mode-range.show, .mode-month.show, .mode-quarter.show { display: flex; }
 
     .kpis{display:grid;gap:16px;grid-template-columns:repeat(12,minmax(0,1fr))}
-    .kpi{grid-column:span 3 / span 3;background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
-      border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+    .kpi{
+      grid-column:span 3 / span 3;background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
+      border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)
+    }
     .kpi h3{margin:0;font-size:.9rem;color:var(--muted)}
     .kpi .big{margin-top:6px;font-size:1.8rem;font-weight:700;letter-spacing:.4px}
     .list{margin:0;padding-left:18px;font-size:.94rem}.list li{margin:4px 0}
 
     .grid{display:grid;gap:16px;grid-template-columns:2fr 1fr}
-    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
-      border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 12px 16px;min-height:260px}
+    .panel{
+      background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
+      border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 12px 16px;min-height:260px
+    }
     .panel h4{margin:8px 8px 12px;color:var(--muted)}
     .chart-wrap{height:460px;position:relative;padding:8px}
     canvas{width:100%!important;height:100%!important}
@@ -82,6 +100,146 @@
     @media (max-width:1200px){.kpi{grid-column:span 4 / span 4}}
     @media (max-width:900px){.grid{grid-template-columns:1fr}.kpi{grid-column:span 6 / span 6}}
     @media (max-width:600px){.kpi{grid-column:span 12 / span 12}}
+
+    /* =========================
+       Floating Quick Links Tab
+       ========================= */
+    .quicklinks{
+      position:fixed; left:12px; top:50%; transform:translateY(-50%);
+      z-index:9999; display:flex; align-items:center; gap:10px; pointer-events:auto;
+    }
+    .ql-handle{
+      writing-mode:vertical-rl; transform:rotate(180deg);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid var(--line); border-right:none;
+      border-radius:12px 0 0 12px; padding:10px 8px; cursor:pointer;
+      color:var(--text); font-weight:600; letter-spacing:.4px;
+      box-shadow:0 8px 30px rgba(0,0,0,.35), 0 0 0 1px rgba(35,201,185,.15) inset;
+      backdrop-filter: blur(10px) saturate(1.2);
+      transition:filter .2s ease, transform .2s ease;
+    }
+    .ql-handle .ql-icon{font-size:1rem; margin-top:6px; opacity:.9}
+    .ql-handle:hover{filter:brightness(1.1)}
+    .ql-handle:focus{outline:2px solid rgba(35,201,185,.5); outline-offset:2px}
+
+    .ql-panel{
+      position:absolute; left:100%; margin-left:10px; width:240px;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border:1px solid var(--line); border-radius:14px; padding:12px;
+      box-shadow:var(--shadow); backdrop-filter: blur(12px) saturate(1.2);
+      transform:translateX(-12px); opacity:0; pointer-events:none;
+      transition:transform .28s ease, opacity .28s ease;
+    }
+    .quicklinks.open .ql-panel{transform:translateX(0); opacity:1; pointer-events:auto}
+
+    .ql-head{
+      font-size:.8rem; color:var(--muted); margin:2px 6px 8px;
+      text-transform:uppercase; letter-spacing:.12em;
+    }
+    .ql-panel a{
+      display:flex; align-items:center; gap:8px; text-decoration:none; color:var(--text);
+      padding:10px 12px; margin:6px 0; border-radius:10px; background:var(--panel-2);
+      border:1px solid transparent; transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+    .ql-panel a:hover{
+      border-color:var(--glow);
+      box-shadow:0 0 0 3px rgba(35,201,185,.18) inset;
+      transform:translateY(-1px);
+    }
+    .ql-panel a span{opacity:.9}
+
+    /* Mobile: move to bottom-left and make handle horizontal */
+    @media (max-width:700px){
+      .quicklinks{left:10px; bottom:14px; top:auto; transform:none;}
+      .ql-handle{writing-mode:horizontal-tb; transform:none; border-radius:12px; border-right:1px solid var(--line)}
+      .ql-panel{
+        position:fixed; left:10px; right:10px; bottom:64px; top:auto; width:auto; margin:0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .ql-panel, .ql-handle{transition:none}
+    }
+/* === THEME VARIABLES === */
+:root{
+  /* Dark (default) */
+  --bg:#0b1020; --panel:#0f152b; --panel-2:#131a35;
+  --text:#e9eef6; --muted:#a9b0c2; --line:rgba(255,255,255,0.08);
+  --glow:#23c9b9; --radius:16px; --shadow:0 8px 30px rgba(0,0,0,.35);
+  --cal-invert:1; /* make the datepicker icon visible on dark */
+}
+
+/* Light overrides */
+:root.light{
+  --bg:#f7f9fc; --panel:#ffffff; --panel-2:#ffffff;
+  --text:#111827; --muted:#6b7280; --line:#e5e7eb;
+  --glow:#23c9b9; --shadow:0 8px 24px rgba(0,0,0,.08);
+  --cal-invert:0; /* normal icon colors on light */
+}
+
+/* Body/background uses variables, so both themes apply automatically */
+html,body{ color:var(--text) !important; background: var(--bg) !important; }
+
+/* High-contrast inputs: native controls */
+select,
+input[type="date"],
+input[type="number"],
+input[type="file"]{
+  background:var(--panel-2)!important;
+  color:var(--text)!important;
+  border:1px solid var(--line)!important;
+  border-radius:10px!important;
+  padding:8px 10px!important;
+  min-height:38px!important;
+  appearance:none;
+}
+:root.light select,
+:root.light input[type="date"],
+:root.light input[type="number"],
+:root.light input[type="file"]{
+  background:#ffffff!important;
+  color:#111827!important;
+  border:1px solid #e5e7eb!important;
+}
+
+/* Date icon visibility */
+input[type="date"]::-webkit-calendar-picker-indicator{
+  filter: invert(var(--cal-invert));
+  opacity:.85;
+}
+
+/* Choices.js – DARK defaults */
+.choices__inner{
+  background:var(--panel-2)!important;
+  color:var(--text)!important;
+  border:1px solid var(--line)!important;
+  border-radius:10px!important;
+  min-height:38px!important;
+}
+.choices__list--dropdown,
+.choices__list[aria-expanded]{
+  background:var(--panel-2)!important;
+  border:1px solid var(--line)!important;
+  color:var(--text)!important;
+}
+.choices__placeholder{ color:var(--muted)!important; }
+.choices__item--selectable.is-highlighted{
+  background:var(--panel)!important;
+}
+
+/* Choices.js – LIGHT overrides (force readable text) */
+:root.light .choices__inner{
+  background:#ffffff!important; color:#111827!important; border:1px solid #e5e7eb!important;
+}
+:root.light .choices__list--dropdown,
+:root.light .choices__list[aria-expanded]{
+  background:#ffffff!important; color:#111827!important; border:1px solid #e5e7eb!important;
+}
+:root.light .choices__placeholder{ color:#6b7280!important; }
+
+/* Buttons inherit; primary stays the same brand color */
+
+
   </style>
 </head>
 <body>
@@ -90,6 +248,7 @@
       <div class="brand">
         <div class="badge" aria-hidden="true"></div>
         <h1>Service Interaction Dashboard</h1>
+        <button id="themeToggle" class="btn" type="button" title="Toggle theme">🌙</button>
       </div>
     </div>
   </header>
@@ -205,6 +364,21 @@
       </div>
     </section>
   </main>
+
+  <!-- Floating Quick Links -->
+  <nav class="quicklinks" id="quicklinks" aria-label="Quick Links">
+    <button class="ql-handle" id="qlToggle" aria-expanded="false" aria-controls="qlPanel" title="Open quick links">
+      <span class="ql-icon" aria-hidden="true">☰</span>
+      <span class="ql-label">Pages</span>
+    </button>
+    <div class="ql-panel" id="qlPanel" role="menu">
+      <div class="ql-head">Jump to</div>
+      <a href="employment.html" role="menuitem">💼 <span>Employment</span></a>
+      <a href="immigration.html" role="menuitem">🛂 <span>Immigration</span></a>
+      <a href="orr.html" role="menuitem">🏛️ <span>ORR</span></a>
+      <a href="prog.html" role="menuitem">📋 <span>Program Enrollment</span></a>
+    </div>
+  </nav>
 
   <script>
     /* ===== State ===== */
@@ -410,27 +584,26 @@
         : '—';
     }
     function mostRecentInteractionDate(data) {
-  const today = new Date();
-  today.setHours(23, 59, 59, 999);          // end of today (local time)
-  const MIN_YEAR = 1990;                    // sanity floor (adjust if needed)
-  const MAX_YEAR = today.getFullYear() + 1; // ignore far-future typos like 3023
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);          // end of today (local time)
+      const MIN_YEAR = 1990;                    // sanity floor (adjust if needed)
+      const MAX_YEAR = today.getFullYear() + 1; // ignore far-future typos like 3023
 
-  let bestPast = null;  // newest date <= today
-  let bestAny  = null;  // fallback: newest date overall
+      let bestPast = null;  // newest date <= today
+      let bestAny  = null;  // fallback: newest date overall
 
-  for (const row of (data || [])) {
-    const d = row._parsedDate;
-    if (!(d instanceof Date) || isNaN(d)) continue;
+      for (const row of (data || [])) {
+        const d = row._parsedDate;
+        if (!(d instanceof Date) || isNaN(d)) continue;
 
-    const y = d.getFullYear();
-    if (y < MIN_YEAR || y > MAX_YEAR) continue; // drop unrealistic years
+        const y = d.getFullYear();
+        if (y < MIN_YEAR || y > MAX_YEAR) continue; // drop unrealistic years
 
-    if (!bestAny || d > bestAny) bestAny = d;   // track absolute max
-    if (d <= today && (!bestPast || d > bestPast)) bestPast = d; // track latest in the past
-  }
-  return bestPast || bestAny || null;  // prefer past; fallback to absolute max if all are future
-}
-
+        if (!bestAny || d > bestAny) bestAny = d;   // track absolute max
+        if (d <= today && (!bestPast || d > bestPast)) bestPast = d; // track latest in the past
+      }
+      return bestPast || bestAny || null;  // prefer past; fallback to absolute max if all are future
+    }
 
     /* ===== Dashboard ===== */
     function updateDashboard(data){
@@ -484,6 +657,9 @@
           scales:{ x:{ticks:{autoSkip:true,maxRotation:0},grid:{color:'rgba(255,255,255,0.05)'}},
                    y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'}} } }
       });
+
+      window.chartInstance = chartInstance; // ← add this line
+
     }
 
     /* ===== Export ===== */
@@ -506,6 +682,82 @@
     /* ===== Init ===== */
     els.filterType.value = '';
     toggleDateInputs();
+
+    /* ===== Quick Links toggle (floating) ===== */
+    (function(){
+      const root = document.getElementById('quicklinks');
+      const btn  = document.getElementById('qlToggle');
+      const panel= document.getElementById('qlPanel');
+
+      if(!root || !btn || !panel) return;
+
+      function open(){ root.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
+      function close(){ root.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
+
+      btn.addEventListener('click', () => {
+        if(root.classList.contains('open')) close(); else open();
+      });
+
+      // Close on outside click
+      document.addEventListener('click', (e)=>{
+        if(!root.contains(e.target)) close();
+      });
+
+      // Close on Escape
+      document.addEventListener('keydown', (e)=>{
+        if(e.key === 'Escape') close();
+      });
+
+      // Close after navigating
+      panel.querySelectorAll('a').forEach(a=>{
+        a.addEventListener('click', () => close());
+      });
+    })();
   </script>
+    <!-- Theme initializer (put AFTER your main script) -->
+  <script>
+  (() => {
+    const STORAGE_KEY = 'c23m9_theme';
+    const prefersLight = () => window.matchMedia('(prefers-color-scheme: light)').matches;
+
+    function applyTheme(mode){
+      document.documentElement.classList.toggle('light', mode === 'light');
+      const btn = document.getElementById('themeToggle');
+      if (btn) btn.textContent = mode === 'light' ? '🌙' : '☀️';
+
+      // Refresh visuals (charts recalc grid colors)
+      if (window.chartInstance && typeof window.chartInstance.update === 'function') {
+        window.chartInstance.update();
+      }
+      // Also trigger a resize so canvases/layout reflow
+      window.dispatchEvent(new Event('resize'));
+    }
+
+    // Initialize theme from saved value or OS preference
+    const saved = localStorage.getItem(STORAGE_KEY);
+    const initial = saved || (prefersLight() ? 'light' : 'dark');
+    applyTheme(initial);
+
+    // Toggle on click
+    const toggle = document.getElementById('themeToggle');
+    if (toggle) {
+      toggle.addEventListener('click', () => {
+        const next = document.documentElement.classList.contains('light') ? 'dark' : 'light';
+        localStorage.setItem(STORAGE_KEY, next);
+        applyTheme(next);
+      });
+    }
+
+    // Track OS theme changes only if user hasn't chosen manually
+    const mq = window.matchMedia('(prefers-color-scheme: light)');
+    mq.addEventListener?.('change', e => {
+      const manual = localStorage.getItem(STORAGE_KEY);
+      if (!manual) applyTheme(e.matches ? 'light' : 'dark');
+    });
+  })();
+  </script>
+</body>
+</html>
+
 </body>
 </html>

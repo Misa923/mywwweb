@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Web & Database</title>
+
+  <link rel="stylesheet" href="quicklinks.css">
+<script>
+  // (Optional) Customize once per page BEFORE quicklinks.js loads
+  // window.QL_NEW_TAB = false; // set true to open in a new tab
+  // window.QL_LABEL = 'Pages'; // change the handle text if you want
+  // window.QL_PAGES = [ ... ]; // override links if a page lives in a different folder
+</script>
+<script defer src="quicklinks.js"></script>
+
+
+  <style>
+    :root {
+  --bg:#0b1220; --panel:#111827; --text:#e5e7eb; --muted:#9ca3af;
+  --accent:#60a5fa; --chip:#1f2937; --border:#1f2937;
+  --cal-invert: 1; /* calendar icon visible on dark */
+}
+:root.light {
+  --bg:#f8fafc; --panel:#fff; --text:#111827; --muted:#6b7280;
+  --accent:#2563eb; --chip:#e5e7eb; --border:#e5e7eb;
+  --cal-invert: 0; /* calendar icon normal on light */
+}
+
+/* BASE */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}
+.container{max-width:1200px;margin:0 auto;padding:16px}
+a,button,select,input{font:inherit}
+
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.title{display:flex;gap:10px;align-items:center}
+.title small{color:var(--muted);display:block;margin-top:-4px}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+
+.btn{border:1px solid var(--border);background:var(--chip);color:var(--text);padding:6px 10px;border-radius:8px;cursor:pointer;font-weight:600;transition:background .15s,transform .15s,box-shadow .15s}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px}
+
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.section-title h2{font-size:16px;margin:0;font-weight:700}
+.pill{border-radius:999px;padding:4px 10px;background:var(--chip);color:var(--muted)}
+.right{display:flex;justify-content:flex-end;gap:8px}
+.inline-controls{display:flex;align-items:center;gap:8px}
+
+/* COLLAPSIBLE + hover effect on Show/Hide */
+.collapsible .collapse-body{margin-top:8px}
+.collapsible.collapsed .collapse-body{display:none}
+.toggle-section{min-width:70px;transition:background .15s, color .15s, box-shadow .15s, transform .15s}
+.toggle-section:hover{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.25);transform:translateY(-1px)}
+
+/* FILTERS */
+.filters-card .filters-wrap{display:grid;grid-template-columns:140px 1fr;gap:16px} /* compact Quick groups */
+.filter-sidebar label{display:block;color:var(--muted);font-size:11px;margin-bottom:6px}
+.filter-chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:var(--chip);border:1px solid var(--border);padding:2px 6px;border-radius:999px;cursor:pointer;font-size:12px}
+.chip.active{background:#0ea5e9;color:#06223a;border-color:#0ea5e9}
+
+.filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+
+/* inputs readable on dark + date icon visible */
+.field input,.field select{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:8px;background:rgba(255,255,255,.03);color:var(--text)}
+.field input::placeholder{color:var(--muted)}
+.field select:focus,.field input:focus{outline:none;box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent)}
+input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(var(--cal-invert));opacity:.8}
+
+/* Choices.js dark-friendly */
+.choices{color:var(--text)}
+.choices__inner{background:var(--chip);border:1px solid var(--border);color:var(--text);border-radius:8px}
+.choices__list--multiple .choices__item{background-color:var(--accent);border-color:var(--accent);color:#fff}
+.choices__list--dropdown,.choices__list[aria-expanded]{background:var(--panel);color:var(--text);border:1px solid var(--border)}
+.choices__placeholder{color:var(--muted)}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:12px 0}
+.kpi h3{margin:6px 0 0;font-size:22px}
+.kpi p{margin:0;font-size:12px;color:var(--muted)}
+
+/* CHECK-INS */
+.checkins-card .grid{display:grid;gap:12px}
+.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.tabs{display:flex;gap:6px;margin-bottom:8px}
+.tab{background:var(--chip);border:1px solid var(--border);color:var(--text);padding:4px 10px;border-radius:8px;cursor:pointer}
+.tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.checklist{list-style:none;padding-left:0;margin:6px 0;max-height:220px;overflow:auto}
+.checklist li{padding:6px 8px;border:1px dashed var(--border);border-radius:8px;margin-bottom:6px}
+.checklist li small{color:var(--muted)}
+.checklist.overdue li{border-color:#ef4444;color:#fecaca}
+
+/* CHARTS */
+.charts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.chart-card{position:relative;overflow:hidden}
+.chart-toolbar{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.icon-btn{border:1px solid var(--border);background:var(--chip);color:var(--text);border-radius:8px;padding:4px 8px;cursor:pointer;font-weight:700;transition:background .15s,transform .15s}
+.icon-btn:hover{background:color-mix(in srgb, var(--accent) 30%, var(--chip));transform:translateY(-1px)}
+.icon-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.chart-field{border:1px solid var(--border);background:var(--chip);color:var(--text);border-radius:8px;padding:4px 8px}
+
+/* Canvas sizes (compact) */
+canvas{width:100% !important;height:180px !important}
+.chart-card.expanded{grid-column:span 3;z-index:3}
+.chart-card.expanded canvas{height:540px !important}
+
+/* TABLE */
+.table-wrap{margin-top:10px}
+.grid{display:grid;gap:10px}
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;color:var(--muted);font-size:13px}
+.muted{color: var(--muted)}
+
+/* MODAL */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
+.modal-backdrop.show{display:flex}
+.modal{width:min(800px,96vw);background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px}
+
+/* RESPONSIVE */
+@media (max-width:1100px){
+  .filters{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .kpis{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:800px){
+  .filters-card .filters-wrap{grid-template-columns:1fr}
+  .filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .charts{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:560px){
+  .filters{grid-template-columns:1fr}
+  .charts{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+}
+  </style>
+
+
+  <!-- Vendor libs -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+  <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+  <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
+
+ 
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="title">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 5h16M4 12h16M4 19h16" stroke="#93c5fd" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <h1>ORR-5</h1>
+          <small>Load your XLSX (headers begin at row 6)</small>
+        </div>
+      </div>
+      <div class="actions">
+        <input type="file" id="fileInput" accept=".xlsx,.xls" />
+        <button class="btn" id="btnClear" disabled>Clear Filters</button>
+        <button class="btn ghost" id="btnPresetSave" disabled>Save Preset</button>
+        <button class="btn ghost" id="btnPresetLoad" disabled>Load Preset</button>
+        <button class="btn" id="btnCustomReport" disabled>Custom Report</button>
+        <button class="btn primary" id="btnExportCSV" disabled>Export CSV</button>
+        <button class="btn primary" id="btnExportXLSX" disabled>Export XLSX</button>
+        <button class="btn ghost" id="btnTheme" aria-label="Toggle theme">🌙</button>
+      </div>
+    </header>
+
+    <!-- Filters -->
+    <section class="card filters-card collapsible" id="sectionFilters">
+      <div class="section-title">
+        <h2>Filters</h2>
+        <button class="btn ghost toggle-section" data-target="sectionFilters">Hide</button>
+      </div>
+      <div class="collapse-body">
+        <div class="filters-wrap">
+          <div class="filter-sidebar">
+            <label>Quick groups</label>
+            <div class="filter-chips">
+              <span class="chip active" data-group="dates">Dates</span>
+              <span class="chip active" data-group="demographics">Demographics</span>
+              <span class="chip active" data-group="location">Location</span>
+              <span class="chip active" data-group="programs">Programs</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="filters">
+              <div class="field group-dates">
+                <label for="dateBasis">Date Basis (multi)</label>
+                <select id="dateBasis" multiple>
+                  <option value="eligibilityDate">Eligibility Date (P)</option>
+                  <option value="RSSeEnroll">RSSe enroll (Z)</option>
+                  <option value="RSScmEnroll">RSScm enroll (AB)</option>
+                  <option value="migrationOutDate">Migration out (S/T)</option>
+                </select>
+              </div>
+              <div class="field group-dates">
+                <label for="startDate">Start Date</label>
+                <input type="date" id="startDate" />
+              </div>
+              <div class="field group-dates">
+                <label for="endDate">End Date</label>
+                <input type="date" id="endDate" />
+              </div>
+
+              <div class="field group-demographics">
+                <label for="filterGender">Gender (K)</label>
+                <select id="filterGender" multiple></select>
+              </div>
+              <div class="field group-demographics">
+                <label for="filterAgeBand">Age band</label>
+                <select id="filterAgeBand">
+                  <option value="">Any</option>
+                  <option>1–5</option>
+                  <option>5–18</option>
+                  <option>18–65</option>
+                  <option>65+</option>
+                </select>
+              </div>
+              <div class="field group-demographics">
+                <label for="filterStatus">Status/Category (J)</label>
+                <select id="filterStatus" multiple></select>
+              </div>
+              <div class="field group-demographics">
+                <label for="filterNationality">Nationality (L)</label>
+                <select id="filterNationality" multiple></select>
+              </div>
+              <div class="field group-demographics">
+                <label for="filterRelationship">Relationship (E)</label>
+                <select id="filterRelationship" multiple></select>
+              </div>
+
+              <div class="field group-location">
+                <label for="filterCity">City (N)</label>
+                <select id="filterCity" multiple></select>
+              </div>
+              <div class="field group-location">
+                <label for="filterCounty">County (O)</label>
+                <select id="filterCounty" multiple></select>
+              </div>
+
+              <div class="field group-programs">
+                <label for="filterProgram">Program active</label>
+                <select id="filterProgram">
+                  <option value="">Any</option>
+                  <option value="RSSe">RSSe active</option>
+                  <option value="RSScm">RSScm active</option>
+                </select>
+              </div>
+              <div class="field group-programs">
+                <label for="filterSecondary">Secondary migrant (Q)</label>
+                <select id="filterSecondary">
+                  <option value="">Any</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+              <div class="field group-programs">
+                <label for="filterGoalMet">G1 goal met? (AL)</label>
+                <select id="filterGoalMet">
+                  <option value="">Any</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+              <div class="field group-programs">
+                <label for="searchId">Database ID (A)</label>
+                <input id="searchId" type="text" placeholder="Exact match" />
+              </div>
+            </div>
+            <div class="section-title" style="margin-top:12px">
+              <div class="pill" id="trendBasisPill">Basis: Eligibility + RSSe + RSScm + Migration</div>
+              <div>
+                <button class="btn" id="btnApply" disabled>Apply</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KPIs -->
+    <section class="kpis">
+      <div class="card kpi"><p>Total records</p><h3 id="kpiRecords">0</h3></div>
+      <div class="card kpi"><p>Unique individuals</p><h3 id="kpiIndividuals">0</h3></div>
+      <div class="card kpi"><p>Migrated out (unique)</p><h3 id="kpiMigrated">0</h3></div>
+      <div class="card kpi"><p>Secondary migrants</p><h3 id="kpiSecondary">0</h3></div>
+      <div class="card kpi"><p>RSSe active</p><h3 id="kpiRSSeActive">0</h3></div>
+      <div class="card kpi"><p>RSScm active</p><h3 id="kpiRSScmActive">0</h3></div>
+    </section>
+
+    <!-- Check-ins -->
+    <section class="card checkins-card collapsible" id="sectionCheckins">
+      <div class="section-title">
+        <h2>Check-ins</h2>
+        <div class="inline-controls">
+          <label for="chkWindow">Soon (days)</label>
+          <input id="chkWindow" type="number" min="1" max="180" value="30" />
+          <label for="chkCadence">Check-in Frequency</label>
+          <select id="chkCadence">
+            <option value="6" selected>6 months</option>
+            <option value="3">3 months</option>
+            <option value="12">12 months</option>
+          </select>
+          <button class="btn" id="chkExport" disabled>Export CSV</button>
+          <button class="btn ghost toggle-section" data-target="sectionCheckins">Hide</button>
+        </div>
+      </div>
+      <div class="collapse-body">
+        <div class="tabs">
+          <button class="tab active" data-tab="combined">Combined</button>
+          <button class="tab" data-tab="RSSe">RSSe</button>
+          <button class="tab" data-tab="RSScm">RSScm</button>
+        </div>
+        <div class="grid cols-2">
+          <div>
+            <h3>Due Soon</h3>
+            <ul id="chkSoon" class="checklist"></ul>
+          </div>
+          <div>
+            <h3>Overdue</h3>
+            <ul id="chkOverdue" class="checklist overdue"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Charts -->
+    <div class="charts">
+      <!-- Card 1 -->
+      <div class="card chart-card">
+        <div class="section-title">
+          <h2>Records</h2>
+          <div class="chart-toolbar">
+            <select class="chart-field">
+              <option value="nat" selected>Nationality</option>
+              <option value="gender">Gender</option>
+              <option value="status">Status</option>
+              <option value="city">City</option>
+              <option value="ageBand">Age Band</option>
+              <option value="english">English</option>
+              <option value="edu">Education</option>
+              <option value="g1">G1</option>
+              <option value="g1ref">G1 Referral</option>
+              <option value="g1met">G1 Met?</option>
+              <option value="secondary">Secondary Migrant</option>
+            </select>
+            <button class="icon-btn" data-act="labels" title="Toggle labels">123</button>
+            <button class="icon-btn" data-act="sort" title="Sort">⇅</button>
+            <button class="icon-btn" data-act="png" title="Download PNG">⬇</button>
+            <button class="icon-btn" data-act="expand" title="Expand">⤢</button>
+          </div>
+        </div>
+        <canvas id="chartCat1"></canvas>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card chart-card">
+        <div class="section-title">
+          <h2>Distribution</h2>
+          <div class="chart-toolbar">
+            <select class="chart-field">
+              <option value="gender" selected>Gender</option>
+              <option value="nat">Nationality</option>
+              <option value="status">Status</option>
+              <option value="city">City</option>
+              <option value="ageBand">Age Band</option>
+              <option value="english">English</option>
+              <option value="edu">Education</option>
+              <option value="g1">G1</option>
+              <option value="g1ref">G1 Referral</option>
+              <option value="g1met">G1 Met?</option>
+              <option value="secondary">Secondary Migrant</option>
+            </select>
+            <button class="icon-btn" data-act="labels">123</button>
+            <button class="icon-btn" data-act="sort">⇅</button>
+            <button class="icon-btn" data-act="png">⬇</button>
+            <button class="icon-btn" data-act="expand">⤢</button>
+          </div>
+        </div>
+        <canvas id="chartCat2"></canvas>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="card chart-card">
+        <div class="section-title">
+          <h2>Top Categories</h2>
+          <div class="chart-toolbar">
+            <select class="chart-field">
+              <option value="city" selected>City</option>
+              <option value="nat">Nationality</option>
+              <option value="status">Status</option>
+              <option value="gender">Gender</option>
+              <option value="ageBand">Age Band</option>
+              <option value="english">English</option>
+              <option value="edu">Education</option>
+              <option value="g1">G1</option>
+              <option value="g1ref">G1 Referral</option>
+              <option value="g1met">G1 Met?</option>
+              <option value="secondary">Secondary Migrant</option>
+            </select>
+            <button class="icon-btn" data-act="labels">123</button>
+            <button class="icon-btn" data-act="sort">⇅</button>
+            <button class="icon-btn" data-act="png">⬇</button>
+            <button class="icon-btn" data-act="expand">⤢</button>
+          </div>
+        </div>
+        <canvas id="chartCat3"></canvas>
+      </div>
+
+      <!-- Trend -->
+      <div class="card chart-card">
+        <div class="section-title">
+          <h2>Monthly Trend</h2>
+          <div class="chart-toolbar">
+            <button class="icon-btn" data-act="labels">123</button>
+            <button class="icon-btn" data-act="png">⬇</button>
+            <button class="icon-btn" data-act="expand">⤢</button>
+          </div>
+        </div>
+        <canvas id="chartTrend"></canvas>
+      </div>
+
+      <!-- NEW: Card 4 (G1 Met?) -->
+      <div class="card chart-card">
+        <div class="section-title">
+          <h2>G1 Goal Met?</h2>
+          <div class="chart-toolbar">
+            <select class="chart-field">
+              <option value="g1met" selected>G1 Met?</option>
+              <option value="nat">Nationality</option>
+              <option value="status">Status</option>
+              <option value="gender">Gender</option>
+              <option value="city">City</option>
+              <option value="ageBand">Age Band</option>
+              <option value="english">English</option>
+              <option value="edu">Education</option>
+              <option value="g1">G1</option>
+              <option value="g1ref">G1 Referral</option>
+              <option value="secondary">Secondary Migrant</option>
+            </select>
+            <button class="icon-btn" data-act="labels">123</button>
+            <button class="icon-btn" data-act="sort">⇅</button>
+            <button class="icon-btn" data-act="png">⬇</button>
+            <button class="icon-btn" data-act="expand">⤢</button>
+          </div>
+        </div>
+        <canvas id="chartCat4"></canvas>
+      </div>
+
+      <!-- NEW: Card 5 (Secondary Migrant) -->
+      <div class="card chart-card">
+        <div class="section-title">
+          <h2>Secondary Migrant</h2>
+          <div class="chart-toolbar">
+            <select class="chart-field">
+              <option value="secondary" selected>Secondary Migrant</option>
+              <option value="nat">Nationality</option>
+              <option value="status">Status</option>
+              <option value="gender">Gender</option>
+              <option value="city">City</option>
+              <option value="ageBand">Age Band</option>
+              <option value="english">English</option>
+              <option value="edu">Education</option>
+              <option value="g1">G1</option>
+              <option value="g1ref">G1 Referral</option>
+              <option value="g1met">G1 Met?</option>
+            </select>
+            <button class="icon-btn" data-act="labels">123</button>
+            <button class="icon-btn" data-act="sort">⇅</button>
+            <button class="icon-btn" data-act="png">⬇</button>
+            <button class="icon-btn" data-act="expand">⤢</button>
+          </div>
+        </div>
+        <canvas id="chartCat5"></canvas>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top:16px">
+      <h2>Data Table</h2>
+      <div class="inline-controls">
+        <label for="rowsPerPage">Rows per page</label>
+        <select id="rowsPerPage">
+          <option>10</option>
+          <option>20</option>
+          <option>50</option>
+          <option selected>100</option>
+        </select>
+      </div>
+    </div>
+    <section class="table-wrap"><div id="table"></div></section>
+  </div>
+
+  <!-- Custom Report Modal -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+      <h3>Custom Report Builder</h3>
+      <p class="muted">Choose columns and a grouping dimension to export a summarized XLSX.</p>
+      <div class="grid cols-2">
+        <div>
+          <label>Columns</label>
+          <select id="crColumns" multiple size="10" style="width:100%"></select>
+        </div>
+        <div>
+          <label>Group by</label>
+          <select id="crGroup" style="width:100%"></select>
+          <div style="height:8px"></div>
+          <label>Include metrics</label>
+          <div class="metrics-grid">
+            <label><input type="checkbox" id="crCount" checked /> Count</label>
+            <label><input type="checkbox" id="crMigrated" /> Migrated out (unique)</label>
+            <label><input type="checkbox" id="crSecondary" /> Secondary migrants</label>
+            <label><input type="checkbox" id="crRSSeActive" /> RSSe active</label>
+            <label><input type="checkbox" id="crRSScmActive" /> RSScm active</label>
+          </div>
+        </div>
+      </div>
+      <div class="right">
+        <button class="btn ghost" id="crCancel">Cancel</button>
+        <button class="btn primary" id="crExport">Export XLSX</button>
+      </div>
+    </div>
+  </div>
+<script>
+(() => {
+  // ---- App state ----
+  const state = {
+    rows: [],
+    filtered: [],
+    charts: {},
+    chartCfg: {},     // id -> { type, title, sourceField, sort, labels }
+    table: null,
+    rowsPerPage: 100,
+    choices: {},
+    theme: localStorage.getItem('rss_theme') || 'dark',
+    chkTab: 'combined'
+  };
+
+  // ---- Column indexes (A=0-based etc.) ----
+  const COL = { A:0,E:4,I:8,J:9,K:10,L:11,N:13,O:14,P:15,Q:16,S:18,T:19,Z:25,AA:26,AB:27,AC:28,AD:29,AE:30,AF:31,AG:32,AL:37 };
+
+  // ---- DOM helpers ----
+  const $  = (s) => document.querySelector(s);
+  const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+  // ---- Date & text helpers ----
+  function toDate(v){
+    if (v===undefined || v===null || v==='') return null;
+    if (typeof v==='number'){ const d=new Date(Date.UTC(1899,11,30)); d.setUTCDate(d.getUTCDate()+Math.floor(v)); return d; }
+    const d=new Date(v); return isNaN(d.getTime()) ? null : d;
+  }
+  function fmt(d){ if(!d) return ''; const m=String(d.getMonth()+1).padStart(2,'0'); const day=String(d.getDate()).padStart(2,'0'); return `${m}/${day}/${d.getFullYear()}`; }
+  const today = () => { const n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate()); };
+  const addMonths = (d,m)=>{ const nd=new Date(d.getFullYear(),d.getMonth()+m,d.getDate()); if(nd.getDate()!==d.getDate()) nd.setDate(0); return nd; };
+  const diffDays = (a,b)=> Math.round((a.getTime()-b.getTime())/86400000);
+  const pick = (x) => (x??'').toString().trim();
+
+  function ageFromDOB(dob){ if(!dob) return null; const t=today(); let a=t.getFullYear()-dob.getFullYear(); const m=t.getMonth()-dob.getMonth(); if(m<0||(m===0&&t.getDate()<dob.getDate())) a--; return a; }
+  function bandFromAge(age){
+    return (age==null) ? 'Unknown'
+      : (age>=1&&age<5?'1–5'
+      : (age>=5&&age<18?'5–18'
+      : (age>=18&&age<65?'18–65'
+      : (age>=65?'65+':'Unknown'))));
+  }
+
+  // ---- Chart.js value labels plugin ----
+  Chart.register({
+    id:'valueLabel',
+    afterDatasetsDraw(chart){
+      const show = chart.options?.plugins?.valueLabel?.show;
+      if (!show) return;
+      const ctx = chart.ctx;
+      ctx.save();
+      ctx.font = '12px system-ui,-apple-system,Segoe UI,Roboto,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      const color = getComputedStyle(document.documentElement).getPropertyValue('--text') || '#fff';
+      ctx.fillStyle = color;
+      chart.data.datasets.forEach((ds,i)=>{
+        const meta = chart.getDatasetMeta(i);
+        meta.data.forEach((el,idx)=>{
+          const v = ds.data[idx];
+          if (v==null) return;
+          const p = el.tooltipPosition();
+          ctx.fillText(v, p.x, p.y-2);
+        });
+      });
+      ctx.restore();
+    }
+  });
+
+  // ---- Theme ----
+  function initTheme(){
+    if (state.theme==='light') document.documentElement.classList.add('light');
+    $('#btnTheme').textContent = state.theme==='light' ? '🌙' : '☀️';
+    $('#btnTheme').addEventListener('click', ()=>{
+      const light = document.documentElement.classList.toggle('light');
+      state.theme = light ? 'light' : 'dark';
+      localStorage.setItem('rss_theme', state.theme);
+      Object.values(state.charts).forEach(ch => ch.update());
+    });
+  }
+
+  // ---- File loader ----
+  $('#fileInput').addEventListener('change', async (e)=>{
+    const f=e.target.files[0]; if(!f) return;
+    const wb = XLSX.read(await f.arrayBuffer(), { type:'array' });
+    const sheet = wb.Sheets[wb.SheetNames[0]];
+    const range = XLSX.utils.decode_range(sheet['!ref']); range.s.r=5; // headers row 6
+    const data = XLSX.utils.sheet_to_json(sheet, { header:1, range: XLSX.utils.encode_range(range) });
+    const rows = data.slice(1);
+
+    state.rows = rows.map(r=>{
+      const dbid=pick(r[COL.A]); if(!dbid) return null;
+      const rel=pick(r[COL.E]);
+      const dob=toDate(r[COL.I]); const age=ageFromDOB(dob); const ageBand=bandFromAge(age);
+      const status=pick(r[COL.J]), gender=pick(r[COL.K]), nat=pick(r[COL.L]);
+      const city=pick(r[COL.N]), county=pick(r[COL.O]), elig=toDate(r[COL.P]);
+      const secondary=pick(r[COL.Q]);
+      const migHH=toDate(r[COL.S]), migInd=toDate(r[COL.T]);
+      const migCombined = [migHH,migInd].filter(Boolean).sort((a,b)=>a-b)[0] || null; // earliest non-null
+      const rsseEnroll=toDate(r[COL.Z]), rsseExit=toDate(r[COL.AA]);
+      const rscmEnroll=toDate(r[COL.AB]), rscmExit=toDate(r[COL.AC]);
+      const english=pick(r[COL.AD]), edu=pick(r[COL.AE]), g1=pick(r[COL.AF]), g1ref=pick(r[COL.AG]), g1met=pick(r[COL.AL]);
+      const RSSeActive = !!(rsseEnroll && (!rsseExit || rsseExit >= today()));
+      const RSScmActive = !!(rscmEnroll && (!rscmExit || rscmExit >= today()));
+      return { dbid, rel, dob, age, ageBand, status, gender, nat, city, county, elig, secondary, migCombined,
+        rsseEnroll, rsseExit, rscmEnroll, rscmExit, english, edu, g1, g1ref, g1met, RSSeActive, RSScmActive };
+    }).filter(Boolean);
+
+    initFilters();
+    applyFilters();
+    enableUI();
+  });
+
+  function enableUI(){
+    ['btnApply','btnClear','btnPresetSave','btnPresetLoad','btnCustomReport','btnExportCSV','btnExportXLSX','chkExport']
+      .forEach(id=>{ const el=$('#'+id); if(el) el.disabled=false; });
+  }
+
+  // ---- Filters & Choices ----
+  function bindChoices(sel, values){
+    const el=$(sel); el.innerHTML='';
+    values.forEach(v=>{ const o=document.createElement('option'); o.value=v; o.textContent=v; el.appendChild(o); });
+    const ch = new Choices(el,{ removeItemButton:true, searchResultLimit:50, shouldSort:true });
+    state.choices[sel] = ch;
+  }
+  function getChoiceValues(sel){ return state.choices[sel]?.getValue(true) || []; }
+
+  function initFilters(){
+    bindChoices('#dateBasis',['eligibilityDate','RSSeEnroll','RSScmEnroll','migrationOutDate']);
+    state.choices['#dateBasis'].setChoiceByValue(['eligibilityDate','RSSeEnroll','RSScmEnroll','migrationOutDate']);
+    const uniq = (k)=> Array.from(new Set(state.rows.map(r=>pick(r[k])).filter(Boolean))).sort();
+    bindChoices('#filterGender', uniq('gender'));
+    bindChoices('#filterStatus', uniq('status'));
+    bindChoices('#filterNationality', uniq('nat'));
+    bindChoices('#filterRelationship', uniq('rel'));
+    bindChoices('#filterCity', uniq('city'));
+    bindChoices('#filterCounty', uniq('county'));
+
+    // Group chips show/hide
+    $$('.chip').forEach((chip)=>{
+      chip.addEventListener('click', ()=>{
+        chip.classList.toggle('active');
+        const group = chip.dataset.group;
+        const show = chip.classList.contains('active');
+        $$('.group-' + group).forEach((el)=>{ const field = el.closest('.field'); if(field) field.style.display = show ? '' : 'none'; });
+      });
+    });
+
+    // Apply/Clear
+    $('#btnApply').addEventListener('click', applyFilters);
+    $('#btnClear').addEventListener('click', clearFilters);
+
+    // Section collapse (Filters / Check-ins)
+    document.addEventListener('click',(e)=>{
+      const t=e.target.closest('.toggle-section'); if(!t) return;
+      const id=t.dataset.target; const sec=document.getElementById(id); if(!sec) return;
+      const collapsed = sec.classList.toggle('collapsed');
+      t.textContent = collapsed ? 'Show' : 'Hide';
+    });
+
+    // Check-ins controls
+    $('#chkWindow').addEventListener('change', renderCheckins);
+    $('#chkCadence').addEventListener('change', renderCheckins); // "Check-in Frequency"
+    $('.tabs').addEventListener('click',(e)=>{
+      const btn = e.target.closest('.tab'); if(!btn) return;
+      $$('.tab').forEach(t=>t.classList.remove('active'));
+      btn.classList.add('active');
+      state.chkTab = btn.dataset.tab;
+      renderCheckins();
+    });
+
+    // Chart toolbar (delegated)
+    $('.charts').addEventListener('click', (e)=>{
+      const b=e.target.closest('button[data-act]'); if(!b) return;
+      const card=b.closest('.chart-card'); const id=card.querySelector('canvas')?.id; if(!id) return;
+      const act=b.dataset.act;
+      if(act==='expand'){ toggleExpand(card); }
+      else if(act==='png'){ downloadPNG(id); }
+      else if(act==='labels'){ toggleLabels(id, b); }
+      else if(act==='sort'){ toggleSort(id, b); }
+    });
+
+    // Per-chart field selector
+    $('.charts').addEventListener('change',(e)=>{
+      const sel=e.target.closest('.chart-field'); if(!sel) return;
+      const card=sel.closest('.chart-card'); const id=card.querySelector('canvas')?.id; if(!id) return;
+      setChartField(id, sel.value);
+      rebuildChart(id);
+    });
+
+    // Table page size
+    $('#rowsPerPage')?.addEventListener('change',()=>{
+      state.rowsPerPage = parseInt($('#rowsPerPage').value,10)||10;
+      renderTable(true);
+    });
+  }
+
+  function clearFilters(){
+    $('#startDate').value=''; $('#endDate').value='';
+    ['#filterGender','#filterStatus','#filterNationality','#filterRelationship','#filterCity','#filterCounty']
+      .forEach(s=> state.choices[s]?.removeActiveItems());
+    state.choices['#dateBasis'].removeActiveItems();
+    state.choices['#dateBasis'].setChoiceByValue(['eligibilityDate','RSSeEnroll','RSScmEnroll','migrationOutDate']);
+    ['filterProgram','filterSecondary','filterGoalMet','filterAgeBand','searchId'].forEach(id=> $('#'+id).value='');
+    applyFilters();
+  }
+
+  function applyFilters(){
+    const start=$('#startDate').value?new Date($('#startDate').value):null;
+    const end=$('#endDate').value?new Date($('#endDate').value+'T23:59:59'):null;
+    const bases=new Set(getChoiceValues('#dateBasis'));
+    const g=new Set(getChoiceValues('#filterGender'));
+    const s=new Set(getChoiceValues('#filterStatus'));
+    const n=new Set(getChoiceValues('#filterNationality'));
+    const r=new Set(getChoiceValues('#filterRelationship'));
+    const c=new Set(getChoiceValues('#filterCity'));
+    const co=new Set(getChoiceValues('#filterCounty'));
+    const prog=$('#filterProgram').value;
+    const sec=$('#filterSecondary').value.toLowerCase();
+    const goal=$('#filterGoalMet').value.toLowerCase();
+    const ageB=$('#filterAgeBand').value;
+    const idEq=$('#searchId').value.trim();
+
+    $('#trendBasisPill').textContent = `Basis: ${Array.from(bases).map(toBasisLabel).join(' + ')}`;
+
+    state.filtered = state.rows.filter(row=>{
+      // In-range if ANY chosen basis date falls in range
+      let inRange = bases.size===0;
+      const map={eligibilityDate:row.elig, RSSeEnroll:row.rsseEnroll, RSScmEnroll:row.rscmEnroll, migrationOutDate:row.migCombined};
+      for(const k of bases){
+        const d = map[k]; if(!d) continue;
+        if((!start || d>=start) && (!end || d<=end)){ inRange=true; break; }
+      }
+      if(!inRange) return false;
+      if(g.size && !g.has(row.gender)) return false;
+      if(s.size && !s.has(row.status)) return false;
+      if(n.size && !n.has(row.nat)) return false;
+      if(r.size && !r.has(row.rel)) return false;
+      if(c.size && !c.has(row.city)) return false;
+      if(co.size && !co.has(row.county)) return false;
+      if(prog==='RSSe' && !row.RSSeActive) return false;
+      if(prog==='RSScm' && !row.RSScmActive) return false;
+      if(sec && pick(row.secondary).toLowerCase()!==sec) return false;
+      if(goal && pick(row.g1met).toLowerCase()!==goal) return false;
+      if(ageB && row.ageBand!==ageB) return false;
+      if(idEq && row.dbid!==idEq) return false;
+      return true;
+    });
+
+    renderKPIs();
+    renderCharts();
+    renderTable(false);
+    renderCheckins();
+  }
+
+  function toBasisLabel(k){
+    return k==='eligibilityDate'?'Eligibility'
+      : k==='RSSeEnroll'?'RSSe enroll'
+      : k==='RSScmEnroll'?'RSScm enroll'
+      : k==='migrationOutDate'?'Migration'
+      : k;
+  }
+
+  // ---- KPIs ----
+  function renderKPIs(){
+    $('#kpiRecords').textContent = state.filtered.length;
+    $('#kpiIndividuals').textContent = new Set(state.filtered.map(r=>r.dbid)).size;
+    $('#kpiMigrated').textContent = new Set(state.filtered.filter(r=>r.migCombined).map(r=>r.dbid)).size;
+    $('#kpiSecondary').textContent = state.filtered.filter(r=>pick(r.secondary).toLowerCase()==='yes').length;
+    $('#kpiRSSeActive').textContent = new Set(state.filtered.filter(r=>r.RSSeActive).map(r=>r.dbid)).size;
+    $('#kpiRSScmActive').textContent = new Set(state.filtered.filter(r=>r.RSScmActive).map(r=>r.dbid)).size;
+  }
+
+  // ---- Charts ----
+  function countByField(field){
+    const m=new Map();
+    state.filtered.forEach(r=>{ const k=pick(r[field])||'Unknown'; m.set(k,(m.get(k)||0)+1); });
+    let arr=[...m.entries()].map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v);
+    const cap = (field==='city')?10:20;
+    if(field!=='ageBand' && field!=='gender' && field!=='g1met' && field!=='secondary') arr = arr.slice(0, cap);
+    return arr;
+  }
+  function buildTrendPairs(){
+    const bases=new Set(getChoiceValues('#dateBasis'));
+    const monthKey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const b=new Map();
+    state.filtered.forEach(r=>{
+      const map={eligibilityDate:r.elig, RSSeEnroll:r.rsseEnroll, RSScmEnroll:r.rscmEnroll, migrationOutDate:r.migCombined};
+      bases.forEach(k=>{ const d=map[k]; if(!d) return; const key=monthKey(d); b.set(key,(b.get(key)||0)+1); });
+    });
+    return [...b.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([k,v])=>({k,v}));
+  }
+
+  function setChartField(id, field){
+    const cfg = state.chartCfg[id] || { type:'bar', title:'', sourceField:field, sort:'none', labels:false };
+    cfg.sourceField = field;
+    state.chartCfg[id] = cfg;
+  }
+
+  function rebuildChart(id){
+    const cfg=state.chartCfg[id]; if(!cfg) return;
+    let pairs = (cfg.type==='line') ? buildTrendPairs() : countByField(cfg.sourceField);
+    if(cfg.sort==='desc') pairs.sort((a,b)=>b.v-a.v);
+    if(cfg.sort==='asc')  pairs.sort((a,b)=>a.v-b.v);
+    const labels=pairs.map(p=>p.k), data=pairs.map(p=>p.v);
+
+    state.charts[id]?.destroy();
+    const ctx=document.getElementById(id).getContext('2d');
+    const chartCfg = (cfg.type==='line')
+      ? { type:'line',
+          data:{ labels, datasets:[{ label: cfg.title||'Events', data, tension:.2, fill:false }] },
+          options:{ responsive:true, maintainAspectRatio:false,
+            plugins:{ legend:{display:false}, valueLabel:{ show: cfg.labels } },
+            scales:{ y:{ beginAtZero:true } } } }
+      : { type:'bar',
+          data:{ labels, datasets:[{ label: cfg.title||'Records', data }] },
+          options:{ responsive:true, maintainAspectRatio:false,
+            plugins:{ legend:{display:false}, valueLabel:{ show: cfg.labels } },
+            scales:{ y:{ beginAtZero:true, ticks:{ precision:0 } } } } };
+    state.charts[id] = new Chart(ctx, chartCfg);
+  }
+
+  function renderCharts(){
+    // Default fields per card (3 categorical + 2 more + trend)
+    if(!state.chartCfg['chartCat1']) setChartField('chartCat1','nat');
+    if(!state.chartCfg['chartCat2']) setChartField('chartCat2','gender');
+    if(!state.chartCfg['chartCat3']) setChartField('chartCat3','city');
+    if(!state.chartCfg['chartCat4']) setChartField('chartCat4','g1met');
+    if(!state.chartCfg['chartCat5']) setChartField('chartCat5','secondary');
+    state.chartCfg['chartCat1'].type='bar'; state.chartCfg['chartCat1'].title='Records';
+    state.chartCfg['chartCat2'].type='bar'; state.chartCfg['chartCat2'].title='Distribution';
+    state.chartCfg['chartCat3'].type='bar'; state.chartCfg['chartCat3'].title='Top Categories';
+    state.chartCfg['chartCat4'].type='bar'; state.chartCfg['chartCat4'].title='G1 Goal Met?';
+    state.chartCfg['chartCat5'].type='bar'; state.chartCfg['chartCat5'].title='Secondary Migrant';
+    state.chartCfg['chartTrend']={ type:'line', title:'Events', sourceField:null, sort:'none', labels:false };
+
+    ['chartCat1','chartCat2','chartCat3','chartCat4','chartCat5','chartTrend'].forEach(rebuildChart);
+  }
+
+  // Chart toolbar actions
+  function toggleLabels(id, btn){
+    const cfg=state.chartCfg[id]; if(!cfg) return;
+    cfg.labels = !cfg.labels;
+    btn?.classList.toggle('active', cfg.labels);
+    rebuildChart(id);
+  }
+  function toggleSort(id, btn){
+    const cfg=state.chartCfg[id]; if(!cfg || cfg.type==='line') return;
+    cfg.sort = cfg.sort==='none' ? 'desc' : (cfg.sort==='desc' ? 'asc' : 'none');
+    btn?.classList.toggle('active', cfg.sort!=='none');
+    rebuildChart(id);
+  }
+  function toggleExpand(card){
+    card.classList.toggle('expanded');
+    setTimeout(()=>{ const id=card.querySelector('canvas')?.id; if(id) state.charts[id]?.resize(); }, 120);
+  }
+  function downloadPNG(id){
+    const url = state.charts[id]?.toBase64Image(); if(!url) return;
+    const a=document.createElement('a'); a.href=url; a.download = `${id}.png`; a.click();
+  }
+
+  // ---- Table ----
+  function renderTable(recreate){
+    const cols = [
+      {id:'dbid',name:'Database ID'},
+      {id:'rel',name:'Relationship (E)'},
+      {id:'dob',name:'DOB (I)',fmt:r=>fmt(r.dob)},
+      {id:'age',name:'Age'},
+      {id:'ageBand',name:'Age Band'},
+      {id:'status',name:'Status (J)'},
+      {id:'gender',name:'Gender (K)'},
+      {id:'nat',name:'Nationality (L)'},
+      {id:'city',name:'City (N)'},
+      {id:'county',name:'County (O)'},
+      {id:'elig',name:'Eligibility (P)',fmt:r=>fmt(r.elig)},
+      {id:'secondary',name:'Secondary (Q)'},
+      {id:'migCombined',name:'Migration out (S/T)',fmt:r=>fmt(r.migCombined)},
+      {id:'rsseEnroll',name:'RSSe Enroll (Z)',fmt:r=>fmt(r.rsseEnroll)},
+      {id:'rsseExit',name:'RSSe Exit (AA)',fmt:r=>fmt(r.rsseExit)},
+      {id:'rscmEnroll',name:'RSScm Enroll (AB)',fmt:r=>fmt(r.rscmEnroll)},
+      {id:'rscmExit',name:'RSScm Exit (AC)',fmt:r=>fmt(r.rscmExit)},
+      {id:'english',name:'English (AD)'},
+      {id:'edu',name:'Education (AE)'},
+      {id:'g1',name:'G1 (AF)'},
+      {id:'g1ref',name:'G1 Referral (AG)'},
+      {id:'g1met',name:'G1 Met? (AL)'}
+    ];
+    const data = state.filtered.map(r=> cols.map(c=> c.fmt? c.fmt(r) : r[c.id] ?? ''));
+    if(state.table && !recreate){ state.table.updateConfig({ data, pagination:{limit:state.rowsPerPage} }).forceRender(); return; }
+    if(recreate && state.table){ state.table.destroy(); state.table=null; }
+    state.table = new gridjs.Grid({
+      columns: cols.map(c=>c.name),
+      data,
+      sort:true,
+      search:true,
+      pagination:{ limit: state.rowsPerPage }
+    }).render(document.getElementById('table'));
+  }
+
+  // ---- Check-ins (tabs + “Check-in Frequency”) ----
+  function renderCheckins(){
+    const soonDays = Math.max(1, parseInt($('#chkWindow').value||'30',10));
+    const cadence = Math.max(1, parseInt($('#chkCadence').value||'6',10)); // months
+    const T=today();
+
+    const soon=[], over=[];
+    const byID=new Map();
+    // collapse to one record per DBID with earliest enroll/exit per program
+    state.filtered.forEach(r=>{
+      let e=byID.get(r.dbid);
+      if(!e){ e={rsseEnroll:null,rsseExit:null,rscmEnroll:null,rscmExit:null}; byID.set(r.dbid,e); }
+      if(r.rsseEnroll && (!e.rsseEnroll || r.rsseEnroll<e.rsseEnroll)) e.rsseEnroll=r.rsseEnroll;
+      if(r.rsseExit   && (!e.rsseExit   || r.rsseExit  <e.rsseExit))   e.rsseExit=r.rsseExit;
+      if(r.rscmEnroll && (!e.rscmEnroll || r.rscmEnroll<e.rscmEnroll)) e.rscmEnroll=r.rscmEnroll;
+      if(r.rscmExit   && (!e.rscmExit   || r.rscmExit  <e.rscmExit))   e.rscmExit=r.rscmExit;
+    });
+
+    const consider=(dbid,program,enroll,exit)=>{
+      if(!enroll) return;
+      const active = !exit || exit>=T; if(!active) return;
+      let k=1,last=null,next=null; const horizon=addMonths(T,72);
+      while(true){
+        const d=addMonths(enroll, cadence*k);
+        if(exit && d>exit) break;
+        if(d>horizon) break;
+        if(d<=T) last=d;
+        if(!next && d>=T) next=d;
+        if(d>addMonths(T,24)) break;
+        k++;
+      }
+      if(next){ const days=diffDays(next,T); if(days>=0 && days<=soonDays) soon.push({ dbid, program, type:`${cadence}-month`, date:next, days }); }
+      if(last && last>=enroll){ const days=diffDays(T,last); if(days>0) over.push({ dbid, program, type:`${cadence}-month`, date:last, days }); }
+    };
+
+    byID.forEach((e,dbid)=>{ consider(dbid,'RSSe',e.rsseEnroll,e.rsseExit); consider(dbid,'RSScm',e.rscmEnroll,e.rscmExit); });
+
+    const tab=state.chkTab, filterTab=arr=>arr.filter(x=>tab==='combined' || x.program===tab);
+    const soonF=filterTab(soon).sort((a,b)=>a.date-b.date);
+    const overF=filterTab(over).sort((a,b)=>b.date-a.date);
+
+    const soonEl=$('#chkSoon'); soonEl.innerHTML='';
+    const overEl=$('#chkOverdue'); overEl.innerHTML='';
+    soonF.forEach(it=>{ const li=document.createElement('li'); li.innerHTML=`<strong>${it.dbid}</strong> · ${it.program} · ${it.type} · <small>${fmt(it.date)} (in ${it.days}d)</small>`; soonEl.appendChild(li); });
+    overF.forEach(it=>{ const li=document.createElement('li'); li.innerHTML=`<strong>${it.dbid}</strong> · ${it.program} · ${it.type} · <small>${fmt(it.date)} (${it.days}d overdue)</small>`; overEl.appendChild(li); });
+
+    $('#chkExport').disabled = (soonF.length+overF.length)===0;
+    $('#chkExport').onclick = ()=> {
+      const rows=[['DBID','Program','Type','Date','Status','Days']];
+      soonF.forEach(x=>rows.push([x.dbid,x.program,x.type,fmt(x.date),'Due Soon',x.days]));
+      overF.forEach(x=>rows.push([x.dbid,x.program,x.type,fmt(x.date),'Overdue',x.days]));
+      const csv = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+      a.download=`checkins_${state.chkTab}_${fmt(today())}.csv`; a.click();
+    };
+  }
+
+  // ---- Exports (filtered rows) ----
+  $('#btnExportCSV')?.addEventListener('click', ()=>{
+    if(!state.filtered.length) return;
+    const headers=['Database ID','Relationship','DOB','Age','Age Band','Status','Gender','Nationality','City','County','Eligibility','Secondary','Migration out (S/T)','RSSe Enroll','RSSe Exit','RSScm Enroll','RSScm Exit','English','Education','G1','G1 Referral','G1 Met?'];
+    const rows = state.filtered.map(r=>[r.dbid,r.rel,fmt(r.dob),r.age,r.ageBand,r.status,r.gender,r.nat,r.city,r.county,fmt(r.elig),r.secondary,fmt(r.migCombined),fmt(r.rsseEnroll),fmt(r.rsseExit),fmt(r.rscmEnroll),fmt(r.rscmExit),r.english,r.edu,r.g1,r.g1ref,r.g1met]);
+    const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'})); a.download=`filtered_${fmt(today())}.csv`; a.click();
+  });
+  $('#btnExportXLSX')?.addEventListener('click', ()=>{
+    if(!state.filtered.length) return;
+    const rows = state.filtered.map(r=>({
+      'Database ID':r.dbid,'Relationship':r.rel,'DOB':fmt(r.dob),'Age':r.age,'Age Band':r.ageBand,'Status':r.status,'Gender':r.gender,'Nationality':r.nat,'City':r.city,'County':r.county,'Eligibility':fmt(r.elig),'Secondary':r.secondary,'Migration out (S/T)':fmt(r.migCombined),'RSSe Enroll':fmt(r.rsseEnroll),'RSSe Exit':fmt(r.rsseExit),'RSScm Enroll':fmt(r.rscmEnroll),'RSScm Exit':fmt(r.rscmExit),'English':r.english,'Education':r.edu,'G1':r.g1,'G1 Referral':r.g1ref,'G1 Met?':r.g1met
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows); const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Filtered');
+    XLSX.writeFile(wb, `filtered_${fmt(today())}.xlsx`);
+  });
+
+  // ---- Custom Report (modal) ----
+  const modal=$('#modalBackdrop');
+  $('#btnCustomReport')?.addEventListener('click', openReport);
+  $('#crCancel')?.addEventListener('click', ()=> modal.classList.remove('show'));
+  $('#crExport')?.addEventListener('click', exportReport);
+
+  function openReport(){
+    const defs = [['dbid','Database ID'],['rel','Relationship'],['dob','DOB'],['age','Age'],['ageBand','Age band'],['status','Status'],['gender','Gender'],['nat','Nationality'],['city','City'],['county','County'],['elig','Eligibility'],['secondary','Secondary'],['migCombined','Migration out'],['rsseEnroll','RSSe enroll'],['rsseExit','RSSe exit'],['rscmEnroll','RSScm enroll'],['rscmExit','RSScm exit'],['english','English'],['edu','Education'],['g1','G1'],['g1ref','G1 referral'],['g1met','G1 met?']];
+    const sel = $('#crColumns'); sel.innerHTML=''; defs.forEach(([k,l])=>{ const o=document.createElement('option'); o.value=k; o.textContent=l; sel.appendChild(o); });
+    const grp = $('#crGroup'); grp.innerHTML='';
+    [['nat','Nationality'],['gender','Gender'],['status','Status'],['city','City'],['county','County'],['ageBand','Age band'],['secondary','Secondary']]
+      .forEach(([k,l])=>{ const o=document.createElement('option'); o.value=k; o.textContent=l; grp.appendChild(o); });
+    modal.classList.add('show');
+  }
+
+  function exportReport(){
+    const cols = Array.from($('#crColumns').selectedOptions).map(o=>o.value);
+    const gk = $('#crGroup').value; if(!gk) return alert('Choose a group-by field');
+    const groups = new Map();
+    state.filtered.forEach(r=>{
+      const k = r[gk] || '(blank)';
+      if(!groups.has(k)) groups.set(k,{rows:[],ids:new Set(),migrated:new Set(),RSSe:new Set(),RSScm:new Set(),secondary:0});
+      const g = groups.get(k);
+      g.rows.push(r);
+      g.ids.add(r.dbid);
+      if(r.migCombined) g.migrated.add(r.dbid);
+      if(r.RSSeActive) g.RSSe.add(r.dbid);
+      if(r.RSScmActive) g.RSScm.add(r.dbid);
+      if(pick(r.secondary).toLowerCase()==='yes') g.secondary++;
+    });
+    const out=[]; groups.forEach((g,k)=> out.push({
+      Group:k, Count:g.rows.length, Migrated_unique:g.migrated.size, Secondary_migrants:g.secondary, RSSe_active_unique:g.RSSe.size, RSScm_active_unique:g.RSScm.size
+    }));
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(out),'Summary');
+    if(cols.length){
+      const det=state.filtered.map(r=>{ const o={}; cols.forEach(c=>o[c]=(r[c] instanceof Date)?fmt(r[c]):r[c]); return o; });
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(det),'Detail');
+    }
+    XLSX.writeFile(wb, 'rss-report-custom.xlsx');
+    modal.classList.remove('show');
+  }
+
+  // ---- Boot ----
+  initTheme();
+})();
+</script>
+</body>
+</html>

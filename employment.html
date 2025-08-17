@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="color-scheme" content="light dark">
+
+  <title>Web & Database</title>
+<link rel="stylesheet" href="quicklinks.css">
+<script>
+  // (Optional) Customize once per page BEFORE quicklinks.js loads
+  // window.QL_NEW_TAB = false; // set true to open in a new tab
+  // window.QL_LABEL = 'Pages'; // change the handle text if you want
+  // window.QL_PAGES = [ ... ]; // override links if a page lives in a different folder
+</script>
+<script defer src="quicklinks.js"></script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root{
+      --bg:#0b1220; --panel:#0f172a; --muted:#93a4b8; --text:#e6eef8; --accent:#23c9b9; --line:#1f2a44;
+      --panel-2:#0c1426;
+      --ok:#30c6f4; --bad:#4156f1; --pt:#30c6f4; --ft:#4156f1; --ov:#e96a2b;
+    }
+
+    
+    *{box-sizing:border-box}
+    body{
+      margin:0; font:14px/1.5 system-ui, Arial, sans-serif; background:var(--bg); color:var(--text);
+      padding:24px; max-width:1200px; margin-inline:auto;
+    }
+    h1{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    header{display:flex; justify-content:space-between; align-items:end; gap:16px; flex-wrap:wrap}
+    .panel{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:12px; margin:16px 0;}
+    label{display:flex; flex-direction:column; gap:6px; font-size:12px}
+
+    select, input[type=date], input[type=number], input[type=file], button{
+      padding:10px 12px; border-radius:12px; border:1px solid var(--line);
+      background:#13203a; color:var(--text); outline:none; transition: border-color .2s ease, box-shadow .2s ease, transform .12s ease;
+      appearance:none;
+    }
+    select:hover, input:hover{ transform: translateY(-1px); }
+    select:focus, input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(35,201,185,.18); }
+    button{cursor:pointer}
+    button[disabled], select:disabled, input:disabled{opacity:0.5; cursor:not-allowed}
+
+    /* Controls layout */
+    #controls{display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:12px; align-items:end}
+    .actions{grid-column:1/-1; display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+
+    /* Filter bar */
+    .filters-bar{
+      display:grid;
+      grid-template-columns: 1fr 1fr 2fr 1fr;
+      gap:12px;
+      align-items:end;
+    }
+    @media (max-width: 980px){ .filters-bar{ grid-template-columns: 1fr 1fr; } }
+
+    /* Smooth date-field reveal */
+    .date-fields{
+      align-self:end; background:var(--panel-2); border:1px dashed var(--line); border-radius:12px;
+      padding:10px; overflow:hidden; max-height:0; opacity:.0; transition:max-height .35s ease, opacity .25s ease, padding .2s ease;
+    }
+    .date-fields.open{ opacity:1; }
+    .inline-fields{ display:flex; gap:12px; flex-wrap:wrap; }
+    .inline-fields > label{ flex:1 1 160px; }
+
+    /* Cards / KPIs */
+    .summary{ display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:12px; margin-top:12px; }
+    .card{ background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0)); border:1px solid var(--line); border-radius:14px; padding:12px; text-align:center; box-shadow:0 6px 18px rgba(0,0,0,.18); }
+    .kpi h2{font-size:22px; margin:6px 0; letter-spacing:.2px}
+    .kpi p{font-size:11px; color:var(--muted); margin:0}
+
+    .kpi-title{ margin:6px 0 10px; color:var(--muted); font-size:12px; letter-spacing:.3px; text-transform:uppercase }
+    .kpi-split{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .stat{ background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:12px; display:flex; flex-direction:column; align-items:center; gap:6px; transition:transform .2s ease, border-color .2s ease, background .2s ease; position:relative }
+    .stat:hover{ transform:translateY(-2px); }
+    .stat .count{ font-size:22px; font-weight:700; }
+    .stat .label{ font-size:11px; color:var(--muted) }
+    .stat::after{ content:""; position:absolute; inset:auto 12px 8px 12px; height:3px; border-radius:2px; background:currentColor; opacity:.35 }
+    .stat--yes{ color:var(--ok) }
+    .stat--no{ color:var(--bad) }
+    .stat--pt{ color:var(--pt) }
+    .stat--ft{ color:var(--ft) }
+
+    /* Chart area */
+    .chart-summary-wrapper{display:flex; flex-wrap:wrap; gap:20px; margin-top:16px}
+    .charts{flex:2; min-width:360px}
+    .extras{flex:1; min-width:260px; display:flex; flex-direction:column; gap:12px}
+    #employerList{max-height:380px; overflow:auto; padding-left:18px}
+    canvas{background:#0c1426; border:1px solid var(--line); border-radius:12px; padding:8px; display:block}
+    .charts canvas + canvas{ margin-top:12px }
+
+    /* Buttons */
+    .btn{ display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line);color:#fefcff; background:#105437da; padding:10px 14px; border-radius:10px; transition:transform .12s ease, box-shadow .2s ease }
+    .btn:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(226, 209, 209, 0.2) }
+    .spinner{ width:14px; height:14px; border:2px solid var(--muted); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite; display:none; }
+    .btn.loading .spinner{display:inline-block}
+    @keyframes spin {to{transform:rotate(360deg)}}
+
+    /* Make only the Run Dashboard button green */
+    #applyBtn{ background:#0a694c; border-color:#15803d; color:#fff; }
+#applyBtn:hover{ box-shadow:0 8px 22px rgba(22,163,74,.35); }
+#applyBtn:focus{ border-color:#86ce2d; box-shadow:0 0 0 3px rgba(22,163,74,.25); }
+#applyBtn.loading .spinner{ border-color:rgba(255,255,255,.55); border-top-color:#fff; }
+
+#themeToggle {
+  background: linear-gradient(135deg, #7985838f, #7b026958);
+  color: #061016;
+  border: none;
+  box-shadow: 0 4px 12px rgba(35, 201, 185, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#themeToggle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(35, 201, 185, 0.4);
+}
+
+    /* 90-day checks list */
+    .checks{ max-height:380px; overflow:auto; padding-left:0; margin:0; list-style:none }
+    .checks li{ display:grid; grid-template-columns:1fr auto; gap:8px; padding:10px; border:1px solid var(--line); border-radius:10px; background:var(--panel-2); margin-bottom:8px }
+    .checks .title{ font-weight:600 }
+    .checks .meta{ font-size:11px; color:var(--muted) }
+    .pill{ font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid var(--line); }
+    .pill--over{ color:var(--bad) }
+    .pill--due{ color:var(--pt) }
+    .pill--done{ color:var(--ok) }
+
+    /* Color the 'Overdue' row in the dropdown list */
+#checkScope option[value="overdue"] { color: var(--ov); }
+
+/* Color the select's displayed text when Overdue is selected */
+#checkScope:has(option[value="overdue"]:checked) { color: var(--ov); }
+
+
+    .hidden{display:none}
+    /* Force list text normal */  
+.checks li { color: var(--text); }
+/* Change ONLY the Overdue pill color (pick your color) */
+.checks .pill--over { color: var(--ov); } /* e.g., orange */
+
+
+    /* KPI value "bump" when changing */
+    .bump{ animation:bump .35s ease }
+    @keyframes bump{ 0%{transform:scale(1)} 40%{transform:scale(1.08)} 100%{transform:scale(1)} }
+
+/* === THEME VARIABLES === */
+:root{
+  /* Dark (default) */
+  --bg:#0b1020; --panel:#0f152b; --panel-2:#131a35;
+  --text:#e9eef6; --muted:#a9b0c2; --line:rgba(255,255,255,0.08);
+  --glow:#23c9b9; --radius:16px; --shadow:0 8px 30px rgba(0,0,0,.35);
+  --cal-invert:1; /* make the datepicker icon visible on dark */
+}
+
+/* Light overrides */
+:root.light{
+  --bg:#f7f9fc; --panel:#ffffff; --panel-2:#ffffff;
+  --text:#111827; --muted:#6b7280; --line:#e5e7eb;
+  --glow:#23c9b9; --shadow:0 8px 24px rgba(0,0,0,.08);
+  --cal-invert:0; /* normal icon colors on light */
+}
+
+/* Body/background uses variables, so both themes apply automatically */
+html,body{ color:var(--text) !important; background: var(--bg) !important; }
+
+/* High-contrast inputs: native controls */
+select,
+input[type="date"],
+input[type="number"],
+input[type="file"]{
+  background:var(--panel-2)!important;
+  color:var(--text)!important;
+  border:1px solid var(--line)!important;
+  border-radius:10px!important;
+  padding:8px 10px!important;
+  min-height:38px!important;
+  appearance:none;
+}
+:root.light select,
+:root.light input[type="date"],
+:root.light input[type="number"],
+:root.light input[type="file"]{
+  background:#ffffff!important;
+  color:#111827!important;
+  border:1px solid #e5e7eb!important;
+}
+
+/* Date icon visibility */
+input[type="date"]::-webkit-calendar-picker-indicator{
+  filter: invert(var(--cal-invert));
+  opacity:.85;
+}
+
+/* Choices.js – DARK defaults */
+.choices__inner{
+  background:var(--panel-2)!important;
+  color:var(--text)!important;
+  border:1px solid var(--line)!important;
+  border-radius:10px!important;
+  min-height:38px!important;
+}
+.choices__list--dropdown,
+.choices__list[aria-expanded]{
+  background:var(--panel-2)!important;
+  border:1px solid var(--line)!important;
+  color:var(--text)!important;
+}
+.choices__placeholder{ color:var(--muted)!important; }
+.choices__item--selectable.is-highlighted{
+  background:var(--panel)!important;
+}
+
+/* Choices.js – LIGHT overrides (force readable text) */
+:root.light .choices__inner{
+  background:#ffffff!important; color:#111827!important; border:1px solid #e5e7eb!important;
+}
+:root.light .choices__list--dropdown,
+:root.light .choices__list[aria-expanded]{
+  background:#ffffff!important; color:#111827!important; border:1px solid #e5e7eb!important;
+}
+:root.light .choices__placeholder{ color:#6b7280!important; }
+
+/* Buttons inherit; primary stays the same brand color */
+
+
+  </style>
+
+
+
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1>📈 Employment Outcomes Dashboard</h1>
+        <button id="themeToggle" class="btn" type="button" title="Toggle theme">🌙</button>
+</div> <!-- keep the rest the same -->
+
+      <div class="muted">Upload your spreadsheet (row 5 headers), set filters, then run.</div>
+      
+
+    </div>
+    <div>
+      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv"/>
+    </div>
+  </header>
+
+  <section id="controls" class="panel filters-bar">
+    <label>Program
+      <select id="programFilter" disabled><option value="">All</option></select>
+    </label>
+
+    <label>Date Mode
+      <select id="dateMode" disabled>
+        <option value="" selected disabled>— Select Mode —</option>
+        
+        <option value="range">Date Range</option>
+        <option value="month">Month</option>
+        <option value="quarter">Quarter</option>
+      </select>
+    </label>
+
+    <!-- Single reveal area whose content changes with Date Mode -->
+    <div id="dateFields" class="date-fields"></div>
+
+    <label>Average hours
+      <select id="avgHoursFilter" disabled>
+        <option value="">All</option>
+        <option value="<30">Part-time (&lt; 30)</option>
+        <option value=">30">Full-time (&gt; 30)</option>
+      </select>
+    </label>
+
+    <div class="actions">
+      <button id="applyBtn" class="btn" disabled>
+        <span class="spinner" aria-hidden="true"></span><span>Run Dashboard</span>
+      </button>
+      <button id="clearBtn" class="btn" disabled>Clear Filters</button>
+      <button id="dlCsvBtn" class="btn" disabled>Download CSV</button>
+      <button id="dlXlsxBtn" class="btn" disabled>Download XLSX</button>
+      <span class="muted" id="asOf" style="margin-left:auto"></span>
+    </div>
+  </section><!-- KPIs -->
+  <section class="summary">
+    <div class="card kpi"><h2 id="totalAliens">0</h2><p>Unique Alien Numbers</p></div>
+    <div class="card kpi"><h2 id="avgSalary">$0.00</h2><p>Average Hourly Wage</p></div>
+    <div class="card kpi"><h2 id="newestHire">—</h2><p>Newest Hire Date</p></div>
+
+    <!-- Self-placed (polished split) -->
+    <div class="card kpi" aria-labelledby="spTitle">
+      <p class="kpi-title" id="spTitle">Self-placed</p>
+      <div class="kpi-split">
+        <div class="stat stat--yes" title="Self-placed: Yes">
+          <span class="count" id="spYesCount">0</span>
+          <span class="label">Yes</span>
+        </div>
+        <div class="stat stat--no" title="Self-placed: No">
+          <span class="count" id="spNoCount">0</span>
+          <span class="label">No</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Average hours worked split -->
+    <div class="card kpi" aria-labelledby="hrsTitle">
+      <p class="kpi-title" id="hrsTitle">Average hours worked</p>
+      <div class="kpi-split">
+        <div class="stat stat--pt" title="&lt; 30 hours">
+          <span class="count" id="hoursPtCount">0</span>
+          <span class="label">Part-time</span>
+        </div>
+        <div class="stat stat--ft" title="> 30 hours">
+          <span class="count" id="hoursFtCount">0</span>
+          <span class="label">Full-time</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chart-summary-wrapper">
+    <div class="charts">
+      <!-- TOP: Year -->
+      <canvas id="hiresByProgramChart" height="220"></canvas>
+      <!-- BOTTOM: Month -->
+      <canvas id="hiresByMonthChart" height="220"></canvas>
+    </div>
+
+    <div class="extras">
+      <div class="card">
+        <h3 style="margin:6px 0 8px">Employers</h3>
+        <ul id="employerList"></ul>
+      </div>
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px">
+          <h3 style="margin:6px 0 8px">90‑Day Checks</h3>
+          <div style="display:flex; gap:8px; align-items:center">
+            <select id="checkScope">
+              <option value="due">Due (next 7d)</option>
+              <option value="overdue">Overdue</option>
+            </select>
+            <button id="dlChecksBtn" class="btn" disabled>Download CSV</button>
+          </div>
+        </div>
+        <ul id="checksList" class="checks"></ul>
+      </div>
+    </div>
+  </section>
+
+<script>
+  // ========= State =========
+  let allData = [];
+  let filteredData = [];
+  let chart1, chart2;
+
+  // Header mapping & detected headers
+  let headerByLetter = {};   // e.g., { A:'Alien number', L:'Average hours worked', M:'Hire date', T:'Self-placed' }
+  let headerRowIndex = 4;    // fallback (row 5, 0-based)
+  let programHeader = 'Program';
+  let hireHeader = 'Hire date';
+  let avgHoursHeader = 'Average hours worked';
+  let selfPlacedHeader = 'Self-placed';
+  let wageHeader = 'Hourly wage';
+  let employerHeader = 'Employer';
+  let alienHeader = 'Alien number';
+  let checkStatusHeader = '90 day check status';
+  let caseMgrNameHeader = 'Case manager name';
+  let caseMgrEmailHeader = 'Case manager email';
+
+  // ========= Controls =========
+  const el = id => document.getElementById(id);
+  const controls = {
+    program: el('programFilter'),
+    dateMode: el('dateMode'),
+    startDate: el('startDate'), endDate: el('endDate'),
+    monthSelect: el('monthSelect'), monthYear: el('monthYear'),
+    quarterSelect: el('quarterSelect'), quarterYear: el('quarterYear'),
+    avgHours: el('avgHoursFilter'),
+    run: el('applyBtn'), clear: el('clearBtn'),
+    dlCsv: el('dlCsvBtn'), dlXlsx: el('dlXlsxBtn'),
+    asOf: el('asOf'),
+    checkScope: el('checkScope'),
+    dlChecks: el('dlChecksBtn'),
+  };
+
+  // Color the checkScope select when 'Overdue' is selected
+const scopeEl = document.getElementById('checkScope');
+function paintScope() {
+  if (!scopeEl) return;
+  scopeEl.style.color = scopeEl.value === 'overdue' ? 'var(--bad)' : 'var(--text)';
+}
+paintScope(); // initial paint
+scopeEl && scopeEl.addEventListener('change', paintScope);
+
+
+  // ========= UX helpers =========
+  function showStatus(msg, isError = false) {
+    controls.asOf.textContent = msg;
+    controls.asOf.style.color = isError ? '#ffb4b4' : '';
+  }
+
+  function setLoading(isLoading){
+    controls.run.classList.toggle('loading', !!isLoading);
+  }
+
+  function setFiltersEnabled(enabled){
+    [controls.program, controls.dateMode, controls.avgHours].forEach(x => x.disabled = !enabled);
+  }
+
+  // Smoothly open/close the date box to its natural height
+  function toggleRevealBox(box, show) {
+    if (!box) return;
+    const willOpen = !!show;
+    if (willOpen) {
+      // measure
+      box.style.maxHeight = '0px';
+      box.classList.add('open');
+      // Let paint, then grow
+      requestAnimationFrame(() => {
+        box.style.maxHeight = box.scrollHeight + 'px';
+      });
+      box.addEventListener('transitionend', function once(e){
+        if (e.propertyName === 'max-height') {
+          box.style.maxHeight = 'none'; // auto
+          box.removeEventListener('transitionend', once);
+        }
+      });
+    } else {
+      // collapse from current height
+      if (getComputedStyle(box).maxHeight === 'none') box.style.maxHeight = box.scrollHeight + 'px';
+      requestAnimationFrame(() => { box.style.maxHeight = '0px'; box.classList.remove('open'); });
+    }
+  }
+
+  function renderDateFields(mode){
+    const box = document.getElementById('dateFields');
+    let html = '';
+    if (mode === 'range'){
+      html = `
+        <div class="inline-fields">
+          <label>Start <input type="date" id="startDate"/></label>
+          <label>End <input type="date" id="endDate"/></label>
+        </div>`;
+    } else if (mode === 'month'){
+      html = `
+        <div class="inline-fields">
+          <label>Month
+            <select id="monthSelect">
+              <option value="">— Select —</option>
+              <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+              <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+              <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+              <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+            </select>
+          </label>
+          <label>Year <input type="number" id="monthYear" placeholder="e.g., 2025"/></label>
+        </div>`;
+    } else if (mode === 'quarter'){
+      html = `
+        <div class="inline-fields">
+          <label>Quarter
+            <select id="quarterSelect">
+              <option value="">— Select —</option>
+              <option value="1">Jan–Mar</option>
+              <option value="2">Apr–Jun</option>
+              <option value="3">Jul–Sep</option>
+              <option value="4">Oct–Dec</option>
+            </select>
+          </label>
+          <label>Year <input type="number" id="quarterYear" placeholder="e.g., 2025"/></label>
+        </div>`;
+    }
+
+    const hadContent = !!box.innerHTML.trim();
+    if (html){
+      box.innerHTML = html;
+      toggleRevealBox(box, true);
+    } else {
+      box.innerHTML = '';
+      toggleRevealBox(box, false);
+    }
+
+    // Refresh control references & listeners for the newly injected inputs
+    refreshDateFieldRefs();
+    setRunEnabled();
+  }
+
+  function refreshDateFieldRefs(){
+    controls.startDate    = document.getElementById('startDate');
+    controls.endDate      = document.getElementById('endDate');
+    controls.monthSelect  = document.getElementById('monthSelect');
+    controls.monthYear    = document.getElementById('monthYear');
+    controls.quarterSelect= document.getElementById('quarterSelect');
+    controls.quarterYear  = document.getElementById('quarterYear');
+
+    [controls.startDate, controls.endDate, controls.monthSelect, controls.monthYear, controls.quarterSelect, controls.quarterYear]
+      .filter(Boolean)
+      .forEach(x => x.addEventListener('input', setRunEnabled));
+  }
+
+  // After file load, allow running with no filters (applies to all rows)
+  function setRunEnabled(){ controls.run.disabled = !allData.length; }
+
+  function setActionButtons(enabled){
+    controls.clear.disabled = !enabled;
+    const downloadable = enabled && filteredData.length > 0;
+    controls.dlCsv.disabled = !downloadable;
+    controls.dlXlsx.disabled = !downloadable;
+  }
+
+  // ========= File load =========
+  el('fileInput').addEventListener('change', handleFile);
+
+  async function handleFile(e){
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      showStatus('Reading file…');
+      const buf = await file.arrayBuffer();
+      const workbook = XLSX.read(new Uint8Array(buf), { type:'array' });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      if (!sheet || !sheet['!ref']) { showStatus('No sheet data found in this file.', true); return; }
+
+      // Auto-detect header row (at least two expected headers)
+      const detected = autoDetectHeaderRow(sheet);
+      headerRowIndex = (detected !== null ? detected : 4);
+
+      buildHeaderMap(sheet);
+      detectKnownHeaders();
+
+      // Try primary parse (header row at headerRowIndex)
+      allData = XLSX.utils.sheet_to_json(sheet, { range: headerRowIndex, defval:'', raw:false });
+
+      // Fallback: array-of-arrays parse if primary produced 0 rows
+      if (!allData.length) {
+        allData = sheetToJsonByHeaderRow(sheet, headerRowIndex);
+        if (!allData.length) { showStatus(`Loaded, but found 0 rows under header row ${headerRowIndex+1}.`, true); return; }
+      }
+
+      populateProgramFilter(allData);
+
+      // Enable filters & run
+      setFiltersEnabled(true);
+      setRunEnabled();
+      setActionButtons(false);
+
+      // after: populateProgramFilter(allData); setFiltersEnabled(true); setRunEnabled(); setActionButtons(false);
+setLoading(true);
+setTimeout(() => { applyFilters(); setLoading(false); }, 0);
+
+
+      showStatus(`Loaded ${allData.length.toLocaleString()} rows from “${sheetName}” (header at row ${headerRowIndex+1}).`);
+    } catch (err) {
+      console.error(err);
+      showStatus('Failed to read this file. Is it a valid .xlsx/.xls/.csv?', true);
+    }
+  }
+
+  // ========= Header detection =========
+  function autoDetectHeaderRow(sheet, lookAhead = 25) {
+    const expected = ['Program', 'Hire date', 'Average hours worked', 'Self-placed', 'Hourly wage', 'Alien number', 'Employer'];
+    const ref = XLSX.utils.decode_range(sheet['!ref']);
+    for (let r = ref.s.r; r <= Math.min(ref.e.r, ref.s.r + lookAhead); r++) {
+      let hits = 0;
+      for (let c = ref.s.c; c <= ref.e.c; c++) {
+        const cell = sheet[XLSX.utils.encode_cell({ r, c })];
+        const v = cell && cell.v ? String(cell.v).trim() : '';
+        if (expected.includes(v)) { if (++hits >= 2) return r; }
+      }
+    }
+    return null;
+  }
+
+  function buildHeaderMap(sheet){
+    headerByLetter = {};
+    const range = XLSX.utils.decode_range(sheet['!ref']);
+    const r = headerRowIndex;
+    for (let c = range.s.c; c <= range.e.c; c++){
+      const addr = XLSX.utils.encode_cell({ r, c });
+      const cell = sheet[addr];
+      const headerText = cell && cell.v ? String(cell.v).trim() : '';
+      const letter = XLSX.utils.encode_col(c);
+      if (headerText) headerByLetter[letter] = headerText;
+    }
+  }
+
+  function detectKnownHeaders(){
+    const values = Object.values(headerByLetter);
+    const by = (reArr, fallback) => {
+      for (const h of values) {
+        const n = h.toLowerCase();
+        if (reArr.some(re => re.test(n))) return h;
+      }
+      return fallback;
+    };
+    programHeader   = by([/^\s*program\s*$/], programHeader);
+    hireHeader      = by([/^\s*hire\s*date\s*$/], hireHeader);
+    avgHoursHeader  = by([/average\s*hours\s*worked/], avgHoursHeader);
+    selfPlacedHeader= by([/self[-\s]?placed/], selfPlacedHeader);
+    wageHeader      = by([/hourly\s*wage/], wageHeader);
+    employerHeader  = by([/employer|company/], employerHeader);
+    alienHeader     = by([/alien\s*number/], alienHeader);
+  }
+
+  function getHeaderForLetter(letter){ return headerByLetter[letter.toUpperCase()] || null; }
+
+  // Try candidates: header names and/or column letters
+  function getField(row, candidates){
+    for (const cand of candidates){
+      if (/^[A-Z]+$/i.test(cand) && cand.length <= 3){
+        const hdr = getHeaderForLetter(cand);
+        if (hdr && Object.prototype.hasOwnProperty.call(row, hdr)) {
+          const v = row[hdr];
+          if (v !== undefined && v !== '') return v;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(row, cand)){
+        const v = row[cand];
+        if (v !== undefined && v !== '') return v;
+      }
+    }
+    return '';
+  }
+
+  // ========= Fallback parser (array-of-arrays) =========
+  function sheetToJsonByHeaderRow(sheet, headerRowAbs){
+    const ref = XLSX.utils.decode_range(sheet['!ref']);
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+    const headerOffset = headerRowAbs - ref.s.r;
+    if (headerOffset < 0 || headerOffset >= rows.length) return [];
+
+    const header = rows[headerOffset].map(h => String(h).trim());
+    const out = [];
+    for (let i = headerOffset + 1; i < rows.length; i++){
+      const rowArr = rows[i];
+      if (!rowArr || rowArr.every(v => v === '')) continue; // skip blank line
+      const obj = {};
+      for (let c = 0; c < header.length; c++){
+        const key = header[c] || `Col${c+1}`;
+        obj[key] = rowArr[c] ?? '';
+      }
+      out.push(obj);
+    }
+    return out;
+  }
+
+  // ========= Populate filters =========
+  function populateProgramFilter(data){
+    const programs = [...new Set(data.map(r => (r[programHeader] ?? '').trim()).filter(Boolean))].sort();
+    const sel = controls.program;
+    sel.innerHTML = '<option value="">All</option>';
+    programs.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o); });
+  }
+
+  // ========= Parsing helpers =========
+  function parseExcelDate(v){
+    if (v === null || v === undefined || v === '') return null;
+
+    // Excel serial date (1900 system)
+    if (typeof v === 'number' || (/^\d+(\.\d+)?$/.test(v))) {
+      const num = Number(v);
+      if (num > 20000 && num < 60000) {
+        const ms = (num - 25569) * 86400 * 1000;
+        return new Date(ms);
+      }
+    }
+
+    if (typeof v === 'string') {
+      const s = v.trim();
+      let m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s);
+      if (m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+      m = /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/.exec(s);
+      if (m) return new Date(Number(m[3].length===2 ? '20'+m[3] : m[3]), Number(m[1])-1, Number(m[2]));
+    }
+
+    const d = new Date(v);
+    return isNaN(d) ? null : d;
+  }
+
+  function parseNumber(v){
+    if (v === null || v === undefined || v === '') return NaN;
+    if (typeof v === 'number') return v;
+    if (typeof v === 'string') return parseFloat(v.replace(/[^0-9.\-]/g,''));
+    return NaN;
+  }
+
+  function fmtDate(d){ if (!d) return '—'; const y=d.getFullYear(); const m=String(d.getMonth()+1).padStart(2,'0'); const da=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${da}`; }
+
+  // ---- Date helpers for 90-day logic
+  function startOfDay(d){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
+  function addDays(d, n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function isYes(v) {
+  const s = String(v ?? '').trim().toLowerCase();
+  return s === 'yes' || s === 'y' || s === 'true' || s === '1';
+}
+
+  // ========= Date window from mode =========
+  function getDateWindowFromMode(){
+    const mode = controls.dateMode.value;
+    if (mode === 'range'){
+      const s = controls.startDate?.value ? new Date(controls.startDate.value) : null;
+      const e = controls.endDate?.value ? new Date(controls.endDate.value) : null;
+      return {start:s, end:e};
+    }
+    if (mode === 'month'){
+      const m = controls.monthSelect?.value;
+      const y = parseInt(controls.monthYear?.value,10);
+      if (m === '' || !y) return {start:null,end:null};
+      const start = new Date(y, Number(m), 1);
+      const end = new Date(y, Number(m)+1, 0, 23,59,59,999);
+      return {start, end};
+    }
+    if (mode === 'quarter'){
+      const q = parseInt(controls.quarterSelect?.value,10);
+      const y = parseInt(controls.quarterYear?.value,10);
+      if (!q || !y) return {start:null,end:null};
+      const qStartMonth = (q-1)*3;
+      const start = new Date(y, qStartMonth, 1);
+      const end = new Date(y, qStartMonth+3, 0, 23,59,59,999);
+      return {start, end};
+    }
+    return {start:null, end:null};
+  }
+
+  // ========= Filters UI behaviors =========
+  controls.dateMode.addEventListener('change', () => { renderDateFields(controls.dateMode.value); setRunEnabled(); });
+  ;[controls.program, controls.avgHours].forEach(x => x.addEventListener('input', setRunEnabled));
+
+  // 90-day filter change re-renders list using current filtered data
+  controls.checkScope && controls.checkScope.addEventListener('change', () => renderChecks(filteredData));
+
+  // ========= Buttons =========
+  controls.run.addEventListener('click', () => { setLoading(true); setTimeout(() => { applyFilters(); setLoading(false); }, 50); });
+  controls.clear.addEventListener('click', clearFilters);
+  controls.dlCsv.addEventListener('click', () => downloadFiltered('csv'));
+  controls.dlXlsx.addEventListener('click', () => downloadFiltered('xlsx'));
+  controls.dlChecks && controls.dlChecks.addEventListener('click', downloadChecksCsv);
+
+  // ========= Apply filters & update =========
+  function applyFilters(){
+    if (!allData.length){ alert('Please upload a file first.'); return; }
+
+    const program = controls.program.value;
+    const {start, end} = getDateWindowFromMode();
+    const hoursMode = controls.avgHours.value; // "", "<30", ">30"
+
+    const filtered = allData.filter(row => {
+      const hireDate = parseExcelDate(getField(row, [hireHeader, 'M'])); // fallback letter
+      if (!(hireDate instanceof Date) || isNaN(hireDate)) return false;
+
+      if (program && (String(row[programHeader] ?? '').trim() !== program)) return false;
+
+      if (start && hireDate < start) return false;
+      if (end && hireDate > end) return false;
+
+      if (hoursMode){
+        const hrs = parseNumber(getField(row, [avgHoursHeader, 'L']));
+        if (isNaN(hrs)) return false;
+        if (hoursMode === '<30' && !(hrs < 30)) return false;
+        if (hoursMode === '>30' && !(hrs > 30)) return false; // strictly >30 per requirement
+      }
+      return true;
+    });
+
+    filteredData = filtered;
+    if (!filtered.length){
+      showStatus('No matching rows for current filters.', true);
+      setActionButtons(true);
+      updateDashboard([], program);
+      return;
+    }
+
+    updateDashboard(filtered, program);
+    setActionButtons(true);
+    showStatus(`${filtered.length.toLocaleString()} rows after filters.`);
+  }
+
+  function bump(el){ if (!el) return; el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
+
+  function updateDashboard(data, programName = '') {
+    const uniqueAliens = new Set();
+    let totalWage = 0, wageCount = 0;
+
+    const hiresByMonth = {}; // YYYY-MM
+    const hiresByYear  = {}; // YYYY
+    const employerCounts = {};
+
+    let spYes = 0, spNo = 0;
+    let newestHire = null;
+
+    // Hours buckets (<30 = PT, >30 = FT)
+    let lt30 = 0, gt30 = 0;
+
+    data.forEach(row => {
+      const alien    = getField(row, [alienHeader, 'A']);
+      const hireDate = parseExcelDate(getField(row, [hireHeader, 'M']));
+      const wage     = parseNumber(getField(row, [wageHeader, 'Q']));
+      const employer = String(getField(row, [employerHeader, 'O'])).trim();
+
+      const hrs = parseNumber(getField(row, [avgHoursHeader, 'L']));
+      if (!Number.isNaN(hrs)) { if (hrs < 30) lt30++; else if (hrs > 30) gt30++; }
+
+      if (alien) uniqueAliens.add(alien);
+      if (!Number.isNaN(wage)) { totalWage += wage; wageCount++; }
+
+      if (hireDate && (!newestHire || hireDate > newestHire)) newestHire = hireDate;
+
+      if (hireDate) {
+        const y  = hireDate.getFullYear();
+        const ym = `${y}-${String(hireDate.getMonth()+1).padStart(2,'0')}`;
+        hiresByMonth[ym] = (hiresByMonth[ym] || 0) + 1;
+        hiresByYear[y]   = (hiresByYear[y]   || 0) + 1;
+      }
+
+      if (employer) employerCounts[employer] = (employerCounts[employer] || 0) + 1;
+
+      const selfPlacedRaw = String(getField(row, [selfPlacedHeader, 'T'])).trim().toLowerCase();
+      if (selfPlacedRaw === 'yes') spYes++;
+      else if (selfPlacedRaw === 'no') spNo++;
+    });
+
+    // KPIs
+    const aliensEl = el('totalAliens');
+    const wageEl   = el('avgSalary');
+    const newestEl = el('newestHire');
+
+    aliensEl.textContent = uniqueAliens.size;
+    wageEl.textContent   = wageCount ? `$${(totalWage / wageCount).toFixed(2)}` : '$0.00';
+    newestEl.textContent = fmtDate(newestHire);
+    bump(aliensEl); bump(wageEl); bump(newestEl);
+
+    // Self-placed split
+    el('spYesCount').textContent = spYes; bump(el('spYesCount'));
+    el('spNoCount').textContent  = spNo;  bump(el('spNoCount'));
+    // Hours split counts
+    el('hoursPtCount').textContent = lt30; bump(el('hoursPtCount'));
+    el('hoursFtCount').textContent = gt30; bump(el('hoursFtCount'));
+
+    // Employers list
+    const ul = el('employerList');
+    ul.innerHTML = '';
+    Object.entries(employerCounts)
+      .sort((a,b) => b[1]-a[1])
+      .forEach(([name,count]) => { const li = document.createElement('li'); li.textContent = `${name} (${count})`; ul.appendChild(li); });
+
+    // ===== Charts =====
+    const monthCanvas = el('hiresByMonthChart');       // month chart
+    const yearCanvas  = el('hiresByProgramChart');     // year chart
+
+    // If a single Program is selected, show Month chart and place it above Year
+    const showMonth = !!programName;
+    const chartsWrap = document.querySelector('.charts');
+    if (chartsWrap && monthCanvas && yearCanvas) {
+      if (showMonth) { chartsWrap.insertBefore(monthCanvas, yearCanvas); }
+      else { chartsWrap.insertBefore(yearCanvas, chartsWrap.firstChild); }
+    }
+
+    // Draw Year chart
+    const yearTitle = `Hires per Year${programName ? ` — ${programName}` : ''}`;
+    if (yearCanvas) { chart1 = drawChart(yearCanvas.id, yearTitle, hiresByYear, chart1); }
+
+    // Draw/Hide Month chart
+    if (monthCanvas) {
+      if (showMonth) { monthCanvas.style.display = 'block'; chart2 = drawChart(monthCanvas.id, `Hires per Month — ${programName}`, hiresByMonth, chart2); }
+      else { monthCanvas.style.display = 'none'; if (chart2) { chart2.destroy(); chart2 = null; } }
+    }
+
+    // Render 90-day checks list for current filtered rows
+    renderChecks(data);
+  }
+
+  function drawChart(canvasId, title, data, previous){
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    if (previous) previous.destroy();
+    const labels = Object.keys(data).sort();
+    const values = labels.map(k => data[k]);
+    return new Chart(ctx, {
+      type: 'bar',
+      data: { labels, datasets: [{ label:title, data:values }] },
+      options: {
+        responsive:true,
+        plugins:{ legend:{ display:false }, title:{ display:true, text:title } },
+        scales:{ y:{ beginAtZero:true } }
+      }
+    });
+  }
+
+  // ========= Clear filters =========
+  function clearFilters(){
+    controls.program.value = '';
+    controls.dateMode.value = '';
+    controls.avgHours.value = '';
+
+    renderDateFields(''); // clears the dateFields slot with smooth collapse
+
+    filteredData = [];
+    setActionButtons(true);
+
+    if (chart1) chart1.destroy();
+    if (chart2) chart2.destroy();
+    el('employerList').innerHTML = '';
+    el('totalAliens').textContent = '0';
+    el('avgSalary').textContent = '$0.00';
+    el('newestHire').textContent = '—';
+    el('spYesCount').textContent = '0';
+    el('spNoCount').textContent = '0';
+    el('hoursPtCount').textContent = '0';
+    el('hoursFtCount').textContent = '0';
+
+    showStatus('Filters cleared.');
+    setRunEnabled();
+  }
+
+  // ========= Download =========
+  function downloadFiltered(kind){
+    if (!filteredData.length){ alert('No filtered data to download.'); return; }
+    const ws = XLSX.utils.json_to_sheet(filteredData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Filtered');
+    if (kind === 'xlsx'){
+      XLSX.writeFile(wb, 'employment_filtered.xlsx');
+    } else {
+      const csv = XLSX.utils.sheet_to_csv(ws);
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'employment_filtered.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+  }
+
+  // ========= 90-Day Checks render =========
+  function renderChecks(data){
+    const list = document.getElementById('checksList');
+    if (!list) return;
+    const scope = (document.getElementById('checkScope')?.value || 'due');
+
+    const today = startOfDay(new Date());
+    const soon = addDays(today, 7); // window for "due"
+
+    const rows = [];
+    (data || []).forEach(row => {
+      const alien = String(getField(row, [alienHeader, 'A'])).trim();
+      const hireDate = parseExcelDate(getField(row, [hireHeader, 'M']));
+      if (!alien || !hireDate) return;
+      const checkDate = addDays(hireDate, 90);
+      const completed = isYes(getField(row, [checkStatusHeader, 'V']));
+      if (completed) return; // hide completed items in due/overdue
+
+      if (scope === 'overdue' && checkDate < today) rows.push({alien, hireDate, checkDate, status:'Overdue', row});
+      if (scope === 'due' && checkDate >= today && checkDate <= soon) rows.push({alien, hireDate, checkDate, status:'Due soon', row});
+    });
+
+    rows.sort((a,b) => a.checkDate - b.checkDate);
+
+    list.innerHTML = rows.map(r => {
+      const name = String(getField(r.row, [caseMgrNameHeader, 'W']) || '').trim();
+      const email = String(getField(r.row, [caseMgrEmailHeader, 'X']) || '').trim();
+      const pillCls = r.status === 'Overdue' ? 'pill pill--over' : 'pill pill--due';
+      const mgr = name || email ? ` • ${[name,email].filter(Boolean).join(' – ')}` : '';
+      return `<li><div><div class="title">Alien ${r.alien}</div><div class="meta">Hire: ${fmtDate(r.hireDate)} • Check: ${fmtDate(r.checkDate)}${mgr}</div></div><span class="${pillCls}">${r.status}</span></li>`;
+    }).join('');
+
+    if (!rows.length) list.innerHTML = `<li class="muted" style="border:none; background:transparent; padding:0">No items in this view.</li>`;
+
+    if (controls.dlChecks) controls.dlChecks.disabled = rows.length === 0;
+  }
+  function downloadChecksCsv(){
+    const scope = (controls.checkScope?.value || 'due');
+    const today = startOfDay(new Date());
+
+    // Build current rows exactly as renderChecks does
+    const rows = [];
+    (filteredData || []).forEach(row => {
+      const alien = String(getField(row, [alienHeader, 'A'])).trim();
+      const hireDate = parseExcelDate(getField(row, [hireHeader, 'M']));
+      if (!alien || !hireDate) return;
+      const checkDate = addDays(hireDate, 90);
+      const completed = isYes(getField(row, [checkStatusHeader, 'V']));
+      if (completed) return;
+      const inOver = checkDate < today;
+      const inDue = checkDate >= today && checkDate <= addDays(today, 7);
+      if ((scope === 'overdue' && inOver) || (scope === 'due' && inDue)){
+        const name = String(getField(row, [caseMgrNameHeader, 'W']) || '').trim();
+        const email = String(getField(row, [caseMgrEmailHeader, 'X']) || '').trim();
+        rows.push({alien, hireDate, checkDate, status: inOver ? 'Overdue' : 'Due soon', name, email});
+      }
+    });
+
+    if (!rows.length){ alert('No 90‑Day items to download in this view.'); return; }
+
+    const data = rows.map(r => ({
+      'Alien number': r.alien,
+      'Hire date': fmtDate(r.hireDate),
+      '90-day check date': fmtDate(r.checkDate),
+      'Status': r.status,
+      'Employment Specialist name': r.name,
+      'Employment Specialist email': r.email,
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const csv = XLSX.utils.sheet_to_csv(ws);
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `90day_${scope}_${fmtDate(today)}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+</script>
+<script>
+(() => {
+  const STORAGE_KEY = 'c23m9_theme';           // shared across your 4 pages
+  const prefersLight = () => window.matchMedia('(prefers-color-scheme: light)').matches;
+
+  function applyTheme(mode){
+    // mode: 'light' | 'dark'
+    document.documentElement.classList.toggle('light', mode === 'light');
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.textContent = mode === 'light' ? '🌙' : '☀️';
+
+    // If you have charts on this page, refresh them for grid color changes
+    if (window.Chart) {
+      // Update any known chart instances
+      if (window.chartInstance?.update) window.chartInstance.update();
+      // Or trigger a resize to make Chart.js recalc canvas sizes
+      window.dispatchEvent(new Event('resize'));
+    }
+  }
+
+  // Initialize from localStorage or system preference
+  const saved = localStorage.getItem(STORAGE_KEY);
+  const initial = saved || (prefersLight() ? 'light' : 'dark');
+  applyTheme(initial);
+
+  // Wire the toggle
+  const toggle = document.getElementById('themeToggle');
+  if (toggle) {
+    toggle.addEventListener('click', () => {
+      const next = document.documentElement.classList.contains('light') ? 'dark' : 'light';
+      localStorage.setItem(STORAGE_KEY, next);
+      applyTheme(next);
+    });
+  }
+
+  // Keep in sync if user changes OS theme (only when user hasn't explicitly chosen)
+  const mq = window.matchMedia('(prefers-color-scheme: light)');
+  mq.addEventListener?.('change', e => {
+    const manual = localStorage.getItem(STORAGE_KEY);
+    if (!manual) applyTheme(e.matches ? 'light' : 'dark');
+  });
+})();
+</script>
+
+</body>
+</html>

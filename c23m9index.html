@@ -1,330 +1,631 @@
-<html lang="en" data-theme="auto">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>c23m9 — Web & Database Engineer</title>
-  <meta name="description" content="Websites, databases, and APIs that just work. I plan, build, and maintain dependable systems so you can grow without drama." />
-  <meta name="theme-color" content="#0f172a" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css" />
-  <style>html{scroll-behavior:smooth}</style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>c23m9 Web&Database Engineer</title>
+
+  <!-- Libs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
+
+  <style>
+    :root{
+      --bg:#0b1020; --panel:#0f152b; --panel-2:#131a35;
+      --text:#e9eef6; --muted:#a9b0c2; --line:rgba(255,255,255,0.08);
+      --glow:#23c9b9; --radius:16px; --shadow:0 8px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background: radial-gradient(1200px 1200px at 20% -10%, rgba(35,201,185,.15), transparent 60%), var(--bg);
+      color:var(--text);
+    }
+
+    header{
+      position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.2) blur(10px);
+      background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));
+      border-bottom:1px solid var(--line)
+    }
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px}
+    .brand{display:flex;gap:10px;align-items:center}
+    .badge{
+      width:36px;height:36px;border-radius:10px;
+      background:conic-gradient(from 210deg,var(--glow),#7adcd2 25%,#1d9d8f 60%,var(--glow));
+      box-shadow:0 0 24px rgba(35,201,185,.35)
+    }
+    h1{margin:0;font-size:1.05rem;letter-spacing:.3px}
+
+    main{padding:22px;display:grid;gap:18px;max-width:1200px;margin:0 auto}
+
+    .btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;font-size:.92rem}
+    .btn.primary{background:linear-gradient(180deg,#23c9b9,#1aa998);color:#061016;border-color:transparent}
+    .btn:hover{filter:brightness(1.05)} .btn:disabled{opacity:.6;cursor:not-allowed}
+
+    .filterbar{
+      display:grid;gap:14px;grid-template-columns:1fr;padding:14px;border-radius:var(--radius);
+      background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
+      border:1px solid var(--line);box-shadow:var(--shadow)
+    }
+    .filter-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+    .field{display:flex;flex-direction:column;gap:6px;min-width:180px}
+    .field label{font-size:.78rem;color:var(--muted)}
+
+    /* High-contrast inputs */
+    select,input[type="date"],input[type="number"],input[type="file"]{
+      background:var(--panel-2)!important;color:var(--text)!important;border:1px solid var(--line)!important;
+      border-radius:10px!important;padding:8px 10px!important;min-height:38px!important;appearance:none
+    }
+    select:focus,input:focus{outline:2px solid rgba(35,201,185,.5)}
+    ::placeholder{color:var(--muted);opacity:.9}
+
+    /* Choices.js (dark) */
+    .choices__inner{background:var(--panel-2)!important;color:var(--text)!important;border:1px solid var(--line)!important;border-radius:10px!important;min-height:38px!important}
+    .choices__list--dropdown,.choices__list[aria-expanded]{background:var(--panel-2)!important;border:1px solid var(--line)!important;color:var(--text)!important}
+    .choices__list--multiple .choices__item{background:#1a7f77;border-color:#1a7f77}
+    .choices__item--selectable.is-highlighted{background:var(--panel)!important}
+    .choices__input{background:transparent!important;color:var(--text)!important}
+
+    /* STRICT default hidden for all date-mode sections */
+    .mode-range, .mode-month, .mode-quarter { display: none; }
+    .mode-range.show, .mode-month.show, .mode-quarter.show { display: flex; }
+
+    .kpis{display:grid;gap:16px;grid-template-columns:repeat(12,minmax(0,1fr))}
+    .kpi{
+      grid-column:span 3 / span 3;background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
+      border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)
+    }
+    .kpi h3{margin:0;font-size:.9rem;color:var(--muted)}
+    .kpi .big{margin-top:6px;font-size:1.8rem;font-weight:700;letter-spacing:.4px}
+    .list{margin:0;padding-left:18px;font-size:.94rem}.list li{margin:4px 0}
+
+    .grid{display:grid;gap:16px;grid-template-columns:2fr 1fr}
+    .panel{
+      background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
+      border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 12px 16px;min-height:260px
+    }
+    .panel h4{margin:8px 8px 12px;color:var(--muted)}
+    .chart-wrap{height:460px;position:relative;padding:8px}
+    canvas{width:100%!important;height:100%!important}
+    .ranking{max-height:420px;overflow:auto;margin:0;padding:0;list-style:none}
+    .ranking li{display:flex;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);margin:6px 8px}
+    .empty{text-align:center;padding:40px 10px;color:var(--muted)}
+
+    @media (max-width:1200px){.kpi{grid-column:span 4 / span 4}}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}.kpi{grid-column:span 6 / span 6}}
+    @media (max-width:600px){.kpi{grid-column:span 12 / span 12}}
+
+    /* =========================
+       Floating Quick Links Tab
+       ========================= */
+    .quicklinks{
+      position:fixed; left:12px; top:50%; transform:translateY(-50%);
+      z-index:9999; display:flex; align-items:center; gap:10px; pointer-events:auto;
+    }
+    .ql-handle{
+      writing-mode:vertical-rl; transform:rotate(180deg);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid var(--line); border-right:none;
+      border-radius:12px 0 0 12px; padding:10px 8px; cursor:pointer;
+      color:var(--text); font-weight:600; letter-spacing:.4px;
+      box-shadow:0 8px 30px rgba(0,0,0,.35), 0 0 0 1px rgba(35,201,185,.15) inset;
+      backdrop-filter: blur(10px) saturate(1.2);
+      transition:filter .2s ease, transform .2s ease;
+    }
+    .ql-handle .ql-icon{font-size:1rem; margin-top:6px; opacity:.9}
+    .ql-handle:hover{filter:brightness(1.1)}
+    .ql-handle:focus{outline:2px solid rgba(35,201,185,.5); outline-offset:2px}
+
+    .ql-panel{
+      position:absolute; left:100%; margin-left:10px; width:240px;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border:1px solid var(--line); border-radius:14px; padding:12px;
+      box-shadow:var(--shadow); backdrop-filter: blur(12px) saturate(1.2);
+      transform:translateX(-12px); opacity:0; pointer-events:none;
+      transition:transform .28s ease, opacity .28s ease;
+    }
+    .quicklinks.open .ql-panel{transform:translateX(0); opacity:1; pointer-events:auto}
+
+    .ql-head{
+      font-size:.8rem; color:var(--muted); margin:2px 6px 8px;
+      text-transform:uppercase; letter-spacing:.12em;
+    }
+    .ql-panel a{
+      display:flex; align-items:center; gap:8px; text-decoration:none; color:var(--text);
+      padding:10px 12px; margin:6px 0; border-radius:10px; background:var(--panel-2);
+      border:1px solid transparent; transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+    .ql-panel a:hover{
+      border-color:var(--glow);
+      box-shadow:0 0 0 3px rgba(35,201,185,.18) inset;
+      transform:translateY(-1px);
+    }
+    .ql-panel a span{opacity:.9}
+
+    /* Mobile: move to bottom-left and make handle horizontal */
+    @media (max-width:700px){
+      .quicklinks{left:10px; bottom:14px; top:auto; transform:none;}
+      .ql-handle{writing-mode:horizontal-tb; transform:none; border-radius:12px; border-right:1px solid var(--line)}
+      .ql-panel{
+        position:fixed; left:10px; right:10px; bottom:64px; top:auto; width:auto; margin:0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .ql-panel, .ql-handle{transition:none}
+    }
+  </style>
 </head>
 <body>
   <header>
-    <div class="container nav" role="navigation" aria-label="Primary">
-      <a class="brand" href="#home" aria-label="Go to home">
-        <svg viewBox="0 0 64  64" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--brand)"/><stop offset="100%" stop-color="var(--brand-2)"/></linearGradient></defs><path fill="url(#g)" d="M32 6c12 0 22 4 22 10v20c0 6-10 10-22 10S10 42 10 36V16c0-6 10-10 22-10zm0 8c-9.9 0-18 3-18 6s8.1 6 18 6 18-3 18-6-8.1-6-18-6zm0 16c-9.9 0-18-3-18-6v6c0 3 8.1 6 18 6s18-3 18-6v-6c0 3-8.1 6-18 6z"/></svg>
-        <span>c23m9</span>
-      </a>
-
-      <ul class="primary" id="desktopNav" aria-label="Sections">
-        <li><a data-i18n="nav.services" href="#services">Services</a></li>
-        <li><a data-i18n="nav.work" href="#work">Work</a></li>
-        <li><a data-i18n="nav.playground" href="#playground">Playground</a></li>
-        <li><a data-i18n="nav.dash" href="/services.html" target="_blank" rel="noopener">Dashboard ↗</a></li>
-        <li><a data-i18n="nav.contact" href="#contact">Contact</a></li>
-      </ul>
-
-      <nav class="nav-controls">
-        <select id="langSelect" class="select" aria-label="Language">
-          <option value="en">EN</option>
-          <option value="es">ES</option>
-        </select>
-        <button class="btn ghost" id="themeToggle" aria-label="Toggle theme">🌓</button>
-        <button class="btn ghost menu-btn" id="menuBtn" aria-expanded="false" aria-controls="drawer" aria-label="Open menu">☰</button>
-      </nav>
+    <div class="topbar">
+      <div class="brand">
+        <div class="badge" aria-hidden="true"></div>
+        <h1>Service Interaction Dashboard</h1>
+      </div>
     </div>
-    <div id="drawer" class="drawer" role="dialog" aria-modal="true" aria-label="Mobile Menu"></div>
   </header>
 
-  <main id="main">
-    <!-- HERO (wide) -->
-    <section id="home" class="hero container" style="position:relative;">
-      <button class="section-toggle anchor" aria-expanded="true" data-label="Hero" title="Hide hero">
-        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 13a5.5 5.5 0 1 1 0-11a5.5 5.5 0 0 1 0 11z"/></svg>
-        <span>Hide</span>
-      </button>
-      <div>
-        <span class="eyebrow"><span class="pill" data-i18n="home.availability">Available for Q4</span> <span data-i18n="home.role">Web & Database Engineer</span></span>
-        <h1 class="headline">
-          <span class="accent" data-i18n="home.h1a">Build once.</span> <span data-i18n="home.h1b">Scale safely.</span><br/>
-          <span data-i18n="home.h1c">Ship websites, databases &</span> <span class="accent" data-i18n="home.h1d">APIs with confidence.</span>
-        </h1>
-        <p class="sub" data-i18n="home.sub">I help teams design clean schemas, ship robust web apps, and automate cloud deployments. Security‑first. Documented. Observable.</p>
-        <div class="cta"><a class="btn primary" href="#contact" id="scrollToContact">Get a quote</a></div>
-      </div>
-      <div class="hero-visual fx-shine">
-        <div class="terminal notranslate">
-<pre><strong>$</strong> npx create-trusty-app
-✔ project created
-<strong>$</strong> npm run ship
-✔ tests passed (148)
-✔ migrations applied (12)
-✔ smoke checks green
-<strong>$</strong> curl -s https://api.example.dev/health | jq
-{ "status": "ok", "uptime": 86400, "db": "primary: healthy, replica: healthy" }
-</pre>
+  <main>
+    <!-- Filter Bar -->
+    <section class="filterbar" aria-label="Filters">
+      <div class="filter-row">
+        <div class="field" style="min-width:220px">
+          <label for="filterType">Date Mode</label>
+          <select id="filterType" autocomplete="off">
+            <option value="">— Select —</option>
+            <option value="range">Date Range</option>
+            <option value="month">Month</option>
+            <option value="quarter">Quarter</option>
+          </select>
         </div>
+
+        <!-- Range -->
+        <div class="field mode-range">
+          <label for="startDate">Start</label>
+          <input type="date" id="startDate" autocomplete="off"/>
+        </div>
+        <div class="field mode-range">
+          <label for="endDate">End</label>
+          <input type="date" id="endDate" autocomplete="off"/>
+        </div>
+
+        <!-- Month -->
+        <div class="field mode-month">
+          <label for="monthDropdown">Month</label>
+          <select id="monthDropdown" autocomplete="off">
+            <option value="">— Select —</option>
+            <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+            <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+            <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+            <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+          </select>
+        </div>
+        <div class="field mode-month">
+          <label for="monthYearDropdown">Year</label>
+          <select id="monthYearDropdown" autocomplete="off"></select>
+        </div>
+
+        <!-- Quarter -->
+        <div class="field mode-quarter">
+          <label for="quarterSelect">Quarter</label>
+          <select id="quarterSelect" autocomplete="off">
+            <option value="Q1">Jan–Mar</option>
+            <option value="Q2">Apr–Jun</option>
+            <option value="Q3">Jul–Sep</option>
+            <option value="Q4">Oct–Dec</option>
+          </select>
+        </div>
+        <div class="field mode-quarter">
+          <label for="quarterYear">Year</label>
+          <input type="number" id="quarterYear" min="2000" max="2100" placeholder="2025" autocomplete="off"/>
+        </div>
+
+        <!-- Multi-selects -->
+        <div class="field" style="min-width:260px">
+          <label for="userFilter">User</label>
+          <select id="userFilter" multiple></select>
+        </div>
+        <div class="field" style="min-width:260px">
+          <label for="serviceFilter">Service</label>
+          <select id="serviceFilter" multiple></select>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <div class="field" style="min-width:260px">
+          <label for="fileInput">Upload Data</label>
+          <input type="file" id="fileInput" accept=".xlsx,.xls,.csv"/>
+        </div>
+        <div style="display:flex; gap:10px; align-items:end; flex-wrap:wrap">
+          <button class="btn primary" id="btnApply">Apply Filters</button>
+          <button class="btn" id="btnClear">Clear</button>
+          <button class="btn" id="btnExportCsv">Export CSV</button>
+          <button class="btn" id="btnExportXlsx">Export Excel</button>
+        </div>
+      </div>
+
+      <small class="muted">Pick a date mode first; only its fields will appear.</small>
+    </section>
+
+    <!-- KPIs -->
+    <section class="kpis" aria-label="Summary">
+      <div class="kpi"><h3>Unique Case Numbers</h3><div class="big" id="uniqueCases">0</div></div>
+      <div class="kpi"><h3>Total Services Provided</h3><div class="big" id="totalServices">0</div></div>
+      <div class="kpi">
+        <h3>Most Recent Interaction</h3>
+        <div class="big" id="mostRecentInteraction">—</div>
+      </div>
+      <div class="kpi" style="grid-column: span 6 / span 6">
+        <h3>Top 5 Most Common Services</h3>
+        <ol class="list" id="mostCommonService"></ol>
       </div>
     </section>
 
-    <!-- SERVICES -->
-    <section id="services" class="container section-block">
-      <div class="section-title">
-        <div>
-          <h2>Services that reduce risk and increase velocity</h2>
-          <span class="kicker">From Figma to production & beyond</span>
+    <!-- Content -->
+    <section class="grid">
+      <div class="panel">
+        <h4>All Services Provided</h4>
+        <div class="chart-wrap">
+          <canvas id="serviceChart" aria-label="Services frequency chart" role="img"></canvas>
+          <div id="chartEmpty" class="empty" hidden>No data yet. Upload a file or adjust filters.</div>
         </div>
-        <button class="section-toggle" aria-expanded="true" data-label="Services">Hide</button>
       </div>
-      <div class="grid cols-3">
-        <article class="card service fx-shine fx-wiggle">
-          <div class="pill">Web Applications</div>
-          <h3>Front‑to‑back engineering</h3>
-          <p>Type‑safe APIs, component libraries, CI/CD pipelines, and robust testing for maintainable codebases.</p>
-          <div class="badge-row"><span class="pill">Accessibility</span><span class="pill">SSR/SPA</span><span class="pill">Testing</span></div>
-        </article>
-        <article class="card service fx-shine fx-wiggle">
-          <div class="pill">Database Architecture</div>
-          <h3>Schema & performance design</h3>
-          <p>Relational & NoSQL schema design, migrations, indexing, partitioning, and query optimization.</p>
-          <div class="badge-row"><span class="pill">PostgreSQL</span><span class="pill">MySQL</span><span class="pill">MongoDB</span></div>
-        </article>
-        <article class="card service fx-shine fx-wiggle">
-          <div class="pill">APIs</div>
-          <h3>Contract‑first design</h3>
-          <p>REST/GraphQL APIs with strong typing, authN/authZ, rate limiting, and observability built‑in.</p>
-          <div class="badge-row"><span class="pill">OpenAPI</span><span class="pill">GraphQL</span><span class="pill">gRPC</span></div>
-        </article>
-        <article class="card service fx-shine fx-wiggle">
-          <div class="pill">Cloud & DevOps</div>
-          <h3>From laptop to cloud</h3>
-          <p>Infrastructure as code, containerization, blue/green deploys, rollbacks, and autoscaling.</p>
-          <div class="badge-row"><span class="pill">AWS</span><span class="pill">Docker</span><span class="pill">Terraform</span></div>
-        </article>
-        <article class="card service fx-shine fx-wiggle">
-          <div class="pill">Performance</div>
-          <h3>Measure, then optimize</h3>
-          <p>APM, tracing, caching, and capacity planning to keep latency low under real‑world load.</p>
-          <div class="badge-row"><span class="pill">p95</span><span class="pill">RUM</span><span class="pill">Caching</span></div>
-        </article>
-        <article class="card service fx-shine fx-wiggle">
-          <div class="pill">Security</div>
-          <h3>Defense in depth</h3>
-          <p>Threat modeling, secure defaults, least privilege, and dependency hygiene.</p>
-          <div class="badge-row"><span class="pill">OWASP</span><span class="pill">CSP</span><span class="pill">SAST/DAST</span></div>
-        </article>
-      </div>
-    </section>
-
-    <!-- WORK -->
-    <section id="work" class="container section-block">
-      <div class="section-title">
-        <div>
-          <h2>Selected case studies</h2>
-          <span class="kicker">Request detailed write‑ups</span>
-        </div>
-        <button class="section-toggle" aria-expanded="true" data-label="Work">Hide</button>
-      </div>
-      <div class="grid cols-2">
-        <article class="card case fx-shine">
-          <div>
-            <h3>Payments Platform Migration</h3>
-            <p class="meta">PostgreSQL → partitioned schemas, read replicas, failover drills</p>
-            <div class="metrics">
-              <div class="metric">p95 ↓ 63%</div>
-              <div class="metric">Throughput ↑ 3.4×</div>
-              <div class="metric">Zero lost txns</div>
-            </div>
-            <div class="mt-3"><span class="pill">PostgreSQL</span> <span class="pill">Kafka</span> <span class="pill">Kubernetes</span></div>
-          </div>
-          <div class="terminal notranslate"><pre>CREATE TABLE payments (
-  id BIGSERIAL PRIMARY KEY,
-  user_id BIGINT NOT NULL,
-  amount NUMERIC(12,2) NOT NULL,
-  status TEXT NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-) PARTITION BY RANGE (created_at);
-</pre></div>
-        </article>
-        <article class="card case fx-shine">
-          <div>
-            <h3>E‑commerce Catalog API</h3>
-            <p class="meta">GraphQL gateway + Redis caching + CDN edge</p>
-            <div class="metrics">
-              <div class="metric">Cache hit 94%</div>
-              <div class="metric">$ infra ↓ 28%</div>
-              <div class="metric">SLA 99.99%</div>
-            </div>
-            <div class="terminal notranslate"><pre>type Product { id: ID!, sku: String!, price: Float!, inStock: Boolean! }
-
-type Query { products(sku: String): [Product]! }
-</pre></div>
-        </article>
-      </div>
-    </section>
-
-    <!-- PLAYGROUND (insights) -->
-    <section id="playground" class="container section-block notranslate">
-      <div class="section-title">
-        <div>
-          <h2>Playground</h2>
-          <span class="kicker">Social Media Insights (demo)</span>
-        </div>
-        <button class="section-toggle" aria-expanded="true" data-label="Playground">Hide</button>
-      </div>
-      <div class="insights">
-        <div class="controls">
-          <label>Metric
-            <select id="metricSelect" class="pill">
-              <option value="mau_bil">Monthly active users (B)</option>
-              <option value="ad_aud_bil">Ad reach (B)</option>
-              <option value="us_news_pct">U.S. adults who get news (%)</option>
-            </select>
-          </label>
-          <label class="chk"><input type="checkbox" id="filter2b"> MAU ≥ 2B</label>
-          <label class="chk"><input type="checkbox" id="filterROI"> Marketer ROI leaders</label>
-          <button class="btn ghost" id="resetFilters">Reset</button>
-        </div>
-        <canvas id="barChart" height="280" aria-label="Platforms bar chart" role="img"></canvas>
-        <div class="table-wrap">
-          <table id="dataTable" class="table">
-            <thead>
-              <tr>
-                <th data-key="platform">Platform</th>
-                <th data-key="mau_bil">MAU (B)</th>
-                <th data-key="ad_aud_bil">Ad reach (B)</th>
-                <th data-key="us_news_pct">US news (%)</th>
-                <th data-key="roi_top">ROI leader</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <p class="muted">Sources: DataReportal (Feb 2025), Pew Research (2024), platform disclosures. Demo rounding applied.</p>
-      </div>
-    </section>
-
-    <!-- CONTACT (full width) -->
-    <section id="contact" class="container section-block full">
-      <div class="section-title">
-        <div>
-          <h2 style="display:flex; align-items:center; gap:.6rem;">
-            <span class="accent-text">Let’s build something dependable</span>
-            <span class="pill" aria-hidden="true">→</span>
-          </h2>
-          <span class="kicker">Tell me about your project</span>
-        </div>
-        <button class="section-toggle" aria-expanded="true" data-label="Contact">Hide</button>
-      </div>
-
-      <div class="grid cols-2 contact-grid">
-        <!-- Form -->
-        <div class="card" style="display:grid; gap:1rem;">
-          <p style="margin:0; color:var(--muted)">Quick brief below and I’ll reply within one business day.</p>
-
-          <form id="contactForm" action="https://formsubmit.co/431afb18b6d29330088207e6478cadc5" method="POST">
-            <input type="hidden" name="_subject" value="New Website Inquiry (Contact form)" />
-            <input type="hidden" name="_template" value="table" />
-            <input type="hidden" name="_blacklist" value="viagra, crypto, investment, guest post, seo package" />
-            <input type="hidden" name="form_name" value="Contact" />
-            <input type="hidden" name="_autoresponse" value="Thanks for the message — you’ll hear from me within one business day. – c23m9" />
-
-            <div class="grid cols-2" style="gap:.8rem">
-              <div>
-                <label for="name">Name</label>
-                <input id="name" name="name" required autocomplete="name" placeholder="Your name" />
-              </div>
-              <div>
-                <label for="email">Email</label>
-                <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@company.com" />
-              </div>
-            </div>
-
-            <div class="grid cols-2" style="gap:.8rem">
-              <div>
-                <label for="budget">Budget</label>
-                <select id="budget" name="budget" class="pill" required>
-                  <option value="">Select a range</option>
-                  <option value="under-10k">Under $10k</option>
-                  <option value="10-25k">$10k – $25k</option>
-                  <option value="25-50k">$25k – $50k</option>
-                  <option value="50k+">$50k+</option>
-                </select>
-              </div>
-              <div>
-                <label for="timeline">Timeline</label>
-                <select id="timeline" name="timeline" class="pill" required>
-                  <option value="">Choose</option>
-                  <option value="asap">ASAP</option>
-                  <option value="4-8w">4–8 weeks</option>
-                  <option value="2-3m">2–3 months</option>
-                  <option value="flexible">Flexible</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label for="message">Project brief</label>
-              <textarea id="message" name="message" rows="6" placeholder="What are we building? Goals, users, integrations…" required></textarea>
-            </div>
-
-            <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
-
-            <div class="flex" style="gap:.6rem; flex-wrap: wrap;">
-              <button class="btn primary" type="submit">Send inquiry</button>
-              <button class="btn ghost" type="button" id="copyEmail">Copy email</button>
-              <a href="/resume.pdf" class="btn ghost">Download résumé</a>
-            </div>
-            <div class="status" id="formStatus" aria-live="polite">I reply within one business day.</div>
-          </form>
-        </div>
-
-        <!-- Live effectiveness panel -->
-        <aside class="card live fx-shine">
-          <div class="center-between">
-            <div>
-              <div class="kicker">Live snapshot (demo)</div>
-              <strong>Effectiveness in real time</strong>
-            </div>
-            <div class="badge-row">
-              <span class="pill" id="slaBadge">SLA 99.95%</span>
-              <span class="pill ok" id="svcHealth">Healthy</span>
-            </div>
-          </div>
-
-          <div class="live-metrics">
-            <div class="lm"><div class="lm-label">Avg first reply</div><div class="lm-value"><span id="lmReply">–</span> min</div></div>
-            <div class="lm"><div class="lm-label">Uptime (90d)</div><div class="lm-value"><span id="lmUptime">–</span>%</div></div>
-            <div class="lm"><div class="lm-label">p95 latency</div><div class="lm-value"><span id="lmP95">–</span> ms</div></div>
-            <div class="lm"><div class="lm-label">Deploys this week</div><div class="lm-value" id="lmDeploys">–</div></div>
-            <div class="lm"><div class="lm-label">Incidents (90d)</div><div class="lm-value" id="lmIncidents">–</div></div>
-            <div class="lm"><div class="lm-label">A/B uplift</div><div class="lm-value"><span id="lmAB">–</span>%</div></div>
-          </div>
-
-          <canvas id="liveSpark" height="70" aria-label="Last minute latency sparkline" role="img"></canvas>
-
-          <div class="live-actions">
-            <button class="btn ghost" id="simulateSpike">Simulate traffic spike</button>
-            <button class="btn ghost" id="simulateDeploy">Simulate deploy</button>
-          </div>
-          <p class="muted" style="margin:.5rem 0 0">Synthetic demo data. In production this connects to real APM/uptime and deploy hooks.</p>
-        </aside>
+      <div class="panel">
+        <h4>👥 Users by Interactions</h4>
+        <ul class="ranking" id="userRankingList"></ul>
       </div>
     </section>
   </main>
 
-  <footer>
-    <div class="container center-between">
-      <div>© <span id="year"></span> c23m9. <span>All rights reserved.</span></div>
-      <div class="flex" style="gap:.6rem;">
-        <a class="pill" href="#" aria-label="GitHub">GitHub</a>
-        <a class="pill" href="#" aria-label="LinkedIn">LinkedIn</a>
-        <a class="pill" href="mailto:misa@c23m9.com" aria-label="Email">Email</a>
-      </div>
+  <!-- Floating Quick Links -->
+  <nav class="quicklinks" id="quicklinks" aria-label="Quick Links">
+    <button class="ql-handle" id="qlToggle" aria-expanded="false" aria-controls="qlPanel" title="Open quick links">
+      <span class="ql-icon" aria-hidden="true">☰</span>
+      <span class="ql-label">Pages</span>
+    </button>
+    <div class="ql-panel" id="qlPanel" role="menu">
+      <div class="ql-head">Jump to</div>
+      <a href="employment.html" role="menuitem">💼 <span>Employment</span></a>
+      <a href="immigration.html" role="menuitem">🛂 <span>Immigration</span></a>
+      <a href="orr.html" role="menuitem">🏛️ <span>ORR</span></a>
+      <a href="prog.html" role="menuitem">📋 <span>Program Enrollment</span></a>
     </div>
-  </footer>
+  </nav>
 
-  <script src="/scripts.js"></script>
+  <script>
+    /* ===== State ===== */
+    let chartInstance, rawData=[], filteredData=[];
+    let userChoices, serviceChoices;
+
+    const els = {
+      filterType: document.getElementById('filterType'),
+      fileInput: document.getElementById('fileInput'),
+      userFilter: document.getElementById('userFilter'),
+      serviceFilter: document.getElementById('serviceFilter'),
+      uniqueCases: document.getElementById('uniqueCases'),
+      totalServices: document.getElementById('totalServices'),
+      serviceList: document.getElementById('mostCommonService'),
+      userRankingList: document.getElementById('userRankingList'),
+      serviceChart: document.getElementById('serviceChart'),
+      chartEmpty: document.getElementById('chartEmpty'),
+      startDate: document.getElementById('startDate'),
+      endDate: document.getElementById('endDate'),
+      monthDropdown: document.getElementById('monthDropdown'),
+      monthYearDropdown: document.getElementById('monthYearDropdown'),
+      quarterSelect: document.getElementById('quarterSelect'),
+      quarterYear: document.getElementById('quarterYear'),
+      btnApply: document.getElementById('btnApply'),
+      btnClear: document.getElementById('btnClear'),
+      btnExportCsv: document.getElementById('btnExportCsv'),
+      btnExportXlsx: document.getElementById('btnExportXlsx'),
+    };
+
+    /* ===== Visibility controller ===== */
+    function toggleDateInputs(){
+      const mode = els.filterType.value;
+      document.querySelectorAll('.mode-range,.mode-month,.mode-quarter').forEach(el => el.classList.remove('show'));
+      if(mode === 'range') document.querySelectorAll('.mode-range').forEach(el => el.classList.add('show'));
+      else if(mode === 'month') document.querySelectorAll('.mode-month').forEach(el => el.classList.add('show'));
+      else if(mode === 'quarter') document.querySelectorAll('.mode-quarter').forEach(el => el.classList.add('show'));
+    }
+
+    /* ===== Helpers ===== */
+    function persistSelections(){
+      const state = {
+        users: userChoices ? userChoices.getValue(true) : [],
+        services: serviceChoices ? serviceChoices.getValue(true) : []
+      };
+      localStorage.setItem('c23m9.selections', JSON.stringify(state));
+    }
+    function restoreSelections(){
+      const raw = localStorage.getItem('c23m9.selections');
+      if(!raw) return;
+      try{
+        const s = JSON.parse(raw);
+        if(Array.isArray(s.users)) userChoices.setChoiceByValue(s.users);
+        if(Array.isArray(s.services)) serviceChoices.setChoiceByValue(s.services);
+      }catch(e){}
+    }
+    function monthEnd(y,m){ return new Date(y, m+1, 0, 23,59,59,999); }
+    function computeDateRange(){
+      const mode = els.filterType.value;
+      let startDate, endDate;
+      if(mode === 'range'){
+        if(els.startDate.value) startDate = new Date(els.startDate.value);
+        if(els.endDate.value){ endDate = new Date(els.endDate.value); endDate.setHours(23,59,59,999); }
+      } else if(mode === 'month'){
+        const m = els.monthDropdown.value, y = els.monthYearDropdown.value;
+        if(m !== '' && y !== ''){ startDate = new Date(+y, +m, 1); endDate = monthEnd(+y, +m); }
+      } else if(mode === 'quarter'){
+        const q = els.quarterSelect.value; const y = parseInt(els.quarterYear.value,10);
+        if(y){
+          const map = {Q1:[0,2],Q2:[3,5],Q3:[6,8],Q4:[9,11]};
+          const [sm,em] = map[q] || [0,2];
+          startDate = new Date(y, sm, 1); endDate = monthEnd(y, em);
+        }
+      }
+      return { startDate, endDate };
+    }
+
+    // Read the "Interaction date" from each row robustly
+    function getInteractionDateFromRow(row) {
+      if (!row) return null;
+      const key = Object.keys(row).find(k => {
+        const s = k.trim().toLowerCase().replace(/\s+|_/g, '');
+        return s === 'interactiondate';
+      });
+      const v = key ? row[key] : null;
+
+      if (v instanceof Date && !isNaN(v)) return v;      // already a Date
+      if (typeof v === 'number') {                      // Excel serial
+        const p = XLSX.SSF.parse_date_code(v);
+        if (p) return new Date(Date.UTC(p.y,(p.m||1)-1,p.d||1,p.H||0,p.M||0,p.S||0));
+      }
+      if (typeof v === 'string') {                      // parse string
+        const t = v.trim();
+        const d1 = new Date(t);
+        if (!isNaN(d1)) return d1;
+        const mdy = t.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
+        if (mdy) {
+          let mm = parseInt(mdy[1],10)-1, dd = parseInt(mdy[2],10), yy = parseInt(mdy[3],10);
+          if (yy < 100) yy += 2000;
+          return new Date(yy, mm, dd);
+        }
+      }
+      return null;
+    }
+
+    /* ===== File load ===== */
+    els.fileInput.addEventListener('change', handleFile);
+    function handleFile(e){
+      const file = e.target.files[0]; if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        try{
+          const data = new Uint8Array(ev.target.result);
+          const workbook = XLSX.read(data, { type:'array', cellDates:true });
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+          // Keep raw so dates are Date/number; defval:'' to keep columns consistent
+          const json = XLSX.utils.sheet_to_json(sheet, { defval:'', raw:true });
+
+          // Attach parsed date directly from the row's Interaction date
+          rawData = json.map(row => ({ ...row, _parsedDate: getInteractionDateFromRow(row) }));
+
+          filteredData = rawData.slice();
+          populateDropdowns(rawData);
+          updateDashboard(filteredData);
+          persistSelections();
+        }catch(err){
+          alert("Couldn't read the file. Please ensure it's a valid .xlsx/.xls/.csv");
+          console.error(err);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function initYearDropdown(){
+      if(!els.monthYearDropdown.options.length){
+        const currentYear = new Date().getFullYear();
+        for(let y=currentYear-10; y<=currentYear+5; y++){
+          const opt = document.createElement('option'); opt.value = y; opt.textContent = y;
+          els.monthYearDropdown.appendChild(opt);
+        }
+      }
+    }
+    initYearDropdown();
+
+    function populateDropdowns(data){
+      const users = Array.from(new Set(data.map(r => (r['User']||'').trim()).filter(Boolean))).sort();
+      const services = Array.from(new Set(data.map(r => (r['Service']||'').trim()).filter(Boolean))).sort();
+      els.userFilter.innerHTML=''; els.serviceFilter.innerHTML='';
+      users.forEach(u=>{const o=document.createElement('option');o.value=u;o.textContent=u;els.userFilter.appendChild(o);});
+      services.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;els.serviceFilter.appendChild(o);});
+
+      if(userChoices) userChoices.destroy(); if(serviceChoices) serviceChoices.destroy();
+      userChoices = new Choices(els.userFilter,{removeItemButton:true,placeholder:true,placeholderValue:'All users'});
+      serviceChoices = new Choices(els.serviceFilter,{removeItemButton:true,placeholder:true,placeholderValue:'All services'});
+
+      restoreSelections();
+    }
+
+    /* ===== Actions ===== */
+    function applyFilters(){
+      const { startDate, endDate } = computeDateRange();
+      const selectedUsers = userChoices ? userChoices.getValue(true) : [];
+      const selectedServices = serviceChoices ? serviceChoices.getValue(true) : [];
+
+      filteredData = rawData.filter(row=>{
+        const d = row._parsedDate;
+        const user = (row['User']||'').trim();
+        const service = (row['Service']||'').trim();
+        const dateMatch = (!startDate || !d || isNaN(d)) ? true : (d >= startDate && (!endDate || d <= endDate));
+        const userMatch = selectedUsers.length===0 || selectedUsers.includes(user);
+        const serviceMatch = selectedServices.length===0 || selectedServices.includes(service);
+        return dateMatch && userMatch && serviceMatch;
+      });
+
+      updateDashboard(filteredData);
+      if(filteredData.length===0) alert("No results found with the selected filters.");
+      persistSelections();
+    }
+
+    function clearFilters(){
+      els.filterType.value = '';
+      toggleDateInputs();
+      els.startDate.value = ''; els.endDate.value = '';
+      els.monthDropdown.selectedIndex = 0; els.monthYearDropdown.selectedIndex = 0;
+      els.quarterSelect.value = 'Q1'; els.quarterYear.value = '';
+      if(userChoices) userChoices.removeActiveItems();
+      if(serviceChoices) serviceChoices.removeActiveItems();
+      filteredData = rawData.slice();
+      updateDashboard(filteredData);
+      persistSelections();
+    }
+
+    els.filterType.addEventListener('change', toggleDateInputs);
+    els.btnApply.addEventListener('click', applyFilters);
+    els.btnClear.addEventListener('click', clearFilters);
+    els.btnExportCsv.addEventListener('click', exportToCSV);
+    els.btnExportXlsx.addEventListener('click', exportToExcel);
+
+    // Formatting + latest date helpers
+    function formatDateShort(d) {
+      return (d instanceof Date && !isNaN(d))
+        ? d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+        : '—';
+    }
+    function mostRecentInteractionDate(data) {
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);          // end of today (local time)
+      const MIN_YEAR = 1990;                    // sanity floor (adjust if needed)
+      const MAX_YEAR = today.getFullYear() + 1; // ignore far-future typos like 3023
+
+      let bestPast = null;  // newest date <= today
+      let bestAny  = null;  // fallback: newest date overall
+
+      for (const row of (data || [])) {
+        const d = row._parsedDate;
+        if (!(d instanceof Date) || isNaN(d)) continue;
+
+        const y = d.getFullYear();
+        if (y < MIN_YEAR || y > MAX_YEAR) continue; // drop unrealistic years
+
+        if (!bestAny || d > bestAny) bestAny = d;   // track absolute max
+        if (d <= today && (!bestPast || d > bestPast)) bestPast = d; // track latest in the past
+      }
+      return bestPast || bestAny || null;  // prefer past; fallback to absolute max if all are future
+    }
+
+    /* ===== Dashboard ===== */
+    function updateDashboard(data){
+      const uniqueCases=new Set(), serviceCount=new Map(), userCount=new Map();
+      for(const row of data){
+        const cn=(row['Case number']||'').toString().trim();
+        const sv=(row['Service']||'').toString().trim();
+        const us=(row['User']||'').toString().trim();
+        if(cn) uniqueCases.add(cn);
+        if(sv) serviceCount.set(sv,(serviceCount.get(sv)||0)+1);
+        if(us) userCount.set(us,(userCount.get(us)||0)+1);
+      }
+      els.uniqueCases.textContent = uniqueCases.size.toLocaleString();
+      els.totalServices.textContent = data.length.toLocaleString();
+
+      const sortedServices = [...serviceCount.entries()].sort((a,b)=>b[1]-a[1]);
+      els.serviceList.innerHTML='';
+      sortedServices.slice(0,5).forEach(([n,c])=>{
+        const li=document.createElement('li'); li.textContent=`${n} (${c.toLocaleString()})`; els.serviceList.appendChild(li);
+      });
+
+      drawServiceChart(sortedServices);
+
+      // Most recent Interaction date (from column "Interaction date")
+      const latest = mostRecentInteractionDate(data);
+      document.getElementById('mostRecentInteraction').textContent = formatDateShort(latest);
+
+      const sortedUsers = [...userCount.entries()].sort((a,b)=>b[1]-a[1]);
+      els.userRankingList.innerHTML='';
+      sortedUsers.forEach(([u,c],i)=>{
+        const li=document.createElement('li');
+        li.innerHTML=`<span>${i+1}. ${u || '<span class="muted">Unknown</span>'}</span><span class="muted">${c.toLocaleString()}</span>`;
+        els.userRankingList.appendChild(li);
+      });
+    }
+
+    function drawServiceChart(services){
+      if(chartInstance){ chartInstance.destroy(); chartInstance=null; }
+      const labels = services.map(([k])=>k);
+      const values = services.map(([,v])=>v);
+      if(values.length===0){ els.chartEmpty.hidden=false; return; }
+      els.chartEmpty.hidden=true;
+      chartInstance = new Chart(els.serviceChart.getContext('2d'),{
+        type:'bar',
+        data:{ labels, datasets:[{ label:'Service frequency', data:values, borderWidth:1.5,
+          backgroundColor: values.map(()=> 'rgba(35,201,185,0.28)'),
+          borderColor: values.map(()=> 'rgba(35,201,185,0.9)'),
+          maxBarThickness:40 }]},
+        options:{ responsive:true, maintainAspectRatio:false, animation:{duration:600,easing:'easeOutQuart'},
+          plugins:{ legend:{display:false} },
+          scales:{ x:{ticks:{autoSkip:true,maxRotation:0},grid:{color:'rgba(255,255,255,0.05)'}},
+                   y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'}} } }
+      });
+    }
+
+    /* ===== Export ===== */
+    function exportToCSV(){
+      if(!filteredData.length){ alert('No data to export.'); return; }
+      const headers = Object.keys(filteredData[0]).filter(k=>k!=='_parsedDate');
+      const rows = filteredData.map(r=> headers.map(k=>`"${(r[k]??'').toString().replace(/"/g,'""')}"`).join(','));
+      const csv = [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='filtered_data.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+    function exportToExcel(){
+      if(!filteredData.length){ alert('No data to export.'); return; }
+      const exportData = filteredData.map(({_parsedDate,...rest})=> rest);
+      const ws=XLSX.utils.json_to_sheet(exportData), wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Filtered Data'); XLSX.writeFile(wb, 'filtered_data.xlsx');
+    }
+
+    /* ===== Init ===== */
+    els.filterType.value = '';
+    toggleDateInputs();
+
+    /* ===== Quick Links toggle (floating) ===== */
+    (function(){
+      const root = document.getElementById('quicklinks');
+      const btn  = document.getElementById('qlToggle');
+      const panel= document.getElementById('qlPanel');
+
+      if(!root || !btn || !panel) return;
+
+      function open(){ root.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
+      function close(){ root.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
+
+      btn.addEventListener('click', () => {
+        if(root.classList.contains('open')) close(); else open();
+      });
+
+      // Close on outside click
+      document.addEventListener('click', (e)=>{
+        if(!root.contains(e.target)) close();
+      });
+
+      // Close on Escape
+      document.addEventListener('keydown', (e)=>{
+        if(e.key === 'Escape') close();
+      });
+
+      // Close after navigating
+      panel.querySelectorAll('a').forEach(a=>{
+        a.addEventListener('click', () => close());
+      });
+    })();
+  </script>
 </body>
 </html>

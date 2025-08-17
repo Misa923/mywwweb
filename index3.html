@@ -1,0 +1,824 @@
+<!--
+Big Report Interactive Dashboard (single-file HTML)
+Purpose: Load an XLSX with headers starting at row 6 (A6), focus on 17 key columns, filter, chart, and export.
+How to use:
+ 1) Open locally in a modern browser, click “Load XLSX”, select your Big Report file.
+ 2) Choose a Date Basis (Eligibility / Program / Migration) + a date range; refine with multi-select filters.
+ 3) KPIs, charts, and the table update live. Use the Custom Report Builder to export grouped summaries.
+Notes:
+ - Column letters are mapped by position (A=0 ... AL=37). Adjust the `COL_IDX` map if your layout shifts.
+ - Migration Out is deduped per person (Database ID) across S/T. Earliest non-null date is used for per-row display.
+ - Active in RSSe/RSScm = Enrolled with no Exit date.
+ - Edge handling: blanks, serial dates, malformed strings are safely ignored.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Web & Database</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+  <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+  <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
+  <style>
+    :root{--bg:#0b1220;--card:#121a2b;--muted:#98a2b3;--accent:#4f46e5;--ok:#16a34a;--warn:#f59e0b;--bad:#ef4444}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Inter,Arial,sans-serif;background:linear-gradient(180deg,#0b1220,#0e172a);color:#f8fafc}
+    a{color:inherit}
+    .container{max-width:1300px;margin:24px auto;padding:0 16px}
+    header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .title{display:flex;align-items:center;gap:12px}
+    .title h1{margin:0;font-size:20px;font-weight:700}
+    .title small{color:var(--muted)}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{appearance:none;border:1px solid #26324d;background:#151f35;color:#e5e7eb;border-radius:10px;padding:8px 12px;font-size:13px;cursor:pointer}
+    .btn.primary{background:var(--accent);border-color:transparent}
+    .btn.ghost{background:transparent;border-color:#2a395e}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .card{background:var(--card);border:1px solid #1f2937;border-radius:16px;padding:14px}
+    .grid{display:grid;gap:12px}
+    .grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media (max-width:1100px){.grid.cols-4{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:700px){.grid.cols-4,.grid.cols-3{grid-template-columns:1fr}}
+    .kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+    @media (max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:700px){.kpis{grid-template-columns:repeat(2,1fr)}}
+    .kpi h3{margin:6px 0 2px;font-size:22px}
+    .kpi p{margin:0;color:var(--muted);font-size:12px}
+    label{font-size:12px;color:#cbd5e1}
+    select,input{background:#0f172a;border:1px solid #24324f;color:#e2e8f0;border-radius:10px;padding:8px 10px;font-size:13px}
+    .filters{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+    @media (max-width:1100px){.filters{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:700px){.filters{grid-template-columns:1fr}}
+    .filters .field{display:flex;flex-direction:column;gap:6px}
+    .section-title{display:flex;align-items:center;justify-content:space-between;margin:10px 0 6px}
+    .section-title h2{margin:0;font-size:14px;color:#cbd5e1;text-transform:uppercase;letter-spacing:.08em}
+    canvas{width:100%!important;height:360px!important}
+    .charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    @media (max-width:1100px){.charts{grid-template-columns:1fr}}
+    .table-wrap{background:var(--card);border:1px solid #1f2937;border-radius:16px;padding:8px}
+    .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #2b3c64;border-radius:999px;padding:4px 8px;font-size:12px;color:#cbd5e1}
+    .legend{display:flex;gap:8px;flex-wrap:wrap}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:30}
+    .modal{width:min(720px,92vw);background:#0f172a;border:1px solid #2a395e;border-radius:16px;padding:16px}
+    .modal h3{margin:0 0 6px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="title">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 5h16M4 12h16M4 19h16" stroke="#93c5fd" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <h1>Report</h1>
+          <small>Single-file HTML. Load your XLSX to begin.</small>
+        </div>
+      </div>
+      <div class="actions">
+        <input type="file" id="fileInput" accept=".xlsx,.xls" />
+        <button class="btn" id="btnClear" disabled>Clear Filters</button>
+        <button class="btn ghost" id="btnPresetSave" disabled>Save Preset</button>
+        <button class="btn ghost" id="btnPresetLoad" disabled>Load Preset</button>
+        <button class="btn" id="btnCustomReport" disabled>Custom Report</button>
+        <button class="btn primary" id="btnExportCSV" disabled>Export CSV</button>
+        <button class="btn primary" id="btnExportXLSX" disabled>Export XLSX</button>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="filters">
+        <div class="field">
+          <label for="dateBasis">Date Basis</label>
+          <select id="dateBasis">
+            <option value="eligibilityDate">Eligibility date (P)</option>
+            <option value="RSSeEnroll">RSSe enroll (Z)</option>
+            <option value="RSSeExit">RSSe exit (AA)</option>
+            <option value="RSScmEnroll">RSScm enroll (AB)</option>
+            <option value="RSScmExit">RSScm exit (AC)</option>
+            <option value="migrationOutDate">Migration out (S/T)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="startDate">Start Date</label>
+          <input type="date" id="startDate" />
+        </div>
+        <div class="field">
+          <label for="endDate">End Date</label>
+          <input type="date" id="endDate" />
+        </div>
+        <div class="field">
+          <label for="filterNationality">Nationality (L)</label>
+          <select id="filterNationality" multiple></select>
+        </div>
+        <div class="field">
+          <label for="filterGender">Gender (K)</label>
+          <select id="filterGender" multiple></select>
+        </div>
+        <div class="field">
+          <label for="filterStatus">Status/Category (J)</label>
+          <select id="filterStatus" multiple></select>
+        </div>
+        <div class="field">
+          <label for="filterCity">City (N)</label>
+          <select id="filterCity" multiple></select>
+        </div>
+        <div class="field">
+          <label for="filterCounty">County (O)</label>
+          <select id="filterCounty" multiple></select>
+        </div>
+        <div class="field">
+          <label for="filterRelationship">Relationship (E)</label>
+          <select id="filterRelationship" multiple></select>
+        </div>
+        <div class="field">
+          <label for="filterSecondary">Secondary migrant (Q)</label>
+          <select id="filterSecondary">
+            <option value="">Any</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="filterGoalMet">G1 goal met? (AL)</label>
+          <select id="filterGoalMet">
+            <option value="">Any</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="filterAgeBand">Age band</label>
+          <select id="filterAgeBand">
+            <option value="">Any</option>
+            <option>0–5</option>
+            <option>6–12</option>
+            <option>13–17</option>
+            <option>18–24</option>
+            <option>25–34</option>
+            <option>35–44</option>
+            <option>45–54</option>
+            <option>55–64</option>
+            <option>65+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="filterProgram">Program active</label>
+          <select id="filterProgram">
+            <option value="">Any</option>
+            <option value="RSSe">RSSe active</option>
+            <option value="RSScm">RSScm active</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="searchId">Database ID (A)</label>
+          <input id="searchId" type="text" placeholder="Exact match" />
+        </div>
+      </div>
+      <div class="section-title" style="margin-top:12px">
+        <div class="legend">
+          <span class="pill">Date basis applies to date range filter</span>
+          <span class="pill">Multi-selects support typing</span>
+        </div>
+        <div>
+          <button class="btn" id="btnApply" disabled>Apply</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="kpis" style="margin:12px 0">
+      <div class="card kpi"><p>Total records</p><h3 id="kpiRecords">0</h3></div>
+      <div class="card kpi"><p>Unique individuals</p><h3 id="kpiIndividuals">0</h3></div>
+      <div class="card kpi"><p>Migrated out (unique)</p><h3 id="kpiMigrated">0</h3></div>
+      <div class="card kpi"><p>Secondary migrants</p><h3 id="kpiSecondary">0</h3></div>
+      <div class="card kpi"><p>RSSe active</p><h3 id="kpiRSSeActive">0</h3></div>
+      <div class="card kpi"><p>RSScm active</p><h3 id="kpiRSScmActive">0</h3></div>
+    </section>
+
+    <section class="grid cols-2">
+      <div class="card">
+        <div class="section-title"><h2>Records by Nationality</h2></div>
+        <canvas id="chartNationality"></canvas>
+      </div>
+      <div class="card">
+        <div class="section-title"><h2>Gender Split</h2></div>
+        <canvas id="chartGender"></canvas>
+      </div>
+      <div class="card">
+        <div class="section-title"><h2>Status / Category</h2></div>
+        <canvas id="chartStatus"></canvas>
+      </div>
+      <div class="card">
+        <div class="section-title"><h2>Top Cities</h2></div>
+        <canvas id="chartCity"></canvas>
+      </div>
+      <div class="card">
+        <div class="section-title"><h2>Age Bands</h2></div>
+        <canvas id="chartAge"></canvas>
+      </div>
+      <div class="card">
+        <div class="section-title"><h2>Monthly Trend</h2></div>
+        <div class="legend"><span class="pill" id="trendBasisPill">Basis: Eligibility date</span></div>
+        <canvas id="chartTrend"></canvas>
+      </div>
+    </section>
+
+    <div class="section-title" style="margin-top:16px"><h2>Data Table</h2></div>
+    <section class="table-wrap">
+      <div id="table"></div>
+    </section>
+  </div>
+
+  <!-- Custom Report Modal -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+      <h3>Custom Report Builder</h3>
+      <p style="margin:6px 0;color:#cbd5e1">Choose columns and a grouping dimension to export a summarized XLSX.</p>
+      <div class="grid cols-2">
+        <div>
+          <label>Columns</label>
+          <select id="crColumns" multiple size="10" style="width:100%"></select>
+        </div>
+        <div>
+          <label>Group by</label>
+          <select id="crGroup" style="width:100%"></select>
+          <div style="height:8px"></div>
+          <label>Include metrics</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;color:#cbd5e1;font-size:13px">
+            <label><input type="checkbox" id="crCount" checked /> Count</label>
+            <label><input type="checkbox" id="crMigrated" /> Migrated out (unique)</label>
+            <label><input type="checkbox" id="crSecondary" /> Secondary migrants</label>
+            <label><input type="checkbox" id="crRSSeActive" /> RSSe active</label>
+            <label><input type="checkbox" id="crRSScmActive" /> RSScm active</label>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+        <button class="btn ghost" id="crCancel">Cancel</button>
+        <button class="btn primary" id="crExport">Export XLSX</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ---- Config ----
+  const COL_IDX = { // A-based positions
+    A: 0, E: 4, I: 8, J: 9, K: 10, L: 11, N: 13, O: 14, P: 15, Q: 16,
+    S: 18, T: 19, Z: 25, AA: 26, AB: 27, AC: 28, AD: 29, AE: 30, AF: 31, AG: 32, AL: 37
+  };
+  const FIELDS = {
+    id: COL_IDX.A,
+    relationship: COL_IDX.E,
+    dob: COL_IDX.I,
+    status: COL_IDX.J,
+    gender: COL_IDX.K,
+    nationality: COL_IDX.L,
+    city: COL_IDX.N,
+    county: COL_IDX.O,
+    eligibilityDate: COL_IDX.P,
+    secondaryMigrant: COL_IDX.Q,
+    migHH: COL_IDX.S,
+    migInd: COL_IDX.T,
+    RSSeEnroll: COL_IDX.Z,
+    RSSeExit: COL_IDX.AA,
+    RSScmEnroll: COL_IDX.AB,
+    RSScmExit: COL_IDX.AC,
+    english: COL_IDX.AD,
+    education: COL_IDX.AE,
+    g1: COL_IDX.AF,
+    g1Referral: COL_IDX.AG,
+    g1Met: COL_IDX.AL
+  };
+  const AGE_BANDS = [
+    {label:'0–5', min:0, max:5},{label:'6–12',min:6,max:12},{label:'13–17',min:13,max:17},
+    {label:'18–24',min:18,max:24},{label:'25–34',min:25,max:34},{label:'35–44',min:35,max:44},
+    {label:'45–54',min:45,max:54},{label:'55–64',min:55,max:64},{label:'65+',min:65,max:200}
+  ];
+
+  // ---- State ----
+  let allRows = [];            // raw mapped rows
+  let rows = [];               // filtered rows
+  let personIndex = new Map(); // id -> { hasMigrationOut, RSSeActive, RSScmActive }
+  let charts = {};             // Chart.js instances
+  let grid;                    // Grid.js instance
+  let choices = {};            // select -> Choices instance
+
+  // ---- Utilities ----
+  function excelToDate(v){
+    if(v===undefined||v===null||v==='') return null;
+    if(typeof v === 'number'){ // Excel serial
+      const d = new Date(Date.UTC(1899,11,30));
+      d.setUTCDate(d.getUTCDate()+Math.floor(v));
+      return d;
+    }
+    const d = new Date(v);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  function fmtDate(d){return d? d.toISOString().slice(0,10) : ''}
+  function normStr(x){return (x??'').toString().trim()}
+  function toYesNo(v){const s=normStr(v).toLowerCase(); if(!s) return ''; return (s.startsWith('y')||s==='1'||s==='true')?'Yes':'No'}
+  function calcAge(dob){ if(!dob) return null; const now=new Date(); let a=now.getFullYear()-dob.getFullYear(); const m=now.getMonth()-dob.getMonth(); if(m<0||(m===0&&now.getDate()<dob.getDate())) a--; return (a>=0&&a<150)?a:null }
+  function ageBand(age){ if(age==null) return ''; const b=AGE_BANDS.find(b=>age>=b.min&&age<=b.max); return b?b.label:'' }
+  function earliestDate(a,b){ if(!a) return b||null; if(!b) return a||null; return (a<b)?a:b }
+  function monthKey(d){return d? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`:''}
+
+  // ---- Load & Map Rows ----
+  document.getElementById('fileInput').addEventListener('change', handleFile);
+  document.getElementById('btnApply').addEventListener('click', applyFilters);
+  document.getElementById('btnClear').addEventListener('click', clearFilters);
+  document.getElementById('btnExportCSV').addEventListener('click', exportCSV);
+  document.getElementById('btnExportXLSX').addEventListener('click', exportXLSX);
+  document.getElementById('btnPresetSave').addEventListener('click', savePreset);
+  document.getElementById('btnPresetLoad').addEventListener('click', loadPreset);
+  document.getElementById('btnCustomReport').addEventListener('click', openCustomReport);
+
+  function handleFile(e){
+    resetAll();
+    const file=e.target.files?.[0];
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=evt=>{
+      try{
+        const wb=XLSX.read(new Uint8Array(evt.target.result),{type:'array'});
+        const sheet=wb.Sheets[wb.SheetNames[0]];
+        const range=XLSX.utils.decode_range(sheet['!ref']);
+        range.s.r=5; // start at row 6
+        const data=XLSX.utils.sheet_to_json(sheet,{header:1,range:XLSX.utils.encode_range(range)});
+        const body=data.slice(1); // skip the header row at row 6
+        allRows = body.map((row, idx)=> mapRow(row, idx)).filter(r=>r.id);
+        buildPersonIndex();
+        initFilters();
+        rows=[...allRows];
+        refresh();
+        enableUI();
+      }catch(err){
+        alert('Failed to read file: '+err.message);
+        console.error(err);
+      }
+    }
+    reader.readAsArrayBuffer(file);
+  }
+
+  function mapRow(row, idx){
+    const pick = (i)=> row[i]!==undefined? row[i] : '';
+    const dob = excelToDate(pick(FIELDS.dob));
+    const migHH = excelToDate(pick(FIELDS.migHH));
+    const migInd = excelToDate(pick(FIELDS.migInd));
+    const migrationOutDate = earliestDate(migHH, migInd);
+    const RSSeEnroll = excelToDate(pick(FIELDS.RSSeEnroll));
+    const RSSeExit   = excelToDate(pick(FIELDS.RSSeExit));
+    const RSScmEnroll= excelToDate(pick(FIELDS.RSScmEnroll));
+    const RSScmExit  = excelToDate(pick(FIELDS.RSScmExit));
+    const eligibilityDate = excelToDate(pick(FIELDS.eligibilityDate));
+    const age = calcAge(dob);
+    return {
+      _row: idx+7, // human-readable row number approx
+      id: normStr(pick(FIELDS.id)),
+      relationship: normStr(pick(FIELDS.relationship)),
+      dob, age, ageBand: ageBand(age),
+      status: normStr(pick(FIELDS.status)),
+      gender: normStr(pick(FIELDS.gender)),
+      nationality: normStr(pick(FIELDS.nationality)),
+      city: normStr(pick(FIELDS.city)),
+      county: normStr(pick(FIELDS.county)),
+      eligibilityDate,
+      secondaryMigrant: (function(){
+        const raw = normStr(pick(FIELDS.secondaryMigrant));
+        if(!raw) return '';
+        const yn = toYesNo(raw);
+        return yn;
+      })(),
+      migrationOutDate,
+      RSSeEnroll, RSSeExit, RSScmEnroll, RSScmExit,
+      english: normStr(pick(FIELDS.english)),
+      education: normStr(pick(FIELDS.education)),
+      g1: normStr(pick(FIELDS.g1)),
+      g1Referral: normStr(pick(FIELDS.g1Referral)),
+      g1Met: (function(){
+        const raw = normStr(pick(FIELDS.g1Met));
+        if(!raw) return '';
+        return toYesNo(raw);
+      })()
+    }
+  }
+
+  function buildPersonIndex(){
+    personIndex.clear();
+    for(const r of allRows){
+      const e = personIndex.get(r.id) || { hasMigrationOut:false, RSSeActive:false, RSScmActive:false };
+      if(r.migrationOutDate) e.hasMigrationOut = true; // dedup by individual
+      if(r.RSSeEnroll && !r.RSSeExit) e.RSSeActive = true;
+      if(r.RSScmEnroll && !r.RSScmExit) e.RSScmActive = true;
+      personIndex.set(r.id, e);
+    }
+  }
+
+  // ---- Filters ----
+  function initFilters(){
+    const opts = (key)=> Array.from(new Set(allRows.map(r=>r[key]).filter(Boolean))).sort((a,b)=> a.localeCompare(b));
+    makeChoices('filterNationality', opts('nationality'));
+    makeChoices('filterGender', opts('gender'));
+    makeChoices('filterStatus', opts('status'));
+    makeChoices('filterCity', opts('city'));
+    makeChoices('filterCounty', opts('county'));
+    makeChoices('filterRelationship', opts('relationship'));
+    document.getElementById('filterSecondary').value='';
+    document.getElementById('filterGoalMet').value='';
+    document.getElementById('filterAgeBand').value='';
+    document.getElementById('filterProgram').value='';
+    document.getElementById('searchId').value='';
+
+    document.getElementById('dateBasis').addEventListener('change', ()=>{
+      document.getElementById('trendBasisPill').textContent = 'Basis: '+document.querySelector('#dateBasis option:checked').textContent;
+    });
+  }
+
+  function makeChoices(id, items){
+    const el=document.getElementById(id);
+    el.innerHTML='';
+    for(const v of items){ const o=document.createElement('option'); o.value=v; o.textContent=v; el.appendChild(o); }
+    if(choices[id]) choices[id].destroy();
+    choices[id] = new Choices(el,{ removeItemButton:true, searchResultLimit:20, shouldSort:false });
+  }
+
+  function applyFilters(){
+    const basis = document.getElementById('dateBasis').value;
+    const start = document.getElementById('startDate').value ? new Date(document.getElementById('startDate').value) : null;
+    const end = document.getElementById('endDate').value ? new Date(document.getElementById('endDate').value+'T23:59:59') : null;
+    const nationality = choices['filterNationality']?.getValue(true) || [];
+    const gender = choices['filterGender']?.getValue(true) || [];
+    const status = choices['filterStatus']?.getValue(true) || [];
+    const city = choices['filterCity']?.getValue(true) || [];
+    const county = choices['filterCounty']?.getValue(true) || [];
+    const relationship = choices['filterRelationship']?.getValue(true) || [];
+    const secondary = normStr(document.getElementById('filterSecondary').value);
+    const goalMet = normStr(document.getElementById('filterGoalMet').value);
+    const ageBandSel = normStr(document.getElementById('filterAgeBand').value);
+    const prog = normStr(document.getElementById('filterProgram').value);
+    const searchId = normStr(document.getElementById('searchId').value);
+
+    rows = allRows.filter(r=>{
+      const date = r[basis];
+      const dateOK = (!start || !date || date>=start) && (!end || !date || date<=end);
+      const nationalityOK = nationality.length===0 || nationality.includes(r.nationality);
+      const genderOK = gender.length===0 || gender.includes(r.gender);
+      const statusOK = status.length===0 || status.includes(r.status);
+      const cityOK = city.length===0 || city.includes(r.city);
+      const countyOK = county.length===0 || county.includes(r.county);
+      const relationshipOK = relationship.length===0 || relationship.includes(r.relationship);
+      const secondaryOK = !secondary || r.secondaryMigrant===secondary;
+      const goalOK = !goalMet || r.g1Met===goalMet;
+      const ageOK = !ageBandSel || r.ageBand===ageBandSel;
+      const progOK = !prog || (prog==='RSSe' ? (!!r.RSSeEnroll && !r.RSSeExit) : (!!r.RSScmEnroll && !r.RSScmExit));
+      const idOK = !searchId || r.id===searchId;
+      return dateOK && nationalityOK && genderOK && statusOK && cityOK && countyOK && relationshipOK && secondaryOK && goalOK && ageOK && progOK && idOK;
+    });
+
+    refresh();
+  }
+
+  function clearFilters(){
+    document.getElementById('startDate').value='';
+    document.getElementById('endDate').value='';
+    for(const id of ['filterNationality','filterGender','filterStatus','filterCity','filterCounty','filterRelationship']){
+      choices[id]?.removeActiveItems();
+    }
+    document.getElementById('filterSecondary').value='';
+    document.getElementById('filterGoalMet').value='';
+    document.getElementById('filterAgeBand').value='';
+    document.getElementById('filterProgram').value='';
+    document.getElementById('searchId').value='';
+    rows=[...allRows];
+    refresh();
+  }
+
+  function enableUI(){
+    for(const id of ['btnApply','btnClear','btnExportCSV','btnExportXLSX','btnPresetSave','btnPresetLoad','btnCustomReport']){
+      document.getElementById(id).disabled=false;
+    }
+  }
+
+  // ---- KPIs & Charts ----
+  function refresh(){
+    buildPersonIndex(); // keep current
+    updateKPIs();
+    updateCharts();
+    renderTable();
+  }
+
+  function updateKPIs(){
+    const totalRecords = rows.length;
+    const uniqueIds = new Set(rows.map(r=>r.id));
+    const migratedIds = new Set(rows.filter(r=>r.migrationOutDate).map(r=>r.id));
+    const secondary = rows.filter(r=>r.secondaryMigrant==='Yes').length;
+    let RSSeActive=0, RSScmActive=0;
+    for(const id of uniqueIds){
+      const p = personIndex.get(id);
+      if(p?.RSSeActive) RSSeActive++;
+      if(p?.RSScmActive) RSScmActive++;
+    }
+    document.getElementById('kpiRecords').textContent=String(totalRecords);
+    document.getElementById('kpiIndividuals').textContent=String(uniqueIds.size);
+    document.getElementById('kpiMigrated').textContent=String(migratedIds.size);
+    document.getElementById('kpiSecondary').textContent=String(secondary);
+    document.getElementById('kpiRSSeActive').textContent=String(RSSeActive);
+    document.getElementById('kpiRSScmActive').textContent=String(RSScmActive);
+  }
+
+  function updateCharts(){
+    const by = (key)=> countBy(rows.map(r=>r[key]).filter(Boolean));
+    const nat = topEntries(by('nationality'), 20);
+    drawBar('chartNationality', nat.labels, nat.values, 'Records');
+
+    const gen = by('gender');
+    drawDoughnut('chartGender', Object.keys(gen), Object.values(gen));
+
+    const stat = topEntries(by('status'), 20);
+    drawBar('chartStatus', stat.labels, stat.values, 'Records');
+
+    const city = topEntries(by('city'), 10);
+    drawBar('chartCity', city.labels, city.values, 'Top Cities', true);
+
+    const age = by('ageBand');
+    const ageLabels = AGE_BANDS.map(b=>b.label);
+    drawBar('chartAge', ageLabels, ageLabels.map(l=>age[l]||0), 'Individuals');
+
+    const basis = document.getElementById('dateBasis').value;
+    const trend = countBy(rows.map(r=>r[basis]).filter(Boolean).map(d=>monthKey(d)));
+    const tLabels = Object.keys(trend).sort();
+    const tValues = tLabels.map(k=>trend[k]);
+    drawLine('chartTrend', tLabels, tValues, 'Monthly');
+  }
+
+  function countBy(arr){ const m={}; for(const v of arr){ m[v]=(m[v]||0)+1 } return m }
+  function topEntries(obj, n){ const entries=Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,n); return {labels:entries.map(e=>e[0]), values:entries.map(e=>e[1])} }
+
+  function destroyChart(id){ if(charts[id]){ charts[id].destroy(); delete charts[id]; } }
+  function drawBar(id, labels, data, label, horizontal=false){
+    destroyChart(id);
+    const ctx=document.getElementById(id);
+    charts[id]=new Chart(ctx,{ type: horizontal?'bar':'bar', data:{ labels, datasets:[{ label, data }] }, options:{ indexAxis: horizontal?'y':'x', plugins:{ legend:{display:false} }, scales:{ x:{ ticks:{autoSkip:false,maxRotation:0} }, y:{ beginAtZero:true } } } });
+  }
+  function drawDoughnut(id, labels, data){ destroyChart(id); const ctx=document.getElementById(id); charts[id]=new Chart(ctx,{ type:'doughnut', data:{ labels, datasets:[{ data }] }, options:{ plugins:{ legend:{position:'bottom'} } } }) }
+  function drawLine(id, labels, data, label){ destroyChart(id); const ctx=document.getElementById(id); charts[id]=new Chart(ctx,{ type:'line', data:{ labels, datasets:[{ label, data, tension:.2, fill:false }] }, options:{ plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true } } } }) }
+
+  // ---- Table ----
+  function renderTable(){
+    const columns = [
+      {id:'id', name:'Database ID'},
+      {id:'relationship', name:'Relationship'},
+      {id:'dob', name:'DOB', formatter:(cell)=> fmtDate(cell)},
+      {id:'age', name:'Age'},
+      {id:'ageBand', name:'Age band'},
+      {id:'status', name:'Status/Category'},
+      {id:'gender', name:'Gender'},
+      {id:'nationality', name:'Nationality'},
+      {id:'city', name:'City'},
+      {id:'county', name:'County'},
+      {id:'eligibilityDate', name:'Eligibility date', formatter:(cell)=> fmtDate(cell)},
+      {id:'secondaryMigrant', name:'Secondary migrant'},
+      {id:'migrationOutDate', name:'Migration out (S/T)', formatter:(cell)=> fmtDate(cell)},
+      {id:'RSSeEnroll', name:'RSSe enroll', formatter:(cell)=> fmtDate(cell)},
+      {id:'RSSeExit', name:'RSSe exit', formatter:(cell)=> fmtDate(cell)},
+      {id:'RSScmEnroll', name:'RSScm enroll', formatter:(cell)=> fmtDate(cell)},
+      {id:'RSScmExit', name:'RSScm exit', formatter:(cell)=> fmtDate(cell)},
+      {id:'english', name:'English ability'},
+      {id:'education', name:'Education level'},
+      {id:'g1', name:'G1 goal'},
+      {id:'g1Referral', name:'G1 referral'},
+      {id:'g1Met', name:'G1 met?'}
+    ];
+
+    const data = rows.map(r=> columns.map(c=> c.formatter? c.formatter(r[c.id]) : r[c.id]));
+    const headers = columns.map(c=>c.name);
+
+    if(grid){ grid.updateConfig({ data, columns: headers, pagination:{limit:20}, sort:true, search:true }).forceRender(); }
+    else{
+      grid = new gridjs.Grid({
+        columns: headers,
+        data,
+        pagination: { limit: 20 },
+        sort: true,
+        search: true,
+        style: {
+          table: { 'font-size':'13px' },
+          td: { 'white-space':'nowrap' },
+        }
+      }).render(document.getElementById('table'));
+    }
+  }
+
+  // ---- Export ----
+  function exportCSV(){
+    if(!rows.length) return;
+    const arr = rows.map(r=>({
+      'Database ID': r.id,
+      'Relationship': r.relationship,
+      'DOB': fmtDate(r.dob),
+      'Age': r.age,
+      'Age band': r.ageBand,
+      'Status/Category': r.status,
+      'Gender': r.gender,
+      'Nationality': r.nationality,
+      'City': r.city,
+      'County': r.county,
+      'Eligibility date': fmtDate(r.eligibilityDate),
+      'Secondary migrant': r.secondaryMigrant,
+      'Migration out (S/T)': fmtDate(r.migrationOutDate),
+      'RSSe enroll': fmtDate(r.RSSeEnroll),
+      'RSSe exit': fmtDate(r.RSSeExit),
+      'RSScm enroll': fmtDate(r.RSScmEnroll),
+      'RSScm exit': fmtDate(r.RSScmExit),
+      'English ability': r.english,
+      'Education level': r.education,
+      'G1 goal': r.g1,
+      'G1 referral': r.g1Referral,
+      'G1 met?': r.g1Met,
+    }));
+    const headers = Object.keys(arr[0]);
+    const rowsStr = arr.map(obj=> headers.map(h=> '"'+String(obj[h]??'').replace(/"/g,'""')+'"').join(','));
+    const csv = [headers.join(','), ...rowsStr].join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    downloadBlob(blob, 'big-report-filtered.csv');
+  }
+
+  function exportXLSX(){
+    if(!rows.length) return;
+    const arr = rows.map(r=>({
+      Database_ID: r.id,
+      Relationship: r.relationship,
+      DOB: fmtDate(r.dob),
+      Age: r.age,
+      Age_band: r.ageBand,
+      Status_or_category: r.status,
+      Gender: r.gender,
+      Nationality: r.nationality,
+      City: r.city,
+      County: r.county,
+      Eligibility_date: fmtDate(r.eligibilityDate),
+      Secondary_migrant: r.secondaryMigrant,
+      Migration_out: fmtDate(r.migrationOutDate),
+      RSSe_enroll: fmtDate(r.RSSeEnroll),
+      RSSe_exit: fmtDate(r.RSSeExit),
+      RSScm_enroll: fmtDate(r.RSScmEnroll),
+      RSScm_exit: fmtDate(r.RSScmExit),
+      English_ability: r.english,
+      Education_level: r.education,
+      G1_goal: r.g1,
+      G1_referral: r.g1Referral,
+      G1_met: r.g1Met
+    }));
+    const ws = XLSX.utils.json_to_sheet(arr);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Filtered');
+    XLSX.writeFile(wb, 'big-report-filtered.xlsx');
+  }
+
+  function downloadBlob(blob, filename){
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  }
+
+  // ---- Presets ----
+  function savePreset(){
+    const p = {
+      dateBasis: document.getElementById('dateBasis').value,
+      startDate: document.getElementById('startDate').value,
+      endDate: document.getElementById('endDate').value,
+      nationality: choices['filterNationality']?.getValue(true) || [],
+      gender: choices['filterGender']?.getValue(true) || [],
+      status: choices['filterStatus']?.getValue(true) || [],
+      city: choices['filterCity']?.getValue(true) || [],
+      county: choices['filterCounty']?.getValue(true) || [],
+      relationship: choices['filterRelationship']?.getValue(true) || [],
+      secondary: document.getElementById('filterSecondary').value,
+      goalMet: document.getElementById('filterGoalMet').value,
+      ageBand: document.getElementById('filterAgeBand').value,
+      program: document.getElementById('filterProgram').value,
+      searchId: document.getElementById('searchId').value
+    };
+    localStorage.setItem('bigReportPreset', JSON.stringify(p));
+    alert('Preset saved');
+  }
+  function loadPreset(){
+    const txt = localStorage.getItem('bigReportPreset');
+    if(!txt) return alert('No preset found');
+    const p = JSON.parse(txt);
+    document.getElementById('dateBasis').value=p.dateBasis||'eligibilityDate';
+    document.getElementById('startDate').value=p.startDate||'';
+    document.getElementById('endDate').value=p.endDate||'';
+    for(const [id,vals] of Object.entries({
+      filterNationality:p.nationality||[], filterGender:p.gender||[], filterStatus:p.status||[],
+      filterCity:p.city||[], filterCounty:p.county||[], filterRelationship:p.relationship||[]
+    })){
+      choices[id]?.removeActiveItems();
+      vals.forEach(v=> choices[id]?.setChoiceByValue(v));
+    }
+    document.getElementById('filterSecondary').value=p.secondary||'';
+    document.getElementById('filterGoalMet').value=p.goalMet||'';
+    document.getElementById('filterAgeBand').value=p.ageBand||'';
+    document.getElementById('filterProgram').value=p.program||'';
+    document.getElementById('searchId').value=p.searchId||'';
+    applyFilters();
+  }
+
+  // ---- Custom Report Builder ----
+  const modal = document.getElementById('modalBackdrop');
+  document.getElementById('crCancel').addEventListener('click', ()=> modal.style.display='none');
+  document.getElementById('crExport').addEventListener('click', exportCustomReport);
+
+  function openCustomReport(){
+    const colDefs = [
+      ['id','Database ID'],['relationship','Relationship'],['dob','DOB'],['age','Age'],['ageBand','Age band'],
+      ['status','Status/Category'],['gender','Gender'],['nationality','Nationality'],['city','City'],['county','County'],
+      ['eligibilityDate','Eligibility date'],['secondaryMigrant','Secondary migrant'],['migrationOutDate','Migration out'],
+      ['RSSeEnroll','RSSe enroll'],['RSSeExit','RSSe exit'],['RSScmEnroll','RSScm enroll'],['RSScmExit','RSScm exit'],
+      ['english','English ability'],['education','Education level'],['g1','G1 goal'],['g1Referral','G1 referral'],['g1Met','G1 met?']
+    ];
+    const colsSel = document.getElementById('crColumns');
+    colsSel.innerHTML='';
+    for(const [key,label] of colDefs){ const o=document.createElement('option'); o.value=key; o.textContent=label; colsSel.appendChild(o); }
+    const groupSel = document.getElementById('crGroup');
+    groupSel.innerHTML='';
+    for(const [key,label] of [['nationality','Nationality'],['gender','Gender'],['status','Status/Category'],['city','City'],['county','County'],['ageBand','Age band'],['secondaryMigrant','Secondary migrant']]){
+      const o=document.createElement('option'); o.value=key; o.textContent=label; groupSel.appendChild(o);
+    }
+    modal.style.display='flex';
+  }
+
+  function exportCustomReport(){
+    const cols = Array.from(document.getElementById('crColumns').selectedOptions).map(o=>o.value);
+    const groupKey = document.getElementById('crGroup').value;
+    const inc = {
+      count: document.getElementById('crCount').checked,
+      migrated: document.getElementById('crMigrated').checked,
+      secondary: document.getElementById('crSecondary').checked,
+      RSSeActive: document.getElementById('crRSSeActive').checked,
+      RSScmActive: document.getElementById('crRSScmActive').checked
+    };
+    if(!groupKey){ alert('Choose a group-by field'); return; }
+
+    const groups = new Map();
+    for(const r of rows){
+      const k = r[groupKey] || '(blank)';
+      if(!groups.has(k)) groups.set(k, { rows: [], ids: new Set(), migrated: new Set(), RSSe: new Set(), RSScm: new Set(), secondary:0 });
+      const g = groups.get(k);
+      g.rows.push(r);
+      g.ids.add(r.id);
+      if(r.migrationOutDate) g.migrated.add(r.id);
+      const p = personIndex.get(r.id);
+      if(p?.RSSeActive) g.RSSe.add(r.id);
+      if(p?.RSScmActive) g.RSScm.add(r.id);
+      if(r.secondaryMigrant==='Yes') g.secondary++;
+    }
+
+    const out = [];
+    for(const [k,g] of groups){
+      const base = { Group: k };
+      if(inc.count) base.Count = g.rows.length;
+      if(inc.migrated) base.Migrated_unique = g.migrated.size;
+      if(inc.secondary) base.Secondary_migrants = g.secondary;
+      if(inc.RSSeActive) base.RSSe_active_unique = g.RSSe.size;
+      if(inc.RSScmActive) base.RSScm_active_unique = g.RSScm.size;
+      out.push(base);
+    }
+
+    const ws = XLSX.utils.json_to_sheet(out);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Summary');
+
+    if(cols.length){
+      const detail = rows.map(r=>{
+        const o={};
+        for(const c of cols){ o[c]= formatCell(c, r[c]); }
+        return o;
+      });
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(detail), 'Detail');
+    }
+
+    XLSX.writeFile(wb, 'big-report-custom.xlsx');
+    modal.style.display='none';
+  }
+
+  function formatCell(key, val){
+    if(val instanceof Date) return fmtDate(val);
+    return val ?? '';
+  }
+
+  // ---- Reset ----
+  function resetAll(){
+    allRows=[]; rows=[]; personIndex.clear();
+    for(const id in charts){ destroyChart(id); }
+    charts={}; if(grid){ grid.destroy(); grid=null; }
+  }
+</script>
+</body>
+</html>
