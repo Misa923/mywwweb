@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en" data-theme="auto" data-variant="" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>c23m9 — Tech</title>
+  <meta name="description" content="Engineering principles, patterns, SLOs, and a practical SLO burn-rate simulator. Built by c23m9." />
+  <meta name="theme-color" content="#0f172a" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tech.css" />
+  <style>html{scroll-behavior:smooth}</style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="tech-header">
+    <div class="tech-wrap center-between">
+      <a class="tech-brand" href="./" aria-label="Back to main">
+        <svg width="24" height="24" viewBox="0 0 64 64" aria-hidden="true">
+          <defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--brand)"/><stop offset="100%" stop-color="var(--brand-2)"/></linearGradient></defs>
+          <path fill="url(#tg)" d="M32 6c12 0 22 4 22 10v20c0 6-10 10-22 10S10 42 10 36V16c0-6 10-10 22-10zm0 8c-9.9 0-18 3-18 6s8.1 6 18 6 18-3 18-6-8.1-6-18-6zm0 16c-9.9 0-18-3-18-6v6c0 3 8.1 6 18 6s18-3 18-6v-6c0 3-8.1 6-18 6z"/>
+        </svg>
+        <span>c23m9 — Tech</span>
+      </a>
+      <div class="tech-actions">
+        <!-- Visible toggles (persisted) -->
+        <button class="btn ghost" id="themeToggle" title="Toggle light/dark">🌓</button>
+        <button class="btn ghost" id="spideyToggle" title="Toggle Spider palette">🕷️</button>
+        <a class="btn" href="#contactTech" title="Contact">Contact</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="tech-wrap">
+    <!-- HERO -->
+    <section class="tech-hero">
+      <h1>Platform engineering, data you can trust</h1>
+      <p>Schemas, APIs, deploys, observability — shipped the dependable way.</p>
+      <div class="toggle-hint" role="note">
+  Tip: try the <strong>Spider</strong> (🕷️) theme in the header.
+</div>
+      <div class="pillstrap">
+        <span class="pill">PostgreSQL first</span>
+        <span class="pill">OpenAPI & GraphQL</span>
+        <span class="pill">IaC (Terraform)</span>
+        <span class="pill">Zero-downtime deploys</span>
+        <span class="pill">p95 performance</span>
+        <span class="pill">Least privilege</span>
+      </div>
+    </section>
+
+    <!-- PRINCIPLES -->
+    <section class="section-block" id="principles">
+      <div class="section-title">
+        <div>
+          <h2>Engineering principles</h2>
+          <span class="kicker">Boring is beautiful. Reliable beats flashy.</span>
+        </div>
+      </div>
+      <div class="tech-grid">
+        <article class="tech-card">
+          <div class="pill">1. Design for clarity</div>
+          <h3>Simple beats clever</h3>
+          <ul class="tight">
+            <li>Small surface-area APIs with explicit contracts</li>
+            <li>Readable schemas, real names, docstrings</li>
+            <li>Single owners, single sources of truth</li>
+          </ul>
+        </article>
+        <article class="tech-card">
+          <div class="pill">2. Make it observable</div>
+          <h3>Measure before tuning</h3>
+          <ul class="tight">
+            <li>RED + USE metrics, golden signals</li>
+            <li>Structured logs, trace IDs everywhere</li>
+            <li>SLOs with burn alerts, not noise</li>
+          </ul>
+        </article>
+        <article class="tech-card">
+          <div class="pill">3. Ship safely</div>
+          <h3>Automate the scary parts</h3>
+          <ul class="tight">
+            <li>Blue/green or canary deploys</li>
+            <li>Migrations with guards & fallbacks</li>
+            <li>Backups tested with restores</li>
+          </ul>
+        </article>
+        <article class="tech-card">
+          <div class="pill">4. Secure by default</div>
+          <h3>Least privilege, always</h3>
+          <ul class="tight">
+            <li>Short-lived creds & minimal IAM</li>
+            <li>CSP, TLS, dependency hygiene</li>
+            <li>Threat modeling as a habit</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section class="section-block" id="servicesTech">
+      <div class="section-title">
+        <div>
+          <h2>What we ship</h2>
+          <span class="kicker">From design to production — and after</span>
+        </div>
+      </div>
+      <div class="tech-grid">
+        <article class="tech-card">
+          <div class="pill">Web Apps</div>
+          <h3>Modern & accessible</h3>
+          <p>SSR/SPA setups that load fast and are a joy to maintain.</p>
+          <div class="badge-row"><span class="pill">Next/React</span><span class="pill">Vite</span><span class="pill">Testing</span></div>
+        </article>
+        <article class="tech-card">
+          <div class="pill">Data & DB</div>
+          <h3>Clean schemas</h3>
+          <p>PostgreSQL first, indexes shaped by queries, safe migrations.</p>
+          <div class="badge-row"><span class="pill">PostgreSQL</span><span class="pill">Partitioning</span><span class="pill">Backups</span></div>
+        </article>
+        <article class="tech-card">
+          <div class="pill">APIs</div>
+          <h3>Small & well-documented</h3>
+          <p>OpenAPI/GraphQL, strong typing, rate limits, testable stubs.</p>
+          <div class="badge-row"><span class="pill">OpenAPI</span><span class="pill">GraphQL</span><span class="pill">gRPC</span></div>
+        </article>
+        <article class="tech-card">
+          <div class="pill">Cloud & Ops</div>
+          <h3>Confidence at release</h3>
+          <p>Containers, IaC, rollbacks, and hooks to APM/uptime.</p>
+          <div class="badge-row"><span class="pill">Docker</span><span class="pill">Terraform</span><span class="pill">CDN/Edge</span></div>
+        </article>
+        <article class="tech-card">
+          <div class="pill">Perf</div>
+          <h3>p95 reality</h3>
+          <p>Real-user monitoring and targeted cache strategies.</p>
+          <div class="badge-row"><span class="pill">RUM</span><span class="pill">HTTP/3</span><span class="pill">CDN</span></div>
+        </article>
+        <article class="tech-card">
+          <div class="pill">Security</div>
+          <h3>Practical safety</h3>
+          <p>OWASP-first with CSP, SAST/DAST, and alert drills.</p>
+          <div class="badge-row"><span class="pill">OWASP</span><span class="pill">CSP</span><span class="pill">SAST/DAST</span></div>
+        </article>
+      </div>
+    </section>
+<!-- DJANGO-FIRST DELIVERY -->
+<section class="section-block" id="django">
+  <div class="section-title">
+    <div>
+      <h2>Django-first delivery</h2>
+      <span class="kicker">Fast CRUD, real auth, clean migrations, solid ops</span>
+    </div>
+  </div>
+
+  <div class="tech-grid">
+    <article class="tech-card">
+      <div class="pill">Django + DRF</div>
+      <h3>Clean APIs quickly</h3>
+      <ul class="tight">
+        <li>Typed serializers & validators</li>
+        <li>ViewSets + routers for consistent URLs</li>
+        <li>OpenAPI schema export + API docs</li>
+      </ul>
+    </article>
+
+    <article class="tech-card">
+      <div class="pill">Admin + Permissions</div>
+      <h3>Useful back office</h3>
+      <ul class="tight">
+        <li>Curated Django Admin for staff workflows</li>
+        <li>Role-based access (groups/permissions)</li>
+        <li>Row-level checks where needed</li>
+      </ul>
+    </article>
+
+    <article class="tech-card">
+      <div class="pill">Async & Jobs</div>
+      <h3>Celery + Redis</h3>
+      <ul class="tight">
+        <li>Idempotent tasks + retries</li>
+        <li>Rate limits + backoff for 3rd parties</li>
+        <li>Beat schedules with audit logs</li>
+      </ul>
+    </article>
+
+    <article class="tech-card">
+      <div class="pill">Performance</div>
+      <h3>Make queries cheap</h3>
+      <ul class="tight">
+        <li>Index-first modeling, pg_stat_statements</li>
+        <li>select_related/prefetch_related hygiene</li>
+        <li>Per-view caching + CDN edge</li>
+      </ul>
+    </article>
+
+    <article class="tech-card">
+      <div class="pill">Security</div>
+      <h3>Safe by default</h3>
+      <ul class="tight">
+        <li>Settings split by env, DJANGO_SECURE_*</li>
+        <li>CSP, HTTPS only, HSTS, cookie flags</li>
+        <li>Dependency audit, secret rotation</li>
+      </ul>
+    </article>
+
+    <article class="tech-card">
+      <div class="pill">Ops</div>
+      <h3>Ship & observe</h3>
+      <ul class="tight">
+        <li>12-factor settings, Docker + Terraform</li>
+        <li>Zero-downtime deploys + migrations guard</li>
+        <li>APM + SLOs wired to alerts</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<!-- DRF EXAMPLE -->
+<section class="section-block" id="drf-example">
+  <div class="section-title">
+    <div>
+      <h2>Django REST Framework pattern</h2>
+      <span class="kicker">Tiny surface area, strong contracts</span>
+    </div>
+  </div>
+
+  <div class="tech-grid">
+    <article class="tech-card">
+      <h3>Serializer + ViewSet + Router</h3>
+<pre><code># serializers.py
+class ProductIn(serializers.Serializer):
+    sku = serializers.CharField(max_length=64)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+
+class ProductOut(ProductIn):
+    id = serializers.IntegerField(read_only=True)
+    in_stock = serializers.BooleanField()
+
+# views.py
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all().select_related("category")
+    serializer_class = ProductOut
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ["sku", "category_id"]
+    search_fields = ["sku"]
+
+# urls.py
+router = DefaultRouter()
+router.register(r"products", ProductViewSet)
+urlpatterns = [path("api/", include(router.urls))]
+</code></pre>
+    </article>
+
+    <article class="tech-card">
+      <h3>Celery task (idempotent)</h3>
+<pre><code>@shared_task(bind=True, autoretry_for=(HTTPError,), retry_backoff=True)
+def sync_product(self, product_id):
+    p = Product.objects.select_for_update().get(pk=product_id)
+    ext = fetch_external(p.sku)  # pure function
+    with transaction.atomic():
+        Product.objects.filter(pk=p.pk).update(price=ext.price)
+        AuditLog.objects.create(kind="sync", ref=p.pk)</code></pre>
+    </article>
+  </div>
+</section>
+
+<!-- MIGRATIONS SAFETY -->
+<section class="section-block" id="migrations">
+  <div class="section-title">
+    <div>
+      <h2>Safe migration checklist</h2>
+      <span class="kicker">Zero downtime, audit-friendly</span>
+    </div>
+  </div>
+
+  <div class="tech-grid">
+    <article class="tech-card">
+      <h3>Pattern</h3>
+      <ul class="tight">
+        <li>Write + deploy code that tolerates BOTH schemas</li>
+        <li>Deploy 1: add nullable column/index concurrently</li>
+        <li>Backfill in batches (Celery, ETL)</li>
+        <li>Deploy 2: switch reads, then writes</li>
+        <li>Deploy 3: drop old column</li>
+      </ul>
+    </article>
+
+    <article class="tech-card">
+      <h3>Postgres helpers</h3>
+<pre><code>-- add index concurrently
+CREATE INDEX CONCURRENTLY idx_orders_user_created
+ON orders(user_id, created_at);
+
+-- partition by month (example)
+CREATE TABLE orders_2025_02 PARTITION OF orders
+FOR VALUES FROM ('2025-02-01') TO ('2025-03-01');</code></pre>
+    </article>
+  </div>
+</section>
+
+    <!-- PATTERNS -->
+    <section class="section-block" id="patterns">
+      <div class="section-title">
+        <div>
+          <h2>Architecture patterns</h2>
+          <span class="kicker">Choose boring, scale when it matters</span>
+        </div>
+      </div>
+      <div class="tech-grid">
+        <article class="tech-card">
+          <h3>API Gateway + BFF</h3>
+<pre><code>client ──► BFF ──► services
+             │        ├─ accounts
+             └─ cache  └─ catalog</code></pre>
+        </article>
+        <article class="tech-card">
+          <h3>Event-driven jobs</h3>
+<pre><code>app ──► queue ──► workers
+           │         ├─ email
+           └─ retry   └─ reports</code></pre>
+        </article>
+        <article class="tech-card">
+          <h3>Partitioned Postgres</h3>
+<pre><code>orders_y2025_m02 (
+  PARTITION OF orders FOR VALUES
+  FROM ('2025-02-01') TO ('2025-03-01')
+)</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <!-- STACK -->
+    <section class="section-block" id="stack">
+      <div class="section-title">
+        <div>
+          <h2>Preferred stack & tools</h2>
+          <span class="kicker">Interchangeable parts — no lock-in</span>
+        </div>
+      </div>
+      <div class="pillstrap">
+        <span class="pill">React / Next</span>
+        <span class="pill">Node / Deno</span>
+        <span class="pill">PostgreSQL</span>
+        <span class="pill">Redis</span>
+        <span class="pill">OpenAPI / GraphQL</span>
+        <span class="pill">Docker</span>
+        <span class="pill">Terraform</span>
+        <span class="pill">Cloudflare</span>
+        <span class="pill">GitHub Actions</span>
+        <span class="pill">Sentry / DataDog</span>
+      </div>
+    </section>
+
+    <!-- SLOs -->
+    <section class="section-block" id="slos">
+      <div class="section-title">
+        <div>
+          <h2>Example SLOs</h2>
+          <span class="kicker">Targets you can run a business on</span>
+        </div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat"><div class="stat-num">99.95%</div><div class="stat-label">Uptime (month)</div></div>
+        <div class="stat"><div class="stat-num">≤ 300ms</div><div class="stat-label">p95 API</div></div>
+        <div class="stat"><div class="stat-num">≤ 30m</div><div class="stat-label">RTO</div></div>
+        <div class="stat"><div class="stat-num">≤ 15m</div><div class="stat-label">First reply</div></div>
+      </div>
+    </section>
+
+    <!-- CASES -->
+    <section class="section-block" id="cases">
+      <div class="section-title">
+        <div>
+          <h2>Recent wins</h2>
+          <span class="kicker">Ask for case study details</span>
+        </div>
+      </div>
+      <div class="tech-grid">
+        <article class="tech-card">
+          <div>
+            <h3>Payments Platform Migration</h3>
+            <p class="meta">Partitioned Postgres, replicas, failover drills</p>
+            <div class="metrics"><span class="metric">p95 ↓ 63%</span><span class="metric">Throughput ↑ 3.4×</span><span class="metric">Zero lost txns</span></div>
+            <div class="badge-row"><span class="pill">PostgreSQL</span> <span class="pill">Kafka</span> <span class="pill">Kubernetes</span></div>
+          </div>
+<pre><code>CREATE TABLE payments (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  amount NUMERIC(12,2) NOT NULL,
+  status TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+) PARTITION BY RANGE (created_at);</code></pre>
+        </article>
+        <article class="tech-card">
+          <div>
+            <h3>E-commerce Catalog API</h3>
+            <p class="meta">GraphQL gateway + Redis cache + CDN edge</p>
+            <div class="metrics"><span class="metric">Cache hit 94%</span><span class="metric">$ infra ↓ 28%</span><span class="metric">SLA 99.99%</span></div>
+          </div>
+<pre><code>type Product { id: ID!, sku: String!, price: Float!, inStock: Boolean! }
+type Query   { products(sku: String): [Product]! }</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <!-- PLAYGROUND: SLO / Error Budget Burn Simulator -->
+    <section class="section-block full notranslate" id="playgroundTech">
+      <div class="section-title">
+        <div>
+          <h2>SLO & Error Budget Simulator</h2>
+          <span class="kicker">Forecast burn, time-to-violation, and “what-if” scenarios</span>
+          <p class="muted pg-help">Adjust inputs and see how fast you burn your monthly error budget. Uses simple math with clear assumptions.</p>
+
+        </div>
+      </div>
+
+      <div class="insights" id="sloLab">
+        <div class="tool-grid">
+          <div class="card">
+            <div class="tool-row">
+              <label>Target SLO
+                <select id="slo_target" class="pill">
+                  <option value="99.0">99.0%</option>
+                  <option value="99.5">99.5%</option>
+                  <option value="99.9" selected>99.9%</option>
+                  <option value="99.95">99.95%</option>
+                  <option value="99.99">99.99%</option>
+                </select>
+              </label>
+              <label>Window
+                <select id="slo_window" class="pill">
+                  <option value="7">7 days</option>
+                  <option value="30" selected>30 days</option>
+                  <option value="90">90 days</option>
+                </select>
+              </label>
+              <label>Traffic
+                <input id="traffic_rpm" class="pill" type="number" min="1" step="1" value="12000" />
+                <small class="muted">requests/min</small>
+              </label>
+              <label>Current error rate
+                <input id="err_rate" class="pill" type="number" min="0" step="0.01" value="0.12" />
+                <small class="muted">% of requests failing</small>
+              </label>
+            </div>
+
+            <div class="tool-row">
+              <label>Scenario (what-if)
+                <select id="scenario" class="pill">
+                  <option value="1" selected>Current (1.0×)</option>
+                  <option value="0.75">Better alerts (-25% errors)</option>
+                  <option value="0.5">Fix top offender (-50% errors)</option>
+                  <option value="1.25">Risky deploy (+25% errors)</option>
+                </select>
+              </label>
+              <button class="btn ghost" id="resetSlo">Reset</button>
+              <a class="btn" href="#explainers">How this works</a>
+            </div>
+          </div>
+
+          <div class="card">
+            <canvas id="sloChart" height="300" aria-label="Error budget projection chart" role="img"></canvas>
+          </div>
+
+          <div class="card">
+            <div class="tool-stats">
+              <div class="stat small"><div class="stat-num" id="budgetPct">–</div><div class="stat-label">Budget (1-SLO)</div></div>
+              <div class="stat small"><div class="stat-num" id="allowedErrs">–</div><div class="stat-label">Allowed errors this window</div></div>
+              <div class="stat small"><div class="stat-num" id="burnRate">–</div><div class="stat-label">Burn rate (× of safe)</div></div>
+              <div class="stat small"><div class="stat-num" id="ttr">–</div><div class="stat-label">Time to run out</div></div>
+            </div>
+
+            <div class="table-wrap" style="margin-top:.6rem">
+              <table class="table limit-5" id="sloTable">
+                <thead>
+                  <tr>
+                    <th>Hour</th>
+                    <th>Remaining budget</th>
+                    <th>Errors used</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <p class="muted" style="margin:.5rem 0 0">Assumes stationary error rate; use for direction, not absolutes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPLAINERS -->
+    <section class="section-block" id="explainers">
+      <div class="section-title">
+        <div>
+          <h2>How the simulator works</h2>
+          <span class="kicker">Clear math you can re-use in docs</span>
+        </div>
+      </div>
+      <div class="tech-grid">
+        <article class="tech-card">
+          <h3>Budget</h3>
+          <p>Budget fraction = <code>1 − SLO_target</code>. For 99.9% SLO, budget = 0.1% of total requests in the window.</p>
+        </article>
+        <article class="tech-card">
+          <h3>Allowed errors</h3>
+          <p><code>allowed = traffic_rpm × 60 × 24 × days × budget</code></p>
+        </article>
+        <article class="tech-card">
+          <h3>Burn rate</h3>
+          <p><code>burn = (error_rate / 100) / budget</code>. 1.0× means you use exactly your budget pace; 2.0× burns twice as fast.</p>
+        </article>
+        <article class="tech-card">
+          <h3>Time-to-run-out</h3>
+          <p><code>ttr_hours = allowed / (traffic_rpm × 60 × error_rate_fraction)</code></p>
+        </article>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section  id="contactTech" class="section-block">
+      <div class="section-title">
+        <div>
+          <h2 style="display:flex; align-items:center; gap:.6rem;">
+            <span class="accent-text">Let’s build something dependable</span>
+            <span class="pill" aria-hidden="true">→</span>
+          </h2>
+          <span class="kicker">Tell us about your project</span>
+        </div>
+      </div>
+      <div class="grid cols-2 contact-grid">
+        <div class="card" style="display:grid; gap:1rem;">
+          <p class="muted" style="margin:0">Quick brief below and we’ll reply within one business day.</p>
+          <form id="contactFormTech" action="https://formsubmit.co/431afb18b6d29330088207e6478cadc5" method="POST">
+            <input type="hidden" name="_subject" value="New Website Inquiry (Tech page)" />
+            <input type="hidden" name="_template" value="table" />
+            <input type="hidden" name="_blacklist" value="viagra, crypto, investment, guest post, seo package" />
+            <input type="hidden" name="form_name" value="Contact" />
+            <input type="hidden" name="_autoresponse" value="Thanks for the message — you’ll hear from us within one business day. – c23m9" />
+            <div class="grid cols-2" style="gap:.8rem">
+              <div><label for="nameTech">Name</label><input id="nameTech" name="name" required autocomplete="name" placeholder="Your name" /></div>
+              <div><label for="emailTech">Email</label><input id="emailTech" name="email" type="email" required autocomplete="email" placeholder="you@company.com" /></div>
+            </div>
+            <div class="grid cols-2" style="gap:.8rem">
+              <div>
+                <label for="budgetTech">Budget</label>
+                <select id="budgetTech" name="budget" class="pill" required>
+                  <option value="">Select a range</option>
+                  <option value="under-10k">Under $10k</option>
+                  <option value="10-25k">$10k – $25k</option>
+                  <option value="25-50k">$25k – $50k</option>
+                  <option value="50k+">$50k+</option>
+                </select>
+              </div>
+              <div>
+                <label for="timelineTech">Timeline</label>
+                <select id="timelineTech" name="timeline" class="pill" required>
+                  <option value="">Choose</option>
+                  <option value="asap">ASAP</option>
+                  <option value="4-8w">4–8 weeks</option>
+                  <option value="2-3m">2–3 months</option>
+                  <option value="flexible">Flexible</option>
+                </select>
+              </div>
+            </div>
+            <div><label for="messageTech">Project brief</label><textarea id="messageTech" name="message" rows="6" placeholder="What are we building? Goals, users, integrations…" required></textarea></div>
+            <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+            <div class="flex" style="gap:.6rem; flex-wrap: wrap;">
+              <button class="btn primary" type="submit">Send inquiry</button>
+              <!-- parked <a href="/resume.pdf" class="btn ghost">Download résumé</a> -->
+            </div>
+            <div class="status" id="formStatusTech" aria-live="polite">We reply within one business day.</div>
+          </form>
+        </div>
+        <aside class="card live">
+          <div class="center-between">
+            <div><div class="kicker">Live snapshot (demo)</div><strong>Effectiveness in real time</strong></div>
+            <div class="badge-row"><span class="pill">SLA 99.95%</span><span class="pill ok">Healthy</span></div>
+          </div>
+          <p class="muted" style="margin:.5rem 0 0">Hook this to APM/uptime in production.</p>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script src="tech.js"></script>
+</body>
+</html>

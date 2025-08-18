@@ -1,0 +1,327 @@
+/* Responsive container paddings */
+.container{ width: min(1600px, 100% - 64px); margin-inline:auto; }
+@media (max-width: 1024px){ .container{ width: min(1400px, 100% - 40px); } }
+@media (max-width: 640px){ .container{ width: min(1200px, 100% - 24px); } }
+
+/* Section vertical rhythm */
+section{ padding-block: 3.5rem; }
+@media (max-width: 640px){ section{ padding-block: 2.5rem; } }
+
+/* Theme (default dark) */
+:root{
+  --bg:#0b1221; --panel:#0f172a; --muted:#94a3b8; --text:#e2e8f0; --brand:#22d3ee; --brand-2:#a78bfa;
+  --card:#0b1328; --line:#1e293b; --ok:#10b981; --warn:#f59e0b; --err:#ef4444;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:linear-gradient(180deg,#0b1221,#0f172a 40%,#0b1221);color:var(--text);font:16px/1.55 Inter,system-ui,Arial,sans-serif}
+
+/* Light theme */
+[data-theme='light']{
+  --bg:#f8fafc; --panel:#ffffff; --card:#ffffff; --line:#cbd5e1; --muted:#334155; --text:#0b1b2b; --brand:#0ea5e9; --brand-2:#8b5cf6;
+}
+[data-theme='light'] body{background:linear-gradient(180deg,#f8fafc,#eef2f7 40%,#f8fafc)}
+[data-theme='light'] .btn.ghost{background:#e2e8f0;color:#0b1b2b}
+[data-theme='light'] .btn{border-color:#cbd5e1;color:#0b1b2b}
+[data-theme='light'] .pill{background:linear-gradient(90deg,rgba(14,165,233,.15),rgba(139,92,246,.15));color:#0b1b2b}
+[data-theme='light'] .card{background:linear-gradient(180deg,#ffffff,#f8fafc)}
+[data-theme='light'] select,[data-theme='light'] .select,[data-theme='light'] input,[data-theme='light'] textarea{background:#ffffff;color:#0b1b2b;border-color:#cbd5e1}
+[data-theme='light'] ::placeholder{color:#64748b}
+[data-theme='light'] .primary a,[data-theme='light'] .brand{color:#0b1b2b}
+
+/* Spider palette */
+html[data-variant="spidey"]{
+  --bg:#0a0d1a; --panel:#0d1428; --card:#0c1326; --line:#1c2a45; --text:#f9fafb; --muted:#9aa7bd;
+  --brand:#e11d2a; --brand-2:#1e3a8a;
+}
+html[data-variant="spidey"][data-theme="light"]{
+  --bg:#f8fafc; --panel:#ffffff; --card:#ffffff; --line:#cbd5e1;
+  --text:#0b1b2b; --muted:#334155;
+  --brand:#e11d2a; --brand-2:#1e3a8a;
+}
+html[data-variant="spidey"][data-theme="light"] body{ background:linear-gradient(180deg,#f8fafc,#eef2f7 40%,#f8fafc); }
+
+/* Width tweaks */
+@media(min-width:1800px){.container{width:min(1680px,100% - 80px)}}
+.container.full{width:100%;padding-inline:0}
+
+/* Nav */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.brand{display:flex;align-items:center;gap:.5rem;color:var(--text);text-decoration:none;font-weight:700}
+.brand svg{width:28px}
+.primary{display:flex;gap:1rem;list-style:none;margin:0;padding:0;flex-wrap:wrap}
+.primary a{color:var(--text);text-decoration:none;opacity:.95}
+.nav-controls{display:flex;gap:.5rem;align-items:center}
+
+/* Inputs / buttons / pills */
+.select, input, textarea, select{background:var(--input-bg, #0b152c);border:1px solid var(--line);color:var(--text);padding:.6rem .75rem;border-radius:.75rem;width:100%}
+select option{color:inherit;background:var(--panel)}
+::placeholder{color:rgba(148,163,184,.8)}
+.btn{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--line);background:#0b152c;color:var(--text);padding:.65rem .9rem;border-radius:999px;text-decoration:none;cursor:pointer;transition:transform .06s ease, box-shadow .2s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(34,211,238,.12)}
+.btn.primary{background:linear-gradient(90deg,var(--brand),var(--brand-2));border-color:transparent;color:#041221;box-shadow:0 10px 30px rgba(167,139,250,.22),0 6px 18px rgba(34,211,238,.18)}
+.btn.primary:hover{box-shadow:0 14px 36px rgba(167,139,250,.28),0 10px 22px rgba(34,211,238,.22)}
+.btn.ghost{background:#0b152c}
+.btn:focus-visible,
+.pill:focus-visible,
+.seal-btn:focus-visible{outline:3px solid var(--brand); outline-offset:3px; border-radius:12px;}
+.pill{display:inline-flex;align-items:center;gap:.25rem;padding:.25rem .6rem;border-radius:999px;background:linear-gradient(90deg,rgba(34,211,238,.15),rgba(167,139,250,.15));border:1px solid var(--line)}
+.pill.ok{background:linear-gradient(90deg,rgba(16,185,129,.2),rgba(34,197,94,.15))}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:4vw;align-items:center;padding:2.5rem 0 1.25rem}
+.headline{font-size:clamp(32px,4.8vw,72px);line-height:1.03;margin:0 0 .5rem}
+.headline .accent{background:linear-gradient(90deg,var(--brand),var(--brand-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.headline .burst{background:linear-gradient(90deg,var(--brand),var(--brand-2));-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:burstShift 6s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){.headline .burst{animation:none}}
+@keyframes burstShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.eyebrow{display:flex;align-items:center;gap:.6rem;color:var(--muted)}
+.sub{color:var(--muted)}
+.hero-visual{display:grid;place-items:center;min-height:140px}
+
+/* Cards / sections */
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin:2rem 0 1rem}
+.section-title h2{margin:0;position:relative}
+.section-title h2::after{content:"";display:block;width:64px;height:3px;margin-top:.45rem;background:linear-gradient(90deg,var(--brand),var(--brand-2));border-radius:999px}
+.kicker{color:var(--muted)}
+.grid{display:grid;gap:1rem}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.grid.cols-2{grid-template-columns:repeat(2,1fr)}
+.card{position:relative;background:linear-gradient(180deg,#0b152c,#091324);border:1px solid var(--line);border-radius:16px;padding:1rem;overflow:hidden}
+.section-block{position:relative;padding:1rem 0 1.5rem}
+.section-block::before{content:"";position:absolute;inset:0;z-index:-1;background:
+  radial-gradient(1000px 220px at 10% -80px,rgba(34,211,238,.08),transparent),
+  radial-gradient(1000px 220px at 90% -80px,rgba(167,139,250,.08),transparent),
+  repeating-linear-gradient(0deg,rgba(148,163,184,.06) 0 1px,transparent 1px 24px),
+  repeating-linear-gradient(90deg,rgba(148,163,184,.04) 0 1px,transparent 1px 24px)}
+.section-toggle{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-width:108px;font-weight:600;border-radius:999px;border:1px solid var(--line);padding:.45rem .95rem;background:linear-gradient(90deg,rgba(34,211,238,.18),rgba(167,139,250,.18));color:var(--text);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.section-toggle:hover{transform:translateY(-1px)}
+section.collapsed > :not(.section-title){display:none}
+
+/* REMOVE ALL DIAGONAL SHINE EFFECTS GLOBALLY */
+.fx-shine::after{ display:none !important; content:none !important; }
+.seal-shine{ display:none !important; }
+
+/* Playground polish */
+.insights{max-width:980px;margin:0 auto;width:100%}
+.insights .controls{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:.5rem 0 1rem}
+.insights .controls label{display:inline-flex;align-items:center;gap:.35rem;font-weight:700}
+.pg-help{font-size:.9rem;color:var(--muted);margin:.25rem 0 0}
+.value-points{display:flex;gap:.45rem;flex-wrap:wrap;margin:.6rem 0 1rem}
+.chk{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .5rem;border:1px dashed var(--line);border-radius:.5rem;line-height:1}
+.chk input{transform:translateY(1px)}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{border-bottom:1px solid var(--line);padding:.55rem .6rem;text-align:left;white-space:nowrap}
+.table thead th{position:sticky;top:0;background:var(--panel);z-index:1}
+.table th{cursor:pointer}
+.table th:hover{background:rgba(148,163,184,.08)}
+.table tbody tr:hover{background:rgba(148,163,184,.05)}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+#barChart,#barChartMain,#barChartTech{display:block; width:100%; max-width:100%}
+/* Clamp SLO budget table to 5 rows (tbody only) */
+.table.limit-5 tbody tr { display: none; }
+.table.limit-5 tbody tr:nth-child(-n+5) { display: table-row; }
+
+
+/* Work metrics chips */
+.metrics{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.35rem}
+.metric{background:linear-gradient(90deg,rgba(34,211,238,.15),rgba(167,139,250,.15));border:1px solid var(--line);border-radius:999px;padding:.2rem .5rem;font-weight:700;font-size:.9rem}
+
+/* Live panel */
+.contact-grid{align-items:start}
+.trust-strip{display:flex;gap:.5rem;flex-wrap:wrap;margin:.2rem 0 1rem}
+.pill.trust{border-color:rgba(148,163,184,.3);}
+.live .center-between{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.live-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin:.6rem 0}
+.lm{background:#0b152c;border:1px solid var(--line);border-radius:12px;padding:.6rem}
+.lm-label{color:var(--muted);font-size:.85rem}
+.lm-value{font-weight:700;font-size:1.1rem}
+
+/* Footer & utils */
+footer{padding:2rem 0}
+.center-between{display:flex;align-items:center;justify-content:space-between}
+.flex{display:flex}
+.badge-row{display:flex;gap:.4rem;flex-wrap:wrap}
+.hp{position:absolute !important;left:-9999px !important}
+.muted{color:var(--muted)}
+.accent-text{background:linear-gradient(90deg,var(--brand),var(--brand-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* Tech overlay */
+html[data-audience="tech"] main,
+html[data-audience="tech"] footer,
+html[data-audience="tech"] .top-notice { display: none !important; }
+
+.tech-page {
+  position: fixed; inset: 0; z-index: 9999;
+  overflow-y: auto;
+  background:
+    radial-gradient(1200px 420px at 8% -120px, rgba(34,211,238,.10), transparent 60%),
+    radial-gradient(1200px 420px at 92% -140px, rgba(167,139,250,.12), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  display: none;
+}
+html[data-audience="tech"] .tech-page { display: block; }
+
+.tech-header {
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(6px);
+  background: rgba(11,18,33,.72);
+  border-bottom: 1px solid rgba(148,163,184,.18);
+}
+[data-theme='light'] .tech-header { background: rgba(255,255,255,.85); border-bottom-color: rgba(2,6,23,.10); }
+
+.tech-wrap { width: min(1200px, 100% - 48px); margin: 0 auto; padding: 16px 0; }
+.tech-brand { display:flex; align-items:center; gap:.6rem; font-weight:800; }
+.tech-actions { display:flex; gap:.5rem; align-items:center; }
+.tech-hero { padding: 28px 0 10px; display:grid; gap:1rem; }
+.tech-hero h1 {
+  margin:0; font-size: clamp(28px, 4.4vw, 56px); line-height: 1.05;
+  background: linear-gradient(90deg,var(--brand),var(--brand-2));
+  -webkit-background-clip:text; background-clip:text; color: transparent;
+}
+.tech-hero p { color: var(--muted); margin: .25rem 0 0; }
+.pillstrap{ display:flex; gap:.45rem; flex-wrap:wrap; margin:.6rem 0 0; }
+
+.tech-grid { display:grid; gap:1rem; grid-template-columns:repeat(2,1fr); margin: 1rem 0 2rem; }
+@media (max-width: 960px){ .tech-grid{ grid-template-columns:1fr; } }
+
+.tech-card { background: linear-gradient(180deg,#0b152c,#091324); border: 1px solid var(--line); border-radius: 16px; padding: 1rem; }
+.tech-card h3 { margin: .2rem 0 .35rem; }
+.tech-card pre { background: #050e21; color: #e2e8f0; border:1px solid var(--line); border-radius: 12px; padding: .75rem; overflow:auto; margin: .5rem 0 0; }
+.tech-card code { font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9rem; line-height: 1.4; }
+.tech-card ul.tight{ margin:.4rem 0 0; padding-left: 1.1rem; }
+.tech-card ul.tight li{ margin:.2rem 0; }
+
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:.6rem; }
+@media (max-width: 960px){ .stat-grid{ grid-template-columns:repeat(2,1fr);} }
+.stat{ background:#0b152c; border:1px solid var(--line); border-radius:12px; padding:.8rem; text-align:center; }
+.stat-num{ font-size:1.35rem; font-weight:800; }
+.stat-label{ font-size:.9rem; color:var(--muted); }
+
+.timeline{ margin:.6rem 0 0; padding-left:1.2rem; display:grid; gap:.35rem; }
+.timeline li{ margin:0; }
+.timeline li::before{ content:""; position:absolute; left:-.6rem; top:0; width:8px; height:100%; background:linear-gradient(180deg,rgba(34,211,238,.15),rgba(167,139,250,.15)); border-radius:4px; }
+/* ---- Tech page extras ---- */
+.tool-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+@media (max-width: 960px){ .tool-grid{ grid-template-columns:1fr; } }
+.tool-row{ display:flex; gap:.6rem; flex-wrap:wrap; align-items:end; }
+.tool-row label{ display:flex; flex-direction:column; gap:.25rem; font-weight:700; }
+.tool-row small{ font-weight:400; }
+.tool-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:.6rem; }
+.stat.small .stat-num{ font-size:1.05rem; }
+.stat.small .stat-label{ font-size:.85rem; }
+.meta{ color: var(--muted); margin:.15rem 0 .35rem; }
+/* ---------- Light theme contrast fixes ---------- */
+
+/* Kill the diagonal shine everywhere */
+.fx-shine::after { display: none !important; }
+
+/* Sections background overlay could look “dirty” in light mode – remove it */
+[data-theme='light'] .section-block::before { background: none !important; }
+
+/* Cards & tech cards should be bright in light mode */
+[data-theme='light'] .card,
+[data-theme='light'] .tech-card {
+  background: linear-gradient(180deg, #ffffff, #f8fafc) !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Form controls styled as .pill must be white in light mode */
+[data-theme='light'] .pill:is(input, select, textarea),
+[data-theme='light'] input.pill,
+[data-theme='light'] select.pill,
+[data-theme='light'] textarea.pill {
+  background: #ffffff !important;
+  color: #0b1b2b !important;
+  border-color: #cbd5e1 !important;
+}
+[data-theme='light'] .pill:is(input, select, textarea)::placeholder { color: #64748b; }
+
+/* Labels in tool rows should read as dark in light mode */
+[data-theme='light'] .tool-row label { color: #0b1b2b; }
+
+/* Tight lists for tech notes */
+.tight { margin:.2rem 0 0; padding-left:1.1rem; }
+.tight li { margin:.15rem 0; }
+
+/* “Try the toggles” hint */
+.toggle-hint {
+  margin:.6rem 0 0; padding:.55rem .8rem;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background: linear-gradient(90deg, rgba(34,211,238,.12), rgba(167,139,250,.12));
+  font-weight:700;
+}
+[data-theme='light'] .toggle-hint {
+  background:#eef2f7; border-color:#cbd5e1; color:#0b1b2b;
+}
+/* ===== Light-theme hardening (contrast & controls) ===== */
+
+/* Buttons: in light mode, default .btn background shouldn't be dark */
+[data-theme='light'] .btn {
+  background: #f1f5f9 !important;        /* light slate */
+  border-color: #cbd5e1 !important;
+  color: #0b1b2b !important;
+}
+[data-theme='light'] .btn.ghost {
+  background: #e2e8f0 !important;        /* already light, keep explicit */
+  color: #0b1b2b !important;
+}
+[data-theme='light'] .section-toggle {
+  background: #eef2f7 !important;
+  border-color: #cbd5e1 !important;
+  color: #0b1b2b !important;
+}
+
+/* Cards/sections in light mode should read clean */
+[data-theme='light'] .card,
+[data-theme='light'] .tech-card {
+  background: linear-gradient(180deg, #ffffff, #f8fafc) !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Tool rows / filter strips (used in SLO simulator + examples) */
+[data-theme='light'] .controls,
+[data-theme='light'] .tool-row,
+[data-theme='light'] .filters {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 12px !important;
+}
+
+/* Inputs styled as .pill must be bright in light theme */
+[data-theme='light'] .pill:is(input, select, textarea),
+[data-theme='light'] input.pill,
+[data-theme='light'] select.pill,
+[data-theme='light'] textarea.pill {
+  background: #ffffff !important;
+  color: #0b1b2b !important;
+  border-color: #cbd5e1 !important;
+}
+[data-theme='light'] .pill:is(input, select, textarea)::placeholder { color: #64748b; }
+
+/* Code blocks inside tech cards (Example SLOs etc.) */
+[data-theme='light'] .tech-card pre {
+  background: #f8fafc !important;
+  color: #0b1b2b !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Tables hover/headers feel right in light mode */
+[data-theme='light'] .table th:hover { background: rgba(2,6,23,.06) !important; }
+
+/* Remove that diagonal shine effect site-wide */
+.fx-shine::after { display: none !important; }
+
+/* If any section overlay still shows up in light, nuke it */
+[data-theme='light'] .section-block::before { background: none !important; }
+
+/* Optional: ensure headline/sub/muted read crisply in light */
+[data-theme='light'] .headline,
+[data-theme='light'] .sub,
+[data-theme='light'] .kicker,
+[data-theme='light'] .muted,
+[data-theme='light'] .metric { color: inherit; }
+
+#contactTech { scroll-margin-top: 80px; } /* adjust 80px to your header height */

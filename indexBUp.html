@@ -1,30 +1,40 @@
 <!doctype html>
-<html lang="en" data-theme="auto">
+<html lang="en" data-theme="auto" data-audience="biz">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>c23m9 Web & Database Engineer</title>
-  <meta name="description" content="I design and build trustworthy, scalable websites, APIs, and databases. From schema design to cloud deployment—fast, secure, and maintainable." />
+  <title>c23m9 — Web & Database Engineer</title>
+  <meta name="description" content="Domain, custom email, website, hosting, and simple databases — set up right. We make dependable systems so your team can focus on the work that matters." />
   <meta name="theme-color" content="#0f172a" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
+  <style>html{scroll-behavior:smooth}</style>
 </head>
 <body>
+  <!-- Price highlights -->
+  <div class="top-notice" role="note" aria-label="Pricing highlights">
+    <div class="container">
+      <span class="pill">Zero monthly fees</span>
+      <span class="pill">No need to pay for extra users</span>
+    </div>
+  </div>
 
-  <header>
+  <header class="site-header">
     <div class="container nav" role="navigation" aria-label="Primary">
       <a class="brand" href="#home" aria-label="Go to home">
-        <svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--brand)"/><stop offset="100%" stop-color="var(--brand-2)"/></linearGradient></defs><path fill="url(#g)" d="M32 6c12 0 22 4 22 10v20c0 6-10 10-22 10S10 42 10 36V16c0-6 10-10 22-10zm0 8c-9.9 0-18 3-18 6s8.1 6 18 6 18-3 18-6-8.1-6-18-6zm0 16c-9.9 0-18-3-18-6v6c0 3 8.1 6 18 6s18-3 18-6v-6c0 3-8.1 6-18 6z"/></svg>
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--brand)"/><stop offset="100%" stop-color="var(--brand-2)"/></linearGradient></defs>
+          <path fill="url(#g)" d="M32 6c12 0 22 4 22 10v20c0 6-10 10-22 10S10 42 10 36V16c0-6 10-10 22-10zm0 8c-9.9 0-18 3-18 6s8.1 6 18 6 18-3 18-6-8.1-6-18-6zm0 16c-9.9 0-18-3-18-6v6c0 3 8.1 6 18 6s18-3 18-6v-6c0 3-8.1 6-18 6z"/>
+        </svg>
         <span>c23m9</span>
       </a>
 
-      <ul class="primary" id="desktopNav" aria-label="Sections">
-        <li><a data-i18n="nav.services" href="#services">Services</a></li>
-        <li><a data-i18n="nav.work" href="#work">Work</a></li>
-        <li><a data-i18n="nav.stack" href="#stack">Stack</a></li>
-        <li><a data-i18n="nav.playground" href="#playground">Playground</a></li>
-        <li><a data-i18n="nav.dash" href="services.html">Dashboards</a></li>
-        <li><a data-i18n="nav.contact" href="#contact">Contact</a></li>
+      <ul class="primary" aria-label="Sections">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#playgroundMain">Playground</a></li>
+        <li><a href="./services.html">Dashboard</a></li>
+        <li><a href="#contact">Contact</a></li>
       </ul>
 
       <nav class="nav-controls">
@@ -32,311 +42,288 @@
           <option value="en">EN</option>
           <option value="es">ES</option>
         </select>
-        <button class="btn ghost" id="themeToggle" aria-label="Toggle theme">🌓</button>
-        <button class="btn ghost menu-btn" id="menuBtn" aria-expanded="false" aria-controls="drawer" aria-label="Open menu">☰</button>
+        <!-- toggles visible & simple -->
+        <button class="btn ghost" id="themeToggle" aria-label="Toggle light/dark">🌓</button>
+        <button class="btn ghost" id="spideyToggle" aria-label="Toggle Spider palette">🕷️</button>
       </nav>
     </div>
-    <div id="drawer" class="drawer" role="dialog" aria-modal="true" aria-label="Mobile Menu"></div>
   </header>
 
+  <!-- ====== MAIN (POP) SITE ====== -->
   <main id="main">
     <!-- HERO -->
     <section id="home" class="hero container">
       <div>
-        <span class="eyebrow"><span class="pill" data-i18n="home.availability">Available for Q4</span> <span data-i18n="home.role">Web & Database Engineer</span></span>
+        <span class="eyebrow"><span class="pill">Available for Q4</span> <span>Web & Database Engineer</span></span>
         <h1 class="headline">
-          <span class="accent" data-i18n="home.h1a">Build once.</span> <span data-i18n="home.h1b">Scale safely.</span><br/>
-          <span data-i18n="home.h1c">Ship websites, databases &</span> <span class="accent" data-i18n="home.h1d">APIs with confidence.</span>
+          <span class="accent">Get online, look great,</span> and stay organized.<br/>
+          <span class="burst">Domain. Email. Website. Database.</span>
         </h1>
-        <p class="sub" data-i18n="home.sub">I help teams design clean schemas, ship robust web apps, and automate cloud deployments. Security-first. Documented. Observable.</p>
+        <p class="sub">We handle setup and support so your team, board, and customers get a site that’s clear, fast, and dependable.</p>
 
-        <!-- Hero "Get a quote" form — goes to misa@c23m9.com -->
-        <form class="cta" id="heroQuoteForm"
-              action="https://formsubmit.co/misa@c23m9.com"
-              method="POST" autocomplete="on">
-          <!-- FormSubmit options -->
-          <input type="hidden" name="_subject" value="New Quote Request (Hero form)" />
-          <input type="hidden" name="_template" value="table" />
-          <input type="hidden" name="_captcha" value="false" />
-          <input type="hidden" name="form_name" value="Hero Quote" />
-
-          <input style="min-width:260px" class="pill" name="email" id="qEmail" type="email" placeholder="you@company.com" aria-label="Your email" required />
-          <input style="min-width:280px" class="pill" name="brief" id="qBrief" type="text" placeholder="Project in a sentence…" aria-label="Project brief" required />
-          <button class="btn primary" type="submit" data-i18n="home.cta2">Get a quote</button>
-
-          <!-- Honeypot -->
-          <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
-        </form>
-
-        <div class="mt-6" aria-hidden="true">
-          <div class="kicker" data-i18n="home.highlights">Highlights</div>
-          <div class="metrics">
-            <div class="metric"><strong id="m1">0</strong> ms p95</div>
-            <div class="metric"><strong id="m2">0</strong>% uptime</div>
-            <div class="metric"><strong id="m3">0</strong>x throughput</div>
-          </div>
+        <div class="cta" style="display:flex; gap:.6rem; flex-wrap:wrap;">
+          <a class="btn primary" href="#contact" id="scrollToContact">Get a quote</a>
         </div>
       </div>
 
+      <!-- Gold TECH LOVERS button (opens tech overlay) -->
       <div class="hero-visual">
-        <div class="terminal notranslate">
-<pre><strong>$</strong> npx create-trusty-app
-✔ project created
-<strong>$</strong> npm run ship
-✔ tests passed (148)
-✔ migrations applied (12)
-✔ smoke checks green
-<strong>$</strong> curl -s https://api.example.dev/health | jq
-{
-  "status": "ok",
-  "uptime": 86400,
-  "db": "primary: healthy, replica: healthy"
-}
-</pre>
-        </div>
+          <a id="sealTechBtn" class="seal-btn big" href="tech.html" aria-label="Open Tech lovers page">
+          
+
+          <span class="seal-rim"></span>
+          <span class="seal-core">
+            <span class="seal-stars" aria-hidden="true">✦ ✧ ✦</span>
+            <span class="seal-text">Technical information</span>
+            <span class="seal-stars" aria-hidden="true">✦ ✧ ✦</span>
+          </span>
+        </a>
       </div>
     </section>
 
-    <section id="services" class="container reveal">
+    <!-- SERVICES -->
+    <section id="services" class="container section-block">
       <div class="section-title">
-        <h2 data-i18n="services.title">Services that reduce risk and increase velocity</h2>
-        <span class="kicker" data-i18n="services.kicker">From Figma to production & beyond</span>
+        <div>
+          <h2>Services that make life easier</h2>
+          <span class="kicker">Clear deliverables, no jargon</span>
+        </div>
+        <button class="section-toggle" aria-expanded="true" data-label="Services">Hide</button>
       </div>
       <div class="grid cols-3">
         <article class="card service">
-          <div class="pill" data-i18n="services.items.web.badge">Web Applications</div>
-          <h3 data-i18n="services.items.web.h3">Front-to-back engineering</h3>
-          <p data-i18n="services.items.web.p">Type-safe APIs, component libraries, CI/CD pipelines, and robust testing for maintainable codebases.</p>
-          <div class="badge-row"><span class="pill">Accessibility</span><span class="pill">SSR/SPA</span><span class="pill">Testing</span></div>
+          <div class="pill">Website Creation</div>
+          <h3>Pages that work</h3>
+          <p>Modern, mobile-first websites with clear navigation and easy updates.</p>
+          <div class="badge-row"><span class="pill">SEO-ready</span><span class="pill">Accessible</span><span class="pill">Copy help</span></div>
         </article>
         <article class="card service">
-          <div class="pill" data-i18n="services.items.db.badge">Database Architecture</div>
-          <h3 data-i18n="services.items.db.h3">Schema & performance design</h3>
-          <p data-i18n="services.items.db.p">Relational & NoSQL schema design, migrations, indexing, partitioning, and query optimization.</p>
-          <div class="badge-row"><span class="pill">PostgreSQL</span><span class="pill">MySQL</span><span class="pill">MongoDB</span></div>
+          <div class="pill">Domain & Email</div>
+          <h3>Own your name</h3>
+          <p>We register your domain and set up custom emails like you@yourdomain.</p>
+          <div class="badge-row"><span class="pill">DNS</span><span class="pill">Google/M365</span><span class="pill">SPF/DKIM</span></div>
         </article>
         <article class="card service">
-          <div class="pill" data-i18n="services.items.api.badge">APIs</div>
-          <h3 data-i18n="services.items.api.h3">Contract-first design</h3>
-          <p data-i18n="services.items.api.p">REST/GraphQL APIs with strong typing, authN/authZ, rate limiting, and observability built-in.</p>
-          <div class="badge-row"><span class="pill">OpenAPI</span><span class="pill">GraphQL</span><span class="pill">gRPC</span></div>
+          <div class="pill">Hosting & Care</div>
+          <h3>Fast & backed up</h3>
+          <p>Secure hosting with SSL, backups, uptime checks, and ongoing support.</p>
+          <div class="badge-row"><span class="pill">SSL</span><span class="pill">Backups</span><span class="pill">Monitoring</span></div>
         </article>
         <article class="card service">
-          <div class="pill" data-i18n="services.items.devops.badge">Cloud & DevOps</div>
-          <h3 data-i18n="services.items.devops.h3">From laptop to cloud</h3>
-          <p data-i18n="services.items.devops.p">Infrastructure as code, containerization, blue/green deploys, rollbacks, and autoscaling.</p>
-          <div class="badge-row"><span class="pill">AWS</span><span class="pill">Docker</span><span class="pill">Terraform</span></div>
+          <div class="pill">Graphic Design</div>
+          <h3>Look professional</h3>
+          <p>Logos, brand kit, and social graphics that match your organization.</p>
+          <div class="badge-row"><span class="pill">Logos</span><span class="pill">Brand kit</span><span class="pill">Social assets</span></div>
         </article>
         <article class="card service">
-          <div class="pill" data-i18n="services.items.perf.badge">Performance</div>
-          <h3 data-i18n="services.items.perf.h3">Measure, then optimize</h3>
-          <p data-i18n="services.items.perf.p">APM, tracing, caching, and capacity planning to keep latency low under real-world load.</p>
-          <div class="badge-row"><span class="pill">p95</span><span class="pill">RUM</span><span class="pill">Caching</span></div>
+          <div class="pill">Databases</div>
+          <h3>Simple reporting</h3>
+          <p>We create a clean database and monthly reports your board will understand.</p>
+          <div class="badge-row"><span class="pill">Dashboards</span><span class="pill">Exports</span><span class="pill">Audits</span></div>
         </article>
         <article class="card service">
-          <div class="pill" data-i18n="services.items.sec.badge">Security</div>
-          <h3 data-i18n="services.items.sec.h3">Defense in depth</h3>
-          <p data-i18n="services.items.sec.p">Threat modeling, secure defaults, least privilege, and dependency hygiene.</p>
-          <div class="badge-row"><span class="pill">OWASP</span><span class="pill">CSP</span><span class="pill">SAST/DAST</span></div>
+          <div class="pill">Integrations</div>
+          <h3>No more copy-paste</h3>
+          <p>Connect forms, payments, and tools so data just flows.</p>
+          <div class="badge-row"><span class="pill">Forms</span><span class="pill">Payments</span><span class="pill">Automation</span></div>
         </article>
       </div>
     </section>
 
-    <section id="work" class="container reveal">
+    <!-- WORK -->
+    <section id="work" class="container section-block">
       <div class="section-title">
-        <h2 data-i18n="work.title">Selected case studies</h2>
-        <a class="btn ghost" href="#contact" data-i18n="work.cta">Request detailed write-ups</a>
+        <div>
+          <h2>Recent results</h2>
+          <span class="kicker">Ask for case study details</span>
+        </div>
+        <button class="section-toggle" aria-expanded="true" data-label="Work">Hide</button>
       </div>
       <div class="grid cols-2">
         <article class="card case">
           <div>
-            <h3>Payments Platform Migration</h3>
-            <p class="meta">PostgreSQL → partitioned schemas, read replicas, failover drills</p>
+            <h3>Membership site refresh</h3>
+            <p class="meta">Clear navigation, faster load, easier updates</p>
             <div class="metrics">
-              <div class="metric">p95 ↓ 63%</div>
-              <div class="metric">Throughput ↑ 3.4×</div>
-              <div class="metric">Zero lost txns</div>
+              <div class="metric">Bounce ↓ 31%</div>
+              <div class="metric">Sign-ups ↑ 2.1×</div>
+              <div class="metric">Staff can edit</div>
             </div>
-            <div class="mt-3"><span class="pill">PostgreSQL</span> <span class="pill">Kafka</span> <span class="pill">Kubernetes</span></div>
           </div>
-          <div class="terminal notranslate"><pre>CREATE TABLE payments (
-  id BIGSERIAL PRIMARY KEY,
-  user_id BIGINT NOT NULL,
-  amount NUMERIC(12,2) NOT NULL,
-  status TEXT NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-) PARTITION BY RANGE (created_at);
-</pre></div>
         </article>
         <article class="card case">
           <div>
-            <h3>E-commerce Catalog API</h3>
-            <p class="meta">GraphQL gateway + Redis caching + CDN edge</p>
+            <h3>Program reporting database</h3>
+            <p class="meta">Monthly exports for board & funders</p>
             <div class="metrics">
-              <div class="metric">Cache hit 94%</div>
-              <div class="metric">$ infra ↓ 28%</div>
-              <div class="metric">SLA 99.99%</div>
+              <div class="metric">Manual work ↓ 80%</div>
+              <div class="metric">One-click reports</div>
+              <div class="metric">Audit-ready</div>
             </div>
-            <div class="mt-3"><span class="pill">GraphQL</span> <span class="pill">Redis</span> <span class="pill">CDN</span></div>
           </div>
-          <div class="terminal notranslate"><pre>type Product { id: ID!, sku: String!, price: Float!, inStock: Boolean! }
-
-type Query { products(sku: String): [Product]! }
-</pre></div>
         </article>
       </div>
     </section>
 
-    <!-- PLAYGROUND (unchanged logic drawn in scripts.js) -->
-    <section id="playground" class="container reveal notranslate">
+    <!-- PLAYGROUND -->
+    <section id="playgroundMain" class="container section-block full notranslate">
       <div class="section-title">
-        <h2 data-i18n="pg.title">SQL Query Explorer</h2>
-        <span class="kicker" data-i18n="pg.kicker">Try a safe demo — no real data</span>
+        <div>
+          <h2>Social Media Insights (demo)</h2>
+          <span class="kicker">Filter and sort — sourced, rounded figures</span>
+          <p class="muted pg-help">Change the dropdown or check a box to update the chart (demo data).</p>
+        </div>
+        <button class="section-toggle" aria-expanded="true" data-label="Playground">Hide</button>
       </div>
-      <div class="playground">
-        <div class="playground-wrap">
-          <div class="sql">
-            <div class="toolbar">
-              <button id="runBtn" class="btn run-btn" type="button" title="Run (Ctrl/Cmd+Enter)">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
-                <span data-i18n="pg.run">Run Query</span>
-              </button>
-              <select id="sampleQueries" class="pill" title="Sample queries">
-                <option value="" data-i18n="pg.sample.choose">Choose sample</option>
-                <option value="SELECT id, name, email FROM customers WHERE plan = 'pro' AND active = 'true'">Top customers (pro & active)</option>
-                <option value="SELECT id, total, status FROM orders WHERE status = 'paid'">Orders: paid</option>
-                <option value="SELECT * FROM products WHERE stock > '0'">Products in stock</option>
-                <option value="SELECT * FROM tickets WHERE priority = 'high' AND status = 'open'">Open high-priority tickets</option>
-              </select>
-              <select id="datasetSelect" class="pill" title="Dataset">
-                <option value="default" data-i18n="pg.ds.default">Default dataset</option>
-                <option value="ecomm" data-i18n="pg.ds.ecomm">E-commerce</option>
-                <option value="support" data-i18n="pg.ds.support">Support</option>
-              </select>
-              <span class="pill" title="Run">Ctrl/⌘+Enter</span>
-              <span class="pill" title="Clear">Ctrl/⌘+L</span>
-              <span class="pill" title="Toggle sample">Ctrl/⌘+/</span>
-            </div>
-            <label for="sqlInput" class="mt-2" data-i18n="pg.label">SQL (supports: <code>SELECT cols FROM table [WHERE a='x' AND b='y']</code>)</label>
-            <textarea id="sqlInput" class="sql-input" spellcheck="false">SELECT id, name, email FROM customers WHERE plan = 'pro' AND active = 'true';</textarea>
-            <div class="flex" style="gap:.6rem; flex-wrap: wrap; align-items:center;">
-              <span class="status" id="status">Ready.</span>
-              <div class="xp-bar" style="flex:1; max-width:380px;"><div class="xp-fill" id="xpFill"></div></div>
-              <span class="pill" id="xpLabel" aria-live="polite">XP 0 • Streak 0</span>
-            </div>
-            <div class="result" id="resultTable" aria-live="polite"></div>
-
-            <div class="mt-3">
-              <div class="kicker" data-i18n="pg.quests.title">Quests (try these):</div>
-              <div class="badge-row">
-                <button class="pill quest" data-q="SELECT * FROM customers WHERE active = 'true'">Active users</button>
-                <button class="pill quest" data-q="SELECT id, total FROM orders WHERE status = 'refunded'">Refunds</button>
-                <button class="pill quest" data-q="SELECT name, price FROM products WHERE price = '99'">Price point</button>
-                <button class="pill quest" data-q="SELECT id, summary FROM tickets WHERE status = 'open' AND priority = 'high'">Open HOT tickets</button>
-              </div>
-            </div>
-          </div>
+      <div class="insights insights-compact">
+        <div class="controls">
+          <label><span>Metric</span>
+            <select id="metricSelectMain" class="pill">
+              <option value="mau_bil">Monthly active users (B)</option>
+              <option value="ad_aud_bil">Ad reach (B)</option>
+              <option value="us_news_pct">U.S. adults who get news (%)</option>
+            </select>
+          </label>
+          <label class="chk"><input type="checkbox" id="filter2bMain"> MAU ≥ 2B</label>
+          <label class="chk"><input type="checkbox" id="filterROIMain"> Marketer ROI leaders</label>
+          <button class="btn ghost" id="resetFiltersMain">Reset</button>
         </div>
-
-        <div class="card chart-card">
-          <div class="center-between">
-            <div>
-              <div class="kicker" data-i18n="pg.chart.kicker">Mini performance dashboard</div>
-              <strong data-i18n="pg.chart.title">Throughput & latency (simulated)</strong>
-            </div>
-            <div class="badge-row">
-              <span class="pill">p95 <span id="p95">–</span> ms</span>
-              <span class="pill">QPS <span id="qps">–</span></span>
-            </div>
-          </div>
-          <canvas id="chart" height="280" aria-label="Performance chart" role="img"></canvas>
+        <canvas id="barChartMain" height="260" aria-label="Platforms bar chart" role="img"></canvas>
+        <div class="table-wrap">
+          <table id="dataTableMain" class="table">
+            <thead>
+              <tr>
+                <th data-key="platform">Platform</th>
+                <th data-key="mau_bil">MAU (B)</th>
+                <th data-key="ad_aud_bil">Ad reach (B)</th>
+                <th data-key="us_news_pct">US news (%)</th>
+                <th data-key="roi_top">ROI leader</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
+        <p class="muted">Sources: DataReportal (Feb 2025), Pew Research (2024), platform disclosures. Demo rounding applied.</p>
       </div>
     </section>
 
     <!-- CONTACT -->
-    <section id="contact" class="container reveal">
+    <section id="contact" class="container section-block full">
       <div class="section-title">
-        <h2 style="display:flex; align-items:center; gap:.6rem;">
-          <span class="accent-text">Let’s build something dependable</span>
-          <span class="pill" aria-hidden="true">→</span>
-        </h2>
-        <span class="kicker" data-i18n="contact.kicker">Tell me about your project</span>
+        <div>
+          <h2 style="display:flex; align-items:center; gap:.6rem;">
+            <span class="accent-text">Let’s build something dependable</span>
+            <span class="pill" aria-hidden="true">→</span>
+          </h2>
+          <span class="kicker">Tell us about your project</span>
+        </div>
       </div>
 
-      <div class="card" style="padding:1.25rem; display:grid; gap:1rem;">
-        <p style="margin:0; color:var(--muted)">Quick brief below and I’ll reply within one business day.</p>
+      <div class="trust-strip">
+        <span class="pill trust">Privacy-first</span>
+        <span class="pill trust">NDA-friendly</span>
+        <span class="pill trust">1-business-day reply</span>
+        <span class="pill trust">Backups & SSL</span>
+      </div>
 
-        <!-- Main contact form — goes to misa@c23m9.com -->
-        <form id="contactForm" action="https://formsubmit.co/misa@c23m9.com" method="POST" novalidate>
-          <!-- FormSubmit options -->
-          <input type="hidden" name="_subject" value="New Website Inquiry (Contact form)" />
-          <input type="hidden" name="_template" value="table" />
-          <input type="hidden" name="_captcha" value="false" />
-          <input type="hidden" name="form_name" value="Contact" />
+      <div class="grid cols-2 contact-grid">
+        <div class="card" style="display:grid; gap:1rem;">
+          <p style="margin:0; color:var(--muted)">Quick brief below and we’ll reply within one business day.</p>
 
-          <div class="grid cols-2" style="gap:.8rem">
-            <div>
-              <label for="name" data-i18n="contact.name">Name</label>
-              <input id="name" name="name" required autocomplete="name" placeholder="Your name" />
-            </div>
-            <div>
-              <label for="email" data-i18n="contact.email">Email</label>
-              <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@company.com" />
-            </div>
-          </div>
+          <form id="contactForm" action="https://formsubmit.co/431afb18b6d29330088207e6478cadc5" method="POST">
+            <input type="hidden" name="_subject" value="New Website Inquiry (Contact form)" />
+            <input type="hidden" name="_template" value="table" />
+            <input type="hidden" name="_blacklist" value="viagra, crypto, investment, guest post, seo package" />
+            <input type="hidden" name="form_name" value="Contact" />
+            <input type="hidden" name="_autoresponse" value="Thanks for the message — you’ll hear from us within one business day. – c23m9" />
 
-          <div class="grid cols-2" style="gap:.8rem">
-            <div>
-              <label for="budget" data-i18n="contact.budget">Budget</label>
-              <select id="budget" name="budget" class="pill" required>
-                <option value="" data-i18n="contact.budgetChoose">Select a range</option>
-                <option value="under-10k">Under $10k</option>
-                <option value="10-25k">$10k – $25k</option>
-                <option value="25-50k">$25k – $50k</option>
-                <option value="50k+">$50k+</option>
-              </select>
-              <div class="badge-row mt-2" id="budgetPills">
-                <button type="button" class="pill" data-val="under-10k">Under $10k</button>
-                <button type="button" class="pill" data-val="10-25k">$10k–$25k</button>
-                <button type="button" class="pill" data-val="25-50k">$25k–$50k</button>
-                <button type="button" class="pill" data-val="50k+">$50k+</button>
+            <div class="grid cols-2" style="gap:.8rem">
+              <div>
+                <label for="name">Name</label>
+                <input id="name" name="name" required autocomplete="name" placeholder="Your name" />
+              </div>
+              <div>
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@company.com" />
               </div>
             </div>
+
+            <div class="grid cols-2" style="gap:.8rem">
+              <div>
+                <label for="budget">Budget</label>
+                <select id="budget" name="budget" class="pill" required>
+                  <option value="">Select a range</option>
+                  <option value="under-10k">Under $10k</option>
+                  <option value="10-25k">$10k – $25k</option>
+                  <option value="25-50k">$25k – $50k</option>
+                  <option value="50k+">$50k+</option>
+                </select>
+              </div>
+              <div>
+                <label for="timeline">Timeline</label>
+                <select id="timeline" name="timeline" class="pill" required>
+                  <option value="">Choose</option>
+                  <option value="asap">ASAP</option>
+                  <option value="4-8w">4–8 weeks</option>
+                  <option value="2-3m">2–3 months</option>
+                  <option value="flexible">Flexible</option>
+                </select>
+              </div>
+            </div>
+
             <div>
-              <label for="timeline" data-i18n="contact.timeline">Timeline</label>
-              <select id="timeline" name="timeline" class="pill" required>
-                <option value="" data-i18n="contact.timelineChoose">Choose</option>
-                <option value="asap">ASAP</option>
-                <option value="4-8w">4–8 weeks</option>
-                <option value="2-3m">2–3 months</option>
-                <option value="flexible">Flexible</option>
-              </select>
+              <label for="message">Project brief</label>
+              <textarea id="message" name="message" rows="6" placeholder="What are we building? Goals, users, integrations…" required></textarea>
+            </div>
+
+            <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+
+            <div class="flex" style="gap:.6rem; flex-wrap: wrap;">
+              <button class="btn primary" type="submit">Send inquiry</button>
+              <button class="btn ghost" type="button" id="copyEmail">Copy email</button>
+              <a href="/resume.pdf" class="btn ghost">Download résumé</a>
+            </div>
+            <div class="status" id="formStatus" aria-live="polite">We reply within one business day.</div>
+          </form>
+        </div>
+
+        <!-- Live panel (demo) -->
+        <aside class="card live">
+          <div class="center-between">
+            <div>
+              <div class="kicker">Live snapshot (demo)</div>
+              <strong>Effectiveness in real time</strong>
+            </div>
+            <div class="badge-row">
+              <span class="pill" id="slaBadge">SLA 99.95%</span>
+              <span class="pill ok" id="svcHealth">Healthy</span>
             </div>
           </div>
 
-          <div>
-            <label for="message" data-i18n="contact.brief">Project brief</label>
-            <textarea id="message" name="message" rows="6" placeholder="What are we building? Goals, users, integrations…" required></textarea>
+          <div class="live-metrics">
+            <div class="lm"><div class="lm-label">Avg first reply</div><div class="lm-value"><span id="lmReply">–</span> min</div></div>
+            <div class="lm"><div class="lm-label">Uptime (90d)</div><div class="lm-value"><span id="lmUptime">–</span>%</div></div>
+            <div class="lm"><div class="lm-label">p95 latency</div><div class="lm-value"><span id="lmP95">–</span> ms</div></div>
+            <div class="lm"><div class="lm-label">Deploys this week</div><div class="lm-value" id="lmDeploys">–</div></div>
+            <div class="lm"><div class="lm-label">Incidents (90d)</div><div class="lm-value" id="lmIncidents">–</div></div>
+            <div class="lm"><div class="lm-label">A/B uplift</div><div class="lm-value"><span id="lmAB">–</span>%</div></div>
           </div>
 
-          <!-- Honeypot (FormSubmit uses _honey) -->
-          <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+          <canvas id="liveSpark" height="70" aria-label="Last minute latency sparkline" role="img"></canvas>
 
-          <div class="flex" style="gap:.6rem; flex-wrap: wrap;">
-            <button class="btn primary" type="submit" data-i18n="contact.send">Send inquiry</button>
-            <button class="btn ghost" type="button" id="copyEmail" data-i18n="contact.copy">Copy email</button>
-            <a href="/resume.pdf" class="btn ghost" data-i18n="contact.resume">Download résumé</a>
+          <div class="live-actions">
+            <button class="btn ghost" id="simulateSpike">Simulate traffic spike</button>
+            <button class="btn ghost" id="simulateDeploy">Simulate deploy</button>
           </div>
-          <div class="status" id="formStatus" aria-live="polite" data-i18n="contact.sla">I reply within one business day.</div>
-        </form>
+          <p class="muted" style="margin:.5rem 0 0">Synthetic demo data. In production this connects to real APM/uptime and deploy hooks.</p>
+        </aside>
       </div>
     </section>
   </main>
 
   <footer>
     <div class="container center-between">
-      <div>© <span id="year"></span> c23m9. <span data-i18n="footer.rights">All rights reserved.</span></div>
+      <div>© <span id="year"></span> c23m9. <span>All rights reserved.</span></div>
       <div class="flex" style="gap:.6rem;">
         <a class="pill" href="#" aria-label="GitHub">GitHub</a>
         <a class="pill" href="#" aria-label="LinkedIn">LinkedIn</a>
@@ -345,6 +332,9 @@ type Query { products(sku: String): [Product]! }
     </div>
   </footer>
 
+  
+
+  <!-- Scripts -->
   <script src="scripts.js"></script>
 </body>
 </html>

@@ -25,6 +25,8 @@
       --shadow: 0 10px 25px rgba(0,0,0,.28);
       --placeholder:#a9b6d4;
       --chart-text:#e8eefc; --chart-grid:rgba(232,238,252,.2);
+      --chart-h: 230px;
+
     }
 
     /* Dark theme (default) */
@@ -163,7 +165,11 @@ html[data-theme="dark"] option{
     .chart-actions .icon-btn:hover{filter:brightness(1.1)}
 
     /* The wrapper has explicit height; Chart.js sizes to its parent */
-    .chart-wrap{padding:.6rem .8rem; height:230px;}
+    .chart-wrap{
+  padding:.6rem .8rem;
+  height: var(--chart-h);
+  overflow: hidden; /* clip only the canvas area, not the header */
+}
     .chart-wrap canvas{width:100%; height:100%; display:block;}
 
     /* Expanded: span 2 columns (2x width), header sticks; height doubled via inline style */
@@ -631,585 +637,784 @@ html[data-theme="dark"] option{
     </div>
   </div>
 
-  <footer class="footer">Built by Code Copilot • Client-side only</footer>
+  <footer>
+    <small>© c23m9. All rights reserved.</small>
+  </footer>
 
   <!-- ====== App JS ====== -->
   <script>
   (() => {
-    const $ = (s,r=document)=>r.querySelector(s);
-    const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+  const $ = (s,r=document)=>r.querySelector(s);
+  const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
 
-    let rows=[], filtered=[], page=1, perPage=25, headerCols=[];
-    const CANON=['Database Id','Updated','Principal applicant','Contact','Case size','Country','Application','Case type','PA receipt #','USCIS case status','Lawyer','Notes','Date: Interview','Date: Biometrics','Date: Approval','Date: Denial','Date: Case closing'];
-    const DATE_COLS=['Updated','Application','Date: Interview','Date: Biometrics','Date: Approval','Date: Denial','Date: Case closing'];
-    const TEXT_FIELDS=['Principal applicant','Contact','Notes','PA receipt #','Database Id'];
+  let rows=[], filtered=[], page=1, perPage=25, headerCols=[];
+  const CANON=['Database Id','Updated','Principal applicant','Contact','Case size','Country','Application','Case type','PA receipt #','USCIS case status','Lawyer','Notes','Date: Interview','Date: Biometrics','Date: Approval','Date: Denial','Date: Case closing'];
+  const DATE_COLS=['Updated','Application','Date: Interview','Date: Biometrics','Date: Approval','Date: Denial','Date: Case closing'];
+  const TEXT_FIELDS=['Principal applicant','Contact','Notes','PA receipt #','Database Id'];
 
-    // Elements
-    const fileInput=$('#fileInput'), statusEl=$('#status');
-    const table=$('#dataTable'), thead=table?.querySelector('thead'), tbody=table?.querySelector('tbody');
-    const rowsPerPageSel=$('#rowsPerPage'), prevBtn=$('#prevPage'), nextBtn=$('#nextPage'), pageInfo=$('#pageInfo');
-    const exportCsvBtn=$('#exportCsvBtn'), resetBtn=$('#resetBtn'), toggleFiltersBtn=$('#toggleFiltersBtn');
-    const chips=$('#chips'), dateMode=$('#dateMode');
-    const drawer=$('#filtersDrawer'), drawerBackdrop=$('#drawerBackdrop'), drawerPanel=drawer?.querySelector('.drawer-panel'), closeDrawer=$('#closeDrawer');
-    const applyBtn=$('#applyFiltersBtn'), drawerClearBtn=$('#drawerClearBtn');
-    const searchInput=$('#f-search');
-    const sumRows=$('#sumRows'), sumIds=$('#sumIds'), sumSize=$('#sumSize');
-    const themeToggle=$('#themeToggle');
+  // Elements
+  const fileInput=$('#fileInput'), statusEl=$('#status');
+  const table=$('#dataTable'), thead=table?.querySelector('thead'), tbody=table?.querySelector('tbody');
+  const rowsPerPageSel=$('#rowsPerPage'), prevBtn=$('#prevPage'), nextBtn=$('#nextPage'), pageInfo=$('#pageInfo');
+  const exportCsvBtn=$('#exportCsvBtn'), resetBtn=$('#resetBtn'), toggleFiltersBtn=$('#toggleFiltersBtn');
+  const chips=$('#chips'), dateMode=$('#dateMode');
+  const drawer=$('#filtersDrawer'), drawerBackdrop=$('#drawerBackdrop'), drawerPanel=drawer?.querySelector('.drawer-panel'), closeDrawer=$('#closeDrawer');
+  const applyBtn=$('#applyFiltersBtn'), drawerClearBtn=$('#drawerClearBtn');
+  const searchInput=$('#f-search');
+  const sumRows=$('#sumRows'), sumIds=$('#sumIds'), sumSize=$('#sumSize');
+  const themeToggle=$('#themeToggle');
 
-    // Global date controls
-    const globalMonthSel = $('#globalMonthSel');
-    const globalMonthYear = $('#globalMonthYear');
-    const globalQuarter = $('#globalQuarter');
-    const globalQuarterYear = $('#globalQuarterYear');
+  // Global date controls
+  const globalMonthSel = $('#globalMonthSel');
+  const globalMonthYear = $('#globalMonthYear');
+  const globalQuarter = $('#globalQuarter');
+  const globalQuarterYear = $('#globalQuarterYear');
 
-    // charts registry + state
-    const chartObjs = {};
-    const chartStates = {
-      chartApplications: {kind:'simple', field:'Application', sort:'asc'},
-      chartStatus: {kind:'status', field:'Updated', sort:'asc'},
-      chartInterview: {kind:'simple', field:'Date: Interview', sort:'asc'},
-      chartBiometrics: {kind:'simple', field:'Date: Biometrics', sort:'asc'},
-      chartApproval: {kind:'simple', field:'Date: Approval', sort:'asc'},
-      chartDenial: {kind:'simple', field:'Date: Denial', sort:'asc'},
-      chartClosing: {kind:'simple', field:'Date: Case closing', sort:'asc'},
-    };
+  // charts registry + state
+  const chartObjs = {};
+  const chartStates = {
+    chartApplications: {kind:'simple', field:'Application', sort:'asc'},
+    chartStatus: {kind:'status', field:'Updated', sort:'asc'},
+    chartInterview: {kind:'simple', field:'Date: Interview', sort:'asc'},
+    chartBiometrics: {kind:'simple', field:'Date: Biometrics', sort:'asc'},
+    chartApproval: {kind:'simple', field:'Date: Approval', sort:'asc'},
+    chartDenial: {kind:'simple', field:'Date: Denial', sort:'asc'},
+    chartClosing: {kind:'simple', field:'Date: Case closing', sort:'asc'},
+  };
 
-    // utils
-    const throttle=(fn,wait=200)=>{let last=0,t=null; return(...a)=>{const now=Date.now(),rem=wait-(now-last); if(rem<=0){clearTimeout(t);t=null;last=now;fn(...a);} else if(!t){t=setTimeout(()=>{last=Date.now();t=null;fn(...a);},rem);} }};
-    const escapeCsv=(s)=>{const str=String(s??''); const mustQ=/[",\n\r]/.test(str); const esc=str.replace(/"/g,'""'); return mustQ?`"${esc}"`:esc;};
-    const toCsv=(header,rows)=>[header.map(escapeCsv).join(','),...rows.map(r=>header.map(h=>escapeCsv(r[h])).join(','))].join('\n');
-    const norm=(s)=>String(s||'').toLowerCase().replace(/\s+/g,' ').replace(/[–—-]/g,'-').replace(/[#:]/g,'').trim();
-    const HEAD_MAP=[[/^database id$/,'Database Id'],[/^updated/,'Updated'],[/^principal applicant$/,'Principal applicant'],[/^contact$/,'Contact'],[/^case size$/,'Case size'],[/^country$/,'Country'],[/^application$/,'Application'],[/^case type$/,'Case type'],[/^(pa )?receipt( number)?$/,'PA receipt #'],[/^uscis case status$/,'USCIS case status'],[/^lawyer$/,'Lawyer'],[/^notes?$/,'Notes'],[/^date.*interview$/,'Date: Interview'],[/^date.*biometric/,'Date: Biometrics'],[/^date.*approval$/,'Date: Approval'],[/^date.*denial$/,'Date: Denial'],[/^date.*case.*closing$/,'Date: Case closing']];
-    const mapToCanonical=(cell)=>{const n=norm(cell); for(const[re,canon] of HEAD_MAP){ if(re.test(n)) return canon; } return String(cell||'').trim(); };
-    function findHeaderRow(aoa){ let bestIdx=4,bestScore=-1; for(let i=0;i<Math.min(10,aoa.length);i++){ const row=aoa[i]||[]; const score=row.reduce((acc,cell)=>acc+(HEAD_MAP.some(([re])=>re.test(norm(cell)))?1:0),0); if(score>bestScore){bestScore=score; bestIdx=i;} } return bestIdx; }
+  // utils
+  const throttle=(fn,wait=200)=>{let last=0,t=null; return(...a)=>{const now=Date.now(),rem=wait-(now-last); if(rem<=0){clearTimeout(t);t=null;last=now;fn(...a);} else if(!t){t=setTimeout(()=>{last=Date.now();t=null;fn(...a);},rem);} }};
+  const escapeCsv=(s)=>{const str=String(s??''); const mustQ=/[",\n\r]/.test(str); const esc=str.replace(/"/g,'""'); return mustQ?`"${esc}"`:esc;};
+  const toCsv=(header,rows)=>[header.map(escapeCsv).join(','),...rows.map(r=>header.map(h=>escapeCsv(r[h])).join(','))].join('\n');
+  const norm=(s)=>String(s||'').toLowerCase().replace(/\s+/g,' ').replace(/[–—-]/g,'-').replace(/[#:]/g,'').trim();
+  const HEAD_MAP=[[/^database id$/,'Database Id'],[/^updated/,'Updated'],[/^principal applicant$/,'Principal applicant'],[/^contact$/,'Contact'],[/^case size$/,'Case size'],[/^country$/,'Country'],[/^application$/,'Application'],[/^case type$/,'Case type'],[/^(pa )?receipt( number)?$/,'PA receipt #'],[/^uscis case status$/,'USCIS case status'],[/^lawyer$/,'Lawyer'],[/^notes?$/,'Notes'],[/^date.*interview$/,'Date: Interview'],[/^date.*biometric/,'Date: Biometrics'],[/^date.*approval$/,'Date: Approval'],[/^date.*denial$/,'Date: Denial'],[/^date.*case.*closing$/,'Date: Case closing']];
+  const mapToCanonical=(cell)=>{const n=norm(cell); for(const[re,canon] of HEAD_MAP){ if(re.test(n)) return canon; } return String(cell||'').trim(); };
+  function findHeaderRow(aoa){ let bestIdx=4,bestScore=-1; for(let i=0;i<Math.min(10,aoa.length);i++){ const row=aoa[i]||[]; const score=row.reduce((acc,cell)=>acc+(HEAD_MAP.some(([re])=>re.test(norm(cell)))?1:0),0); if(score>bestScore){bestScore=score; bestIdx=i;} } return bestIdx; }
 
-    const excelDateToJS=(v)=>{ if(v instanceof Date) return v;
-      if(typeof v==='number' && window.XLSX?.SSF?.parse_date_code){ const d=window.XLSX.SSF.parse_date_code(v); if(d) return new Date(Date.UTC(d.y,(d.m||1)-1,d.d||1,d.H||0,d.M||0,d.S||0)); }
-      const t=Date.parse(String(v||'').replace(/\./g,'-')); return Number.isFinite(t)?new Date(t):null; };
-    const fmtDate=(d)=>d instanceof Date && !isNaN(+d) ? d.toISOString().slice(0,10) : '';
-    const monthRange=(m,y)=>{ m=Number(m); y=Number(y); if(!m||!y) return {min:null,max:null}; const min=new Date(y,m-1,1); const max=new Date(y,m,0,23,59,59,999); return {min,max}; };
-    const getQuarterRange=(q,y)=>{ q=Number(q); y=Number(y); if(!Number.isInteger(q)||q<1||q>4) return {min:null,max:null}; if(!Number.isInteger(y)||y<0) return {min:null,max:null}; const m=(q-1)*3; return {min:new Date(y,m,1), max:new Date(y,m+3,0,23,59,59,999)}; };
+  const excelDateToJS=(v)=>{ if(v instanceof Date) return v;
+    if(typeof v==='number' && window.XLSX?.SSF?.parse_date_code){ const d=window.XLSX.SSF.parse_date_code(v); if(d) return new Date(Date.UTC(d.y,(d.m||1)-1,d.d||1,d.H||0,d.M||0,d.S||0)); }
+    const t=Date.parse(String(v||'').replace(/\./g,'-')); return Number.isFinite(t)?new Date(t):null; };
+  const fmtDate=(d)=>d instanceof Date && !isNaN(+d) ? d.toISOString().slice(0,10) : '';
+  const monthRange=(m,y)=>{ m=Number(m); y=Number(y); if(!m||!y) return {min:null,max:null}; const min=new Date(y,m-1,1); const max=new Date(y,m,0,23,59,59,999); return {min,max}; };
+  const getQuarterRange=(q,y)=>{ q=Number(q); y=Number(y); if(!Number.isInteger(q)||q<1||q>4) return {min:null,max:null}; if(!Number.isInteger(y)||y<0) return {min:null,max:null}; const m=(q-1)*3; return {min:new Date(y,m,1), max:new Date(y,m+3,0,23,59,59,999)}; };
 
-    /* ===== THEME TOGGLE ===== */
-    function setTheme(t){
-      document.documentElement.setAttribute('data-theme', t);
-      localStorage.setItem('theme', t);
-      const icon = t==='light' ? '☀️' : '🌙';
-      const label = t==='light' ? 'Light' : 'Dark';
-      themeToggle.querySelector('.icon').textContent = icon;
-      themeToggle.querySelector('.label').textContent = label;
-      applyChartTheme();
+  /* ===== THEME TOGGLE ===== */
+  function setTheme(t){
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('theme', t);
+    const icon = t==='light' ? '☀️' : '🌙';
+    const label = t==='light' ? 'Light' : 'Dark';
+    themeToggle.querySelector('.icon').textContent = icon;
+    themeToggle.querySelector('.label').textContent = label;
+    applyChartTheme();
+  }
+  themeToggle?.addEventListener('click', ()=>{
+    const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+    setTheme(cur==='dark' ? 'light' : 'dark');
+    resizeAllChartsSoon();
+  });
+  (()=>{
+    const saved = localStorage.getItem('theme');
+    if(saved==='light' || saved==='dark'){ setTheme(saved); }
+    else{
+      const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+      setTheme(prefersLight?'light':'dark');
     }
-    themeToggle?.addEventListener('click', ()=>{
-      const cur = document.documentElement.getAttribute('data-theme') || 'dark';
-      setTheme(cur==='dark' ? 'light' : 'dark');
-    });
-    (()=>{
-      const saved = localStorage.getItem('theme');
-      if(saved==='light' || saved==='dark'){ setTheme(saved); }
-      else{
-        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-        setTheme(prefersLight?'light':'dark');
-      }
-    })();
-
-    // ingest
-    fileInput?.addEventListener('change', async (e)=>{
-      const f=e.target.files?.[0]; if(!f) return; statusEl.textContent='Reading…';
-      try{
-        const ab=await f.arrayBuffer();
-        const wb=XLSX.read(ab,{type:'array',cellDates:true,dateNF:'yyyy-mm-dd'});
-        const ws=wb.Sheets[wb.SheetNames[0]];
-        const aoa=XLSX.utils.sheet_to_json(ws,{header:1,raw:true});
-        const headerRowIdx=findHeaderRow(aoa);
-        const rawHeader=aoa[headerRowIdx]||[];
-        const mappedHeader=rawHeader.map(mapToCanonical);
-        const required=['Database Id','Updated','Principal applicant','Application'];
-        const missing=required.filter(h=>!mappedHeader.includes(h));
-        if(missing.length){ statusEl.textContent=`Missing required columns: ${missing.join(', ')}`; return; }
-        const extras=mappedHeader.filter(h=>!CANON.includes(h));
-        headerCols=[...CANON.filter(h=>mappedHeader.includes(h)),...extras];
-
-        const dataRows=aoa.slice(headerRowIdx+1);
-        rows=dataRows.map(r=>{
-          const o={}; for(let i=0;i<mappedHeader.length;i++) o[mappedHeader[i]]=r[i];
-          DATE_COLS.forEach(h=>o[h]=excelDateToJS(o[h]));
-          return o;
-        }).filter(o=>Object.values(o).some(v=>String(v??'').trim()!==''));
-
-        renderTableHead(headerCols);
-        populateAttributeOptions(rows);
-        toggleFiltersBtn.disabled=false; resetBtn.disabled=false; exportCsvBtn.disabled=false;
-        applyFilters();
-        statusEl.textContent=`Loaded ${rows.length} rows (header detected).`;
-      }catch(err){ console.error(err); statusEl.textContent='Failed to read file.'; }
-    });
-
-    // drawer
-    const openDrawer=()=>drawer.setAttribute('aria-hidden','false');
-    const closeDrawerNow=()=>drawer.setAttribute('aria-hidden','true');
-    toggleFiltersBtn?.addEventListener('click',openDrawer);
-    closeDrawer?.addEventListener('click',closeDrawerNow);
-    drawerBackdrop?.addEventListener('click',closeDrawerNow);
-    drawerPanel?.addEventListener('click',(e)=>{ if(e.target===drawerPanel) closeDrawerNow(); });
-
-    // date modes
-    const applyMode=(mode)=>{
-      $$('.filter-row').forEach(row=>{
-        $$('.mode',row).forEach(m=>m.classList.add('hidden'));
-        row.querySelector(`.mode.mode-${mode}`)?.classList.remove('hidden');
-      });
-      $$('.global-date-controls .mode').forEach(m=>m.classList.add('hidden'));
-      document.querySelector(`.global-date-controls .mode-${mode}`)?.classList.remove('hidden');
-    };
-    dateMode?.addEventListener('change',(e)=>{const t=e.target; if(t?.name==='dm'){applyMode(t.value);}});
-    applyMode($('#dateMode input[name="dm"]:checked')?.value || 'range');
-
-    // attributes
-    function populateAttributeOptions(data){
-      const unique=(col)=>[...new Set(data.map(r=>String(r[col]??'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-      const fill=(id,opts)=>{const sel=document.getElementById(id); if(!sel) return; sel.innerHTML=''; opts.forEach(v=>{const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o);});};
-      fill('ms-size', unique('Case size'));
-      fill('ms-country', unique('Country'));
-      fill('ms-type', unique('Case type'));
-      fill('ms-status', unique('USCIS case status'));
-      fill('ms-lawyer', unique('Lawyer'));
-    }
-
-    // helpers for current mode
-    const anyActiveForMode = (rowEl, mode) => {
-      if(!rowEl) return false;
-      if(mode==='range') return !!(rowEl.querySelector('.mode-range .min')?.value || rowEl.querySelector('.mode-range .max')?.value);
-      if(mode==='month'){
-        const m=rowEl.querySelector('.mode-month .m')?.value||'';
-        const y=rowEl.querySelector('.mode-month .year')?.value||'';
-        return !!(m && y);
-      }
-      if(mode==='quarter') return !!(rowEl.querySelector('.mode-quarter .q')?.value || rowEl.querySelector('.mode-quarter .year')?.value);
-      return false;
-    };
-
-    function matchDate(rec,col,mode){
-      const d=rec[col]; if(!(d instanceof Date)||isNaN(+d)) return false;
-      if(mode==='range'){
-        const row=$(`.filter-row[data-col="${col}"]`);
-        const min=row?.querySelector('.mode-range .min')?.value||'';
-        const max=row?.querySelector('.mode-range .max')?.value||'';
-        const ds=fmtDate(d);
-        if(min && ds<min) return false; if(max && ds>max) return false;
-        return !!(min||max);
-      }
-      if(mode==='month'){
-        const row=$(`.filter-row[data-col="${col}"]`);
-        const m=row?.querySelector('.mode-month .m')?.value||'';
-        const y=row?.querySelector('.mode-month .year')?.value||'';
-        const {min,max}=monthRange(m,y);
-        if(!min||!max) return false;
-        const ts=+new Date(fmtDate(d));
-        return ts>=+min && ts<=+max;
-      }
-      if(mode==='quarter'){
-        const row=$(`.filter-row[data-col="${col}"]`);
-        const q=parseInt(row?.querySelector('.mode-quarter .q')?.value||'',10);
-        const y=parseInt(row?.querySelector('.mode-quarter .year')?.value||'',10);
-        const {min,max}=getQuarterRange(q,y);
-        if(!min||!max) return false;
-        const ts=+new Date(fmtDate(d));
-        return ts>=+min && ts<=+max;
-      }
-      return false;
-    }
-
-    function clearFilters(){
-      $$('#filtersBody input,#filtersBody select').forEach(el=>{
-        if(el.matches('.chart-field')) return;
-        if(el.type==='checkbox'||el.type==='radio') el.checked=false;
-        else if(el.multiple){ Array.from(el.options).forEach(o=>o.selected=false); }
-        else el.value='';
-      });
-      if(globalMonthSel) globalMonthSel.value='';
-      if(globalMonthYear) globalMonthYear.value='';
-      if(globalQuarter) globalQuarter.value='';
-      if(globalQuarterYear) globalQuarterYear.value='';
-      if(searchInput) searchInput.value='';
-    }
-
-    const scheduleApply=throttle(()=>applyFilters(),200);
-    searchInput?.addEventListener('input', throttle(scheduleApply,250));
-    applyBtn?.addEventListener('click',()=>{ applyFilters(); closeDrawerNow(); });
-    drawerClearBtn?.addEventListener('click',()=>{ clearFilters(); applyFilters(); });
-    resetBtn?.addEventListener('click',()=>{ clearFilters(); scheduleApply(); });
-
-    function activeSet(id){const sel=document.getElementById(id); if(!sel) return null; const vals=Array.from(sel.selectedOptions).map(o=>o.value); return vals.length?new Set(vals):null;}
-
-    function applyFilters(){
-      if(!rows.length) return;
-      page=1;
-      const mode=$('#dateMode input[name="dm"]:checked')?.value || 'range';
-      const setSize=activeSet('ms-size'), setCountry=activeSet('ms-country'), setType=activeSet('ms-type'), setStatus=activeSet('ms-status'), setLawyer=activeSet('ms-lawyer');
-      const q=(searchInput?.value||'').toLowerCase();
-
-      filtered=rows.filter(r=>{
-        if(q){
-          const hay=TEXT_FIELDS.map(f=>String(r[f]??'')).join(' | ').toLowerCase();
-          if(!hay.includes(q)) return false;
-        }
-        if(setSize && !setSize.has(String(r['Case size']??''))) return false;
-        if(setCountry && !setCountry.has(String(r['Country']??''))) return false;
-        if(setType && !setType.has(String(r['Case type']??''))) return false;
-        if(setStatus && !setStatus.has(String(r['USCIS case status']??''))) return false;
-        if(setLawyer && !setLawyer.has(String(r['Lawyer']??''))) return false;
-
-        for(const col of DATE_COLS){
-          const rowEl=document.querySelector(`.filter-row[data-col="${col}"]`);
-          if(anyActiveForMode(rowEl, mode) && !matchDate(r,col,mode)) return false;
-        }
-        return true;
-      });
-
-      renderChips();
-      renderPage();
-      updateSummary();
-      renderAllCharts();
-    }
-
-    function updateSummary(){
-      const totalRows = filtered.length;
-      const ids = new Set(filtered.map(r => String(r['Database Id'] ?? '').trim()).filter(Boolean));
-      const sizeSum = filtered.reduce((acc, r)=>{
-        const raw = String(r['Case size'] ?? '').replace(/,/g,'');
-        const m = raw.match(/-?\d+(\.\d+)?/);
-        return acc + (m ? parseFloat(m[0]) : 0);
-      }, 0);
-      sumRows.textContent = String(totalRows);
-      sumIds.textContent = String(ids.size);
-      sumSize.textContent = Number.isFinite(sizeSum) ? String(sizeSum) : '0';
-    }
-
-    function monthName(m){return ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Number(m)||0];}
-
-    function renderChips(){
-      if(!chips) return; chips.innerHTML='';
-      const add=(lab,text,clear)=>{const c=document.createElement('span'); c.className='chip'; c.innerHTML=`<span>${lab}: ${text}</span><button title="Clear">✕</button>`; c.querySelector('button')?.addEventListener('click',clear); chips.appendChild(c);};
-      if(searchInput?.value){ add('Search',searchInput.value,()=>{searchInput.value=''; applyFilters();}); }
-      [['Case size','ms-size'],['Country','ms-country'],['Case type','ms-type'],['USCIS case status','ms-status'],['Lawyer','ms-lawyer']].forEach(([lab,id])=>{
-        const sel=document.getElementById(id); const vals=sel?Array.from(sel.selectedOptions).map(o=>o.value):[];
-        if(vals.length) add(lab, vals.join(', '), ()=>{ Array.from(sel.options).forEach(o=>o.selected=false); applyFilters(); });
-      });
-
-      const mode=$('#dateMode input[name="dm"]:checked')?.value || 'range';
-      if(mode==='month'){
-        const gm=globalMonthSel?.value||''; const gy=globalMonthYear?.value||'';
-        if(gm && gy) add('Month', `${monthName(gm)} ${gy}`, ()=>{
-          if(globalMonthSel) globalMonthSel.value='';
-          if(globalMonthYear) globalMonthYear.value='';
-          applyFilters();
-        });
-      }
-      if(mode==='quarter'){
-        const gq=globalQuarter?.value||''; const gy=globalQuarterYear?.value||'';
-        if(gq||gy) add('Quarter', `Q${gq||'?'} ${gy||''}`, ()=>{
-          if(globalQuarter) globalQuarter.value='';
-          if(globalQuarterYear) globalQuarterYear.value='';
-          applyFilters();
-        });
-      }
-      const addRangeChip=(rowEl,col)=>{const a=rowEl.querySelector('.mode-range .min')?.value||'', b=rowEl.querySelector('.mode-range .max')?.value||''; if(a||b) add(col, `${a||'…'}–${b||'…'}`, ()=>{ const mi=rowEl.querySelector('.mode-range .min'); const ma=rowEl.querySelector('.mode-range .max'); if(mi) mi.value=''; if(ma) ma.value=''; applyFilters(); });};
-      DATE_COLS.forEach(col=>{ const rowEl=document.querySelector(`.filter-row[data-col="${col}"]`); if(!rowEl) return;
-        if(mode==='range') addRangeChip(rowEl,col);
-        if(mode==='month'){
-          const m=rowEl.querySelector('.mode-month .m')?.value||''; const y=rowEl.querySelector('.mode-month .year')?.value||'';
-          if(m && y) add(col, `${monthName(m)} ${y}`, ()=>{ const mm=rowEl.querySelector('.mode-month .m'); const yy=rowEl.querySelector('.mode-month .year'); if(mm) mm.value=''; if(yy) yy.value=''; applyFilters(); });
-        }
-        if(mode==='quarter'){
-          const q=rowEl.querySelector('.mode-quarter .q')?.value||'', y=rowEl.querySelector('.mode-quarter .year')?.value||'';
-          if(q||y) add(col,`Q${q||'?'} ${y||''}`,()=>{ const qs=rowEl.querySelector('.mode-quarter .q'); const yr=rowEl.querySelector('.mode-quarter .year'); if(qs) qs.value=''; if(yr) yr.value=''; applyFilters(); });
-        }
-      });
-    }
-
-    function renderTableHead(header){
-      if(!thead) return; thead.innerHTML=''; const tr=document.createElement('tr');
-      header.forEach(h=>{ const th=document.createElement('th'); th.textContent=h; tr.appendChild(th); }); thead.appendChild(tr);
-    }
-function downloadCanvasAsJpg(canvas, filename='chart.jpg'){
-  const bg = getCss('--panel-opaque') || '#ffffff';
-  const w = canvas.width, h = canvas.height;
-  const off = document.createElement('canvas');
-  off.width = w; off.height = h;
-  const ctx = off.getContext('2d');
-  ctx.fillStyle = bg; ctx.fillRect(0,0,w,h);  // solid background (no transparency)
-  ctx.drawImage(canvas, 0, 0);
-  const url = off.toDataURL('image/jpeg', 0.95);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
-}
-
-    function renderPage(){
-      if(!tbody) return;
-      const total=filtered.length;
-      const pp=perPage=parseInt(rowsPerPageSel?.value||'25',10);
-      const pages= total ? Math.ceil(total/pp) : 0;
-      page = Math.min(Math.max(1,page), Math.max(1,pages));
-      const start=(page-1)*pp;
-      const slice=filtered.slice(start,start+pp);
-
-      tbody.innerHTML='';
-      slice.forEach(obj=>{
-        const tr=document.createElement('tr');
-        headerCols.forEach(h=>{
-          const td=document.createElement('td');
-          td.className=h==='Notes'?'notes':'';
-          const v=DATE_COLS.includes(h)?fmtDate(obj[h]):(obj[h]??'');
-          td.textContent=v==null?'':String(v);
-          tr.appendChild(td);
-        });
-        tbody.appendChild(tr);
-      });
-
-      prevBtn.disabled=page<=1; nextBtn.disabled=!pages || page>=pages;
-      if(pageInfo) pageInfo.textContent=`${pages ? page : 0} / ${pages || 0}`;
-    }
-
-    rowsPerPageSel?.addEventListener('change',()=>{ page=1; renderPage(); });
-    prevBtn?.addEventListener('click',()=>{ if(page>1){ page--; renderPage(); } });
-    nextBtn?.addEventListener('click',()=>{ const pages=Math.ceil((filtered.length||1)/perPage); if(page<pages){ page++; renderPage(); } });
-
-    exportCsvBtn?.addEventListener('click',()=>{
-      if(!filtered.length) return;
-      const data=filtered.map(r=>{ const o={}; headerCols.forEach(h=>o[h]=DATE_COLS.includes(h)?fmtDate(r[h]):(r[h]??'')); return o; });
-      const csv=toCsv(headerCols,data);
-      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-      const url=URL.createObjectURL(blob); const a=document.createElement('a');
-      a.href=url; a.download='cases-filtered.csv'; a.click(); URL.revokeObjectURL(url);
-    });
-
-    /* ===== Charts ===== */
-    const byYear = (field, data) => {
-      const map = new Map();
-      data.forEach(r => {
-        const d = r[field];
-        if (d instanceof Date && !isNaN(+d)) {
-          const y = d.getFullYear();
-          map.set(y, (map.get(y)||0)+1);
-        }
-      });
-      let years = Array.from(map.keys()).sort((a,b)=>a-b);
-      return { labels: years, datasets: [{ label: field+' count', data: years.map(y => map.get(y)||0) }] };
-    };
-
-    const statusByYear = (statusField, yearField, data) => {
-      const years = new Set(); const statuses = new Set(); const grid = new Map();
-      data.forEach(r => {
-        const d = r[yearField];
-        const s = String(r[statusField] ?? '').trim() || '(None)';
-        if (d instanceof Date && !isNaN(+d)) {
-          const y = d.getFullYear();
-          years.add(y); statuses.add(s);
-          if (!grid.has(y)) grid.set(y, new Map());
-          const row = grid.get(y); row.set(s, (row.get(s)||0)+1);
-        }
-      });
-      const yearArr = Array.from(years).sort((a,b)=>a-b);
-      const statusArr = Array.from(statuses).sort((a,b)=>a.localeCompare(b));
-      const datasets = statusArr.map(s => ({ label: s, data: yearArr.map(y => grid.get(y)?.get(s) || 0) }));
-      return { labels: yearArr, datasets };
-    };
-
-    function sortChartData(conf, order='asc'){
-      const idx = conf.labels.map((y,i)=>({y, i, total: conf.datasets.reduce((a,d)=>a+(d.data[i]||0),0)}));
-      idx.sort((a,b)=> order==='asc' ? a.y - b.y : b.y - a.y);
-      const labels = idx.map(o=>o.y);
-      const datasets = conf.datasets.map(ds => ({...ds, data: idx.map(o=>ds.data[o.i])}));
-      return { labels, datasets };
-    }
-
-    function upsertBarChart(id, conf, stacked=false) {
-      if (!chartObjs[id]) {
-        chartObjs[id] = new Chart(document.getElementById(id), {
-          type: 'bar',
-          data: { labels: conf.labels, datasets: conf.datasets },
-          options: {
-            responsive: true, maintainAspectRatio: false,
-            scales: {
-              x:{ stacked, ticks:{ color:getCss('--chart-text') }, grid:{ color:getCss('--chart-grid') } },
-              y:{ stacked, beginAtZero:true, ticks:{ precision:0, color:getCss('--chart-text') }, grid:{ color:getCss('--chart-grid') } }
-            },
-            plugins: {
-              legend: { display:true, labels:{ color:getCss('--chart-text') } },
-              tooltip:{ mode:'index', intersect:false, titleColor:getCss('--chart-text'), bodyColor:getCss('--chart-text') }
-            }
-          }
-        });
-      } else {
-        const c = chartObjs[id];
-        c.data.labels = conf.labels;
-        c.data.datasets = conf.datasets;
-        c.update();
-      }
-    }
-
-    function getCss(varName){
-      return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
-    }
-
-    function applyChartTheme(){
-      Object.values(chartObjs).forEach(c=>{
-        if(!c) return;
-        c.options.scales.x.ticks.color = getCss('--chart-text');
-        c.options.scales.y.ticks.color = getCss('--chart-text');
-        c.options.scales.x.grid.color  = getCss('--chart-grid');
-        c.options.scales.y.grid.color  = getCss('--chart-grid');
-        c.options.plugins.legend.labels.color = getCss('--chart-text');
-        c.options.plugins.tooltip.titleColor = getCss('--chart-text');
-        c.options.plugins.tooltip.bodyColor  = getCss('--chart-text');
-        c.update();
-      });
-    }
-
-    function getActivePeriodForField(field, mode){
-      if(mode==='range'){
-        const rowEl=document.querySelector(`.filter-row[data-col="${field}"]`);
-        const min=rowEl?.querySelector('.mode-range .min')?.value||'';
-        const max=rowEl?.querySelector('.mode-range .max')?.value||'';
-        return (min||max)? {type:'range', min, max} : null;
-      }
-      if(mode==='month'){
-        let m = globalMonthSel?.value||'';
-        let y = globalMonthYear?.value||'';
-        if(!(m && y)){
-          const rowEl=document.querySelector(`.filter-row[data-col="${field}"]`);
-          if(!m) m = rowEl?.querySelector('.mode-month .m')?.value||'';
-          if(!y) y = rowEl?.querySelector('.mode-month .year')?.value||'';
-        }
-        const {min,max}=monthRange(m,y);
-        return (min&&max)? {type:'month', min, max} : null;
-      }
-      if(mode==='quarter'){
-        let q = parseInt(globalQuarter?.value||'',10);
-        let y = parseInt(globalQuarterYear?.value||'',10);
-        if(!(q && y)){
-          const rowEl=document.querySelector(`.filter-row[data-col="${field}"]`);
-          if(!q) q = parseInt(rowEl?.querySelector('.mode-quarter .q')?.value||'',10);
-          if(!y) y = parseInt(rowEl?.querySelector('.mode-quarter .year')?.value||'',10);
-        }
-        const {min,max}=getQuarterRange(q,y);
-        return (min&&max)? {type:'quarter', min, max} : null;
-      }
-      return null;
-    }
-
-    const fieldToNoun = (field) => ({
-      'Application':'Applications',
-      'Updated':'Updates',
-      'Date: Interview':'Interviews',
-      'Date: Biometrics':'Biometrics',
-      'Date: Approval':'Approvals',
-      'Date: Denial':'Denials',
-      'Date: Case closing':'Closings'
-    })[field] || field;
-
-    function updateCardTitle(card, state){
-      const h3 = card.querySelector('header h3');
-      if(!h3) return;
-      if(state.kind==='simple') h3.textContent = `${fieldToNoun(state.field)} per Year`;
-      else h3.textContent = `USCIS Case Status by Year (${state.field})`;
-    }
-
-    function renderChartCard(card){
-      const canvas = card.querySelector('canvas');
-      const id = canvas.id;
-      const kind = card.dataset.kind;
-      const sel = card.querySelector('.chart-field');
-      const state = chartStates[id];
-      if (!state) return;
-      state.kind = kind;
-
-      if (!state.init) {
-        const d = card.dataset.defaultField;
-        if (d) state.field = d;
-        if (sel) sel.value = state.field;
-        state.init = true;
-      } else if (sel) {
-        state.field = sel.value;
-      }
-
-      const mode=$('#dateMode input[name="dm"]:checked')?.value || 'range';
-      let dataSrc = filtered;
-      const period = getActivePeriodForField(state.field, mode);
-      if(period){
-        dataSrc = filtered.filter(r=>{
-          const d=r[state.field];
-          if(!(d instanceof Date)||isNaN(+d)) return false;
-          const ts=+new Date(fmtDate(d));
-          return ts>=+period.min && ts<=+period.max;
-        });
-      }
-
-      let conf;
-      if (kind==='simple'){
-        conf = byYear(state.field, dataSrc);
-        conf.datasets[0].label = 'Count';
-      } else {
-        conf = statusByYear('USCIS case status', state.field, dataSrc);
-      }
-      conf = sortChartData(conf, state.sort);
-      upsertBarChart(id, conf, kind==='status');
-
-      updateCardTitle(card, state);
-    }
-
-    function renderAllCharts(){ $$('.chart-card').forEach(renderChartCard); }
-
-    // === Expand (2× width + 2× height) ===
-    function expand2x(card){
-      const wrap = card.querySelector('.chart-wrap');
-      const id = card.querySelector('canvas').id;
-      if(!card._baseWrapHeight){
-        const h = parseFloat(getComputedStyle(wrap).height) || 230;
-        card._baseWrapHeight = h; // remember original (typically 230)
-      }
-      wrap.style.height = Math.round(card._baseWrapHeight * 2) + 'px';
-      card.classList.add('span2','expanded');
-      chartObjs[id]?.resize(); // only this chart
-    }
-
-    function collapse2x(card){
-      const wrap = card.querySelector('.chart-wrap');
-      const id = card.querySelector('canvas').id;
-      card.classList.remove('span2','expanded');
-      wrap.style.height = (card._baseWrapHeight ? card._baseWrapHeight + 'px' : '230px');
-      chartObjs[id]?.resize();
-    }
-
-    // Chart controls
-    $('#chartGrid')?.addEventListener('click', (e) => {
-      const btn = e.target.closest('.expand, .chart-sort, .chart-dl');
-      if (!btn) return;
-      const card = btn.closest('.chart-card'); const id = card.querySelector('canvas').id;
-
-      if (btn.classList.contains('expand')) {
-        const expanded = card.classList.contains('expanded');
-        expanded ? collapse2x(card) : expand2x(card);
-        btn.textContent = expanded ? '⤢' : '⤡';
-        btn.title = expanded ? 'Expand' : 'Collapse';
-        return;
-      }
-      if (btn.classList.contains('chart-sort')) { chartStates[id].sort = chartStates[id].sort==='asc'?'desc':'asc'; renderChartCard(card); return; }
-      if (btn.classList.contains('chart-dl')) {
-  const cv = card.querySelector('canvas');
-  const name = (card.querySelector('header h3')?.textContent || 'chart')
-                .trim().replace(/\s+/g,'_').toLowerCase() + '.jpg';
-  downloadCanvasAsJpg(cv, name);
-  return;
-}
-    });
-
-    $('#chartGrid')?.addEventListener('change', (e) => {
-      const sel = e.target.closest('.chart-field'); if (!sel) return;
-      renderChartCard(sel.closest('.chart-card'));
-    });
   })();
+
+  // ingest
+  fileInput?.addEventListener('change', async (e)=>{
+    const f=e.target.files?.[0]; if(!f) return; statusEl.textContent='Reading…';
+    try{
+      const ab=await f.arrayBuffer();
+      const wb=XLSX.read(ab,{type:'array',cellDates:true,dateNF:'yyyy-mm-dd'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const aoa=XLSX.utils.sheet_to_json(ws,{header:1,raw:true});
+      const headerRowIdx=findHeaderRow(aoa);
+      const rawHeader=aoa[headerRowIdx]||[];
+      const mappedHeader=rawHeader.map(mapToCanonical);
+      const required=['Database Id','Updated','Principal applicant','Application'];
+      const missing=required.filter(h=>!mappedHeader.includes(h));
+      if(missing.length){ statusEl.textContent=`Missing required columns: ${missing.join(', ')}`; return; }
+      const extras=mappedHeader.filter(h=>!CANON.includes(h));
+      headerCols=[...CANON.filter(h=>mappedHeader.includes(h)),...extras];
+
+      const dataRows=aoa.slice(headerRowIdx+1);
+      rows=dataRows.map(r=>{
+        const o={}; for(let i=0;i<mappedHeader.length;i++) o[mappedHeader[i]]=r[i];
+        DATE_COLS.forEach(h=>o[h]=excelDateToJS(o[h]));
+        return o;
+      }).filter(o=>Object.values(o).some(v=>String(v??'').trim()!==''));
+
+      renderTableHead(headerCols);
+      populateAttributeOptions(rows);
+      toggleFiltersBtn.disabled=false; resetBtn.disabled=false; exportCsvBtn.disabled=false;
+      applyFilters();
+      statusEl.textContent=`Loaded ${rows.length} rows (header detected).`;
+    }catch(err){ console.error(err); statusEl.textContent='Failed to read file.'; }
+  });
+
+  // drawer
+  const openDrawer=()=>drawer.setAttribute('aria-hidden','false');
+  const closeDrawerNow=()=>drawer.setAttribute('aria-hidden','true');
+  toggleFiltersBtn?.addEventListener('click',openDrawer);
+  closeDrawer?.addEventListener('click',closeDrawerNow);
+  drawerBackdrop?.addEventListener('click',closeDrawerNow);
+  drawerPanel?.addEventListener('click',(e)=>{ if(e.target===drawerPanel) closeDrawerNow(); });
+
+  // date modes
+  const applyMode=(mode)=>{
+    $$('.filter-row').forEach(row=>{
+      $$('.mode',row).forEach(m=>m.classList.add('hidden'));
+      row.querySelector(`.mode.mode-${mode}`)?.classList.remove('hidden');
+    });
+    $$('.global-date-controls .mode').forEach(m=>m.classList.add('hidden'));
+    document.querySelector(`.global-date-controls .mode-${mode}`)?.classList.remove('hidden');
+  };
+  dateMode?.addEventListener('change',(e)=>{const t=e.target; if(t?.name==='dm'){applyMode(t.value);}});
+  applyMode($('#dateMode input[name="dm"]:checked')?.value || 'range');
+
+  // attributes
+  function populateAttributeOptions(data){
+    const unique=(col)=>[...new Set(data.map(r=>String(r[col]??'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+    const fill=(id,opts)=>{const sel=document.getElementById(id); if(!sel) return; sel.innerHTML=''; opts.forEach(v=>{const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o);});};
+    fill('ms-size', unique('Case size'));
+    fill('ms-country', unique('Country'));
+    fill('ms-type', unique('Case type'));
+    fill('ms-status', unique('USCIS case status'));
+    fill('ms-lawyer', unique('Lawyer'));
+  }
+
+  // helpers for current mode
+  const anyActiveForMode = (rowEl, mode) => {
+    if(!rowEl) return false;
+    if(mode==='range') return !!(rowEl.querySelector('.mode-range .min')?.value || rowEl.querySelector('.mode-range .max')?.value);
+    if(mode==='month'){
+      const m=rowEl.querySelector('.mode-month .m')?.value||'';
+      const y=rowEl.querySelector('.mode-month .year')?.value||'';
+      return !!(m && y);
+    }
+    if(mode==='quarter') return !!(rowEl.querySelector('.mode-quarter .q')?.value || rowEl.querySelector('.mode-quarter .year')?.value);
+    return false;
+  };
+
+  function matchDate(rec,col,mode){
+    const d=rec[col]; if(!(d instanceof Date)||isNaN(+d)) return false;
+    if(mode==='range'){
+      const row=$(`.filter-row[data-col="${col}"]`);
+      const min=row?.querySelector('.mode-range .min')?.value||'';
+      const max=row?.querySelector('.mode-range .max')?.value||'';
+      const ds=fmtDate(d);
+      if(min && ds<min) return false; if(max && ds>max) return false;
+      return !!(min||max);
+    }
+    if(mode==='month'){
+      const row=$(`.filter-row[data-col="${col}"]`);
+      const m=row?.querySelector('.mode-month .m')?.value||'';
+      const y=row?.querySelector('.mode-month .year')?.value||'';
+      const {min,max}=monthRange(m,y);
+      if(!min||!max) return false;
+      const ts=+new Date(fmtDate(d));
+      return ts>=+min && ts<=+max;
+    }
+    if(mode==='quarter'){
+      const row=$(`.filter-row[data-col="${col}"]`);
+      const q=parseInt(row?.querySelector('.mode-quarter .q')?.value||'',10);
+      const y=parseInt(row?.querySelector('.mode-quarter .year')?.value||'',10);
+      const {min,max}=getQuarterRange(q,y);
+      if(!min||!max) return false;
+      const ts=+new Date(fmtDate(d));
+      return ts>=+min && ts<=+max;
+    }
+    return false;
+  }
+
+  function clearFilters(){
+    $$('#filtersBody input,#filtersBody select').forEach(el=>{
+      if(el.matches('.chart-field')) return;
+      if(el.type==='checkbox'||el.type==='radio') el.checked=false;
+      else if(el.multiple){ Array.from(el.options).forEach(o=>o.selected=false); }
+      else el.value='';
+    });
+    if(globalMonthSel) globalMonthSel.value='';
+    if(globalMonthYear) globalMonthYear.value='';
+    if(globalQuarter) globalQuarter.value='';
+    if(globalQuarterYear) globalQuarterYear.value='';
+    if(searchInput) searchInput.value='';
+  }
+
+  const scheduleApply=throttle(()=>applyFilters(),200);
+  searchInput?.addEventListener('input', throttle(scheduleApply,250));
+  applyBtn?.addEventListener('click',()=>{ applyFilters(); closeDrawerNow(); });
+  drawerClearBtn?.addEventListener('click',()=>{ clearFilters(); applyFilters(); });
+  resetBtn?.addEventListener('click',()=>{ clearFilters(); scheduleApply(); });
+
+  function activeSet(id){const sel=document.getElementById(id); if(!sel) return null; const vals=Array.from(sel.selectedOptions).map(o=>o.value); return vals.length?new Set(vals):null;}
+
+  function applyFilters(){
+    if(!rows.length) return;
+    page=1;
+    const mode=$('#dateMode input[name="dm"]:checked')?.value || 'range';
+    const setSize=activeSet('ms-size'), setCountry=activeSet('ms-country'), setType=activeSet('ms-type'), setStatus=activeSet('ms-status'), setLawyer=activeSet('ms-lawyer');
+    const q=(searchInput?.value||'').toLowerCase();
+
+    filtered=rows.filter(r=>{
+      if(q){
+        const hay=TEXT_FIELDS.map(f=>String(r[f]??'')).join(' | ').toLowerCase();
+        if(!hay.includes(q)) return false;
+      }
+      if(setSize && !setSize.has(String(r['Case size']??''))) return false;
+      if(setCountry && !setCountry.has(String(r['Country']??''))) return false;
+      if(setType && !setType.has(String(r['Case type']??''))) return false;
+      if(setStatus && !setStatus.has(String(r['USCIS case status']??''))) return false;
+      if(setLawyer && !setLawyer.has(String(r['Lawyer']??''))) return false;
+
+      for(const col of DATE_COLS){
+        const rowEl=document.querySelector(`.filter-row[data-col="${col}"]`);
+        if(anyActiveForMode(rowEl, mode) && !matchDate(r,col,mode)) return false;
+      }
+      return true;
+    });
+
+    renderChips();
+    renderPage();
+    updateSummary();
+    renderAllCharts();
+  }
+
+  function updateSummary(){
+    const totalRows = filtered.length;
+    const ids = new Set(filtered.map(r => String(r['Database Id'] ?? '').trim()).filter(Boolean));
+    const sizeSum = filtered.reduce((acc, r)=>{
+      const raw = String(r['Case size'] ?? '').replace(/,/g,'');
+      const m = raw.match(/-?\d+(\.\d+)?/);
+      return acc + (m ? parseFloat(m[0]) : 0);
+    }, 0);
+    sumRows.textContent = String(totalRows);
+    sumIds.textContent = String(ids.size);
+    sumSize.textContent = Number.isFinite(sizeSum) ? String(sizeSum) : '0';
+  }
+
+  function monthName(m){return ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Number(m)||0];}
+
+  function renderChips(){
+    if(!chips) return; chips.innerHTML='';
+    const add=(lab,text,clear)=>{const c=document.createElement('span'); c.className='chip'; c.innerHTML=`<span>${lab}: ${text}</span><button title="Clear">✕</button>`; c.querySelector('button')?.addEventListener('click',clear); chips.appendChild(c);};
+    if(searchInput?.value){ add('Search',searchInput.value,()=>{searchInput.value=''; applyFilters();}); }
+    [['Case size','ms-size'],['Country','ms-country'],['Case type','ms-type'],['USCIS case status','ms-status'],['Lawyer','ms-lawyer']].forEach(([lab,id])=>{
+      const sel=document.getElementById(id); const vals=sel?Array.from(sel.selectedOptions).map(o=>o.value):[];
+      if(vals.length) add(lab, vals.join(', '), ()=>{ Array.from(sel.options).forEach(o=>o.selected=false); applyFilters(); });
+    });
+
+    const mode=$('#dateMode input[name="dm"]:checked')?.value || 'range';
+    if(mode==='month'){
+      const gm=globalMonthSel?.value||''; const gy=globalMonthYear?.value||'';
+      if(gm && gy) add('Month', `${monthName(gm)} ${gy}`, ()=>{
+        if(globalMonthSel) globalMonthSel.value='';
+        if(globalMonthYear) globalMonthYear.value='';
+        applyFilters();
+      });
+    }
+    if(mode==='quarter'){
+      const gq=globalQuarter?.value||''; const gy=globalQuarterYear?.value||'';
+      if(gq||gy) add('Quarter', `Q${gq||'?'} ${gy||''}`, ()=>{
+        if(globalQuarter) globalQuarter.value='';
+        if(globalQuarterYear) globalQuarterYear.value='';
+        applyFilters();
+      });
+    }
+    const addRangeChip=(rowEl,col)=>{const a=rowEl.querySelector('.mode-range .min')?.value||'', b=rowEl.querySelector('.mode-range .max')?.value||''; if(a||b) add(col, `${a||'…'}–${b||'…'}`, ()=>{ const mi=rowEl.querySelector('.mode-range .min'); const ma=rowEl.querySelector('.mode-range .max'); if(mi) mi.value=''; if(ma) ma.value=''; applyFilters(); });};
+    DATE_COLS.forEach(col=>{ const rowEl=document.querySelector(`.filter-row[data-col="${col}"]`); if(!rowEl) return;
+      if(mode==='range') addRangeChip(rowEl,col);
+      if(mode==='month'){
+        const m=rowEl.querySelector('.mode-month .m')?.value||''; const y=rowEl.querySelector('.mode-month .year')?.value||'';
+        if(m && y) add(col, `${monthName(m)} ${y}`, ()=>{ const mm=rowEl.querySelector('.mode-month .m'); const yy=rowEl.querySelector('.mode-month .year'); if(mm) mm.value=''; if(yy) yy.value=''; applyFilters(); });
+      }
+      if(mode==='quarter'){
+        const q=rowEl.querySelector('.mode-quarter .q')?.value||'', y=rowEl.querySelector('.mode-quarter .year')?.value||'';
+        if(q||y) add(col,`Q${q||'?'} ${y||''}`,()=>{ const qs=rowEl.querySelector('.mode-quarter .q'); const yr=rowEl.querySelector('.mode-quarter .year'); if(qs) qs.value=''; if(yr) yr.value=''; applyFilters(); });
+      }
+    });
+  }
+
+  function renderTableHead(header){
+    if(!thead) return; thead.innerHTML=''; const tr=document.createElement('tr');
+    header.forEach(h=>{ const th=document.createElement('th'); th.textContent=h; tr.appendChild(th); }); thead.appendChild(tr);
+  }
+
+  function downloadCanvasAsJpg(canvas, filename='chart.jpg'){
+    const bg = getCss('--panel-opaque') || '#ffffff';
+    const w = canvas.width, h = canvas.height;
+    const off = document.createElement('canvas');
+    off.width = w; off.height = h;
+    const ctx = off.getContext('2d');
+    ctx.fillStyle = bg; ctx.fillRect(0,0,w,h);
+    ctx.drawImage(canvas, 0, 0);
+    const url = off.toDataURL('image/jpeg', 0.95);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+  }
+
+  function renderPage(){
+    if(!tbody) return;
+    const total=filtered.length;
+    const pp=perPage=parseInt(rowsPerPageSel?.value||'25',10);
+    const pages= total ? Math.ceil(total/pp) : 0;
+    page = Math.min(Math.max(1,page), Math.max(1,pages));
+    const start=(page-1)*pp;
+    const slice=filtered.slice(start,start+pp);
+
+    tbody.innerHTML='';
+    slice.forEach(obj=>{
+      const tr=document.createElement('tr');
+      headerCols.forEach(h=>{
+        const td=document.createElement('td');
+        td.className=h==='Notes'?'notes':'';
+        const v=DATE_COLS.includes(h)?fmtDate(obj[h]):(obj[h]??'');
+        td.textContent=v==null?'':String(v);
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+
+    prevBtn.disabled=page<=1; nextBtn.disabled=!pages || page>=pages;
+    if(pageInfo) pageInfo.textContent=`${pages ? page : 0} / ${pages || 0}`;
+  }
+
+  rowsPerPageSel?.addEventListener('change',()=>{ page=1; renderPage(); });
+  prevBtn?.addEventListener('click',()=>{ if(page>1){ page--; renderPage(); } });
+  nextBtn?.addEventListener('click',()=>{ const pages=Math.ceil((filtered.length||1)/perPage); if(page<pages){ page++; renderPage(); } });
+
+  exportCsvBtn?.addEventListener('click',()=>{
+    if(!filtered.length) return;
+    const data=filtered.map(r=>{ const o={}; headerCols.forEach(h=>o[h]=DATE_COLS.includes(h)?fmtDate(r[h]):(r[h]??'')); return o; });
+    const csv=toCsv(headerCols,data);
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url; a.download='cases-filtered.csv'; a.click(); URL.revokeObjectURL(url);
+  });
+
+  /* ===== Charts ===== */
+  const byYear = (field, data) => {
+    const map = new Map();
+    data.forEach(r => {
+      const d = r[field];
+      if (d instanceof Date && !isNaN(+d)) {
+        const y = d.getFullYear();
+        map.set(y, (map.get(y)||0)+1);
+      }
+    });
+    let years = Array.from(map.keys()).sort((a,b)=>a-b);
+    return { labels: years, datasets: [{ label: field+' count', data: years.map(y => map.get(y)||0) }] };
+  };
+
+  const statusByYear = (statusField, yearField, data) => {
+    const years = new Set(); const statuses = new Set(); const grid = new Map();
+    data.forEach(r => {
+      const d = r[yearField];
+      const s = String(r[statusField] ?? '').trim() || '(None)';
+      if (d instanceof Date && !isNaN(+d)) {
+        const y = d.getFullYear();
+        years.add(y); statuses.add(s);
+        if (!grid.has(y)) grid.set(y, new Map());
+        const row = grid.get(y); row.set(s, (row.get(s)||0)+1);
+      }
+    });
+    const yearArr = Array.from(years).sort((a,b)=>a-b);
+    const statusArr = Array.from(statuses).sort((a,b)=>a.localeCompare(b));
+    const datasets = statusArr.map(s => ({ label: s, data: yearArr.map(y => grid.get(y)?.get(s) || 0) }));
+    return { labels: yearArr, datasets };
+  };
+
+  function sortChartData(conf, order='asc'){
+    const idx = conf.labels.map((y,i)=>({y, i, total: conf.datasets.reduce((a,d)=>a+(d.data[i]||0),0)}));
+    idx.sort((a,b)=> order==='asc' ? a.y - b.y : b.y - a.y);
+    const labels = idx.map(o=>o.y);
+    const datasets = conf.datasets.map(ds => ({...ds, data: idx.map(o=>ds.data[o.i])}));
+    return { labels, datasets };
+  }
+
+  function upsertBarChart(id, conf, stacked=false) {
+    if (!chartObjs[id]) {
+      chartObjs[id] = new Chart(document.getElementById(id), {
+        type: 'bar',
+        data: { labels: conf.labels, datasets: conf.datasets },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: {
+            x:{ stacked, ticks:{ color:getCss('--chart-text') }, grid:{ color:getCss('--chart-grid') } },
+            y:{ stacked, beginAtZero:true, ticks:{ precision:0, color:getCss('--chart-text') }, grid:{ color:getCss('--chart-grid') } }
+          },
+          plugins: {
+            legend: { display:true, labels:{ color:getCss('--chart-text') } },
+            tooltip:{ mode:'index', intersect:false, titleColor:getCss('--chart-text'), bodyColor:getCss('--chart-text') }
+          }
+        }
+      });
+    } else {
+      const c = chartObjs[id];
+      c.data.labels = conf.labels;
+      c.data.datasets = conf.datasets;
+      c.update();
+    }
+  }
+
+  function getCss(varName){
+    return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  }
+
+  function applyChartTheme(){
+    Object.values(chartObjs).forEach(c=>{
+      if(!c) return;
+      c.options.scales.x.ticks.color = getCss('--chart-text');
+      c.options.scales.y.ticks.color = getCss('--chart-text');
+      c.options.scales.x.grid.color  = getCss('--chart-grid');
+      c.options.scales.y.grid.color  = getCss('--chart-grid');
+      c.options.plugins.legend.labels.color = getCss('--chart-text');
+      c.options.plugins.tooltip.titleColor = getCss('--chart-text');
+      c.options.plugins.tooltip.bodyColor  = getCss('--chart-text');
+      c.update();
+    });
+  }
+
+  function getActivePeriodForField(field, mode){
+    if(mode==='range'){
+      const rowEl=document.querySelector(`.filter-row[data-col="${field}"]`);
+      const min=rowEl?.querySelector('.mode-range .min')?.value||'';
+      const max=rowEl?.querySelector('.mode-range .max')?.value||'';
+      return (min||max)? {type:'range', min, max} : null;
+    }
+    if(mode==='month'){
+      let m = globalMonthSel?.value||'';
+      let y = globalMonthYear?.value||'';
+      if(!(m && y)){
+        const rowEl=document.querySelector(`.filter-row[data-col="${field}"]`);
+        if(!m) m = rowEl?.querySelector('.mode-month .m')?.value||'';
+        if(!y) y = rowEl?.querySelector('.mode-month .year')?.value||'';
+      }
+      const {min,max}=monthRange(m,y);
+      return (min&&max)? {type:'month', min, max} : null;
+    }
+    if(mode==='quarter'){
+      let q = parseInt(globalQuarter?.value||'',10);
+      let y = parseInt(globalQuarterYear?.value||'',10);
+      if(!(q && y)){
+        const rowEl=document.querySelector(`.filter-row[data-col="${field}"]`);
+        if(!q) q = parseInt(rowEl?.querySelector('.mode-quarter .q')?.value||'',10);
+        if(!y) y = parseInt(rowEl?.querySelector('.mode-quarter .year')?.value||'',10);
+      }
+      const {min,max}=getQuarterRange(q,y);
+      return (min&&max)? {type:'quarter', min, max} : null;
+    }
+    return null;
+  }
+
+  const fieldToNoun = (field) => ({
+    'Application':'Applications',
+    'Updated':'Updates',
+    'Date: Interview':'Interviews',
+    'Date: Biometrics':'Biometrics',
+    'Date: Approval':'Approvals',
+    'Date: Denial':'Denials',
+    'Date: Case closing':'Closings'
+  })[field] || field;
+
+  function updateCardTitle(card, state){
+    const h3 = card.querySelector('header h3');
+    if(!h3) return;
+    if(state.kind==='simple') h3.textContent = `${fieldToNoun(state.field)} per Year`;
+    else h3.textContent = `USCIS Case Status by Year (${state.field})`;
+  }
+
+  function renderChartCard(card){
+    const canvas = card.querySelector('canvas');
+    const id = canvas.id;
+    const kind = card.dataset.kind;
+    const sel = card.querySelector('.chart-field');
+    const state = chartStates[id];
+    if (!state) return;
+    state.kind = kind;
+
+    if (!state.init) {
+      const d = card.dataset.defaultField;
+      if (d) state.field = d;
+      if (sel) sel.value = state.field;
+      state.init = true;
+    } else if (sel) {
+      state.field = sel.value;
+    }
+
+    const mode=$('#dateMode input[name="dm"]:checked')?.value || 'range';
+    let dataSrc = filtered;
+    const period = getActivePeriodForField(state.field, mode);
+    if(period){
+      dataSrc = filtered.filter(r=>{
+        const d=r[state.field];
+        if(!(d instanceof Date)||isNaN(+d)) return false;
+        const ts=+new Date(fmtDate(d));
+        return ts>=+period.min && ts<=+period.max;
+      });
+    }
+
+    let conf;
+    if (kind==='simple'){
+      conf = byYear(state.field, dataSrc);
+      conf.datasets[0].label = 'Count';
+    } else {
+      conf = statusByYear('USCIS case status', state.field, dataSrc);
+    }
+    conf = sortChartData(conf, state.sort);
+    upsertBarChart(id, conf, kind==='status');
+
+    updateCardTitle(card, state);
+  }
+
+  function renderAllCharts(){ $$('.chart-card').forEach(renderChartCard); }
+
+  // After the chart functions and BEFORE the expand/collapse block:
+  function resizeAllChartsSoon(){
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      Object.values(chartObjs).forEach(c => c?.resize());
+    }));
+  }
+
+  // === Expand (2× width + 2× height) ===
+  function expand2x(card){
+    const wrap = card.querySelector('.chart-wrap');
+    const id = card.querySelector('canvas').id;
+
+    if (!card._baseWrapHeight) {
+      const h = parseFloat(getComputedStyle(wrap).height) || 230;
+      card._baseWrapHeight = h;
+    }
+
+    wrap.style.height = Math.round(card._baseWrapHeight * 2) + 'px';
+    card.classList.add('span2','expanded');
+
+    chartObjs[id]?.resize();
+    resizeAllChartsSoon();
+  }
+
+  function collapse2x(card){
+    const wrap = card.querySelector('.chart-wrap');
+    const id = card.querySelector('canvas').id;
+
+    card.classList.remove('span2','expanded');
+    wrap.style.height = (card._baseWrapHeight ? card._baseWrapHeight + 'px' : '230px');
+
+    chartObjs[id]?.resize();
+    resizeAllChartsSoon();
+  }
+
+  // Chart controls
+  $('#chartGrid')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.expand, .chart-sort, .chart-dl');
+    if (!btn) return;
+    const card = btn.closest('.chart-card'); const id = card.querySelector('canvas').id;
+
+    if (btn.classList.contains('expand')) {
+      const expanded = card.classList.contains('expanded');
+      expanded ? collapse2x(card) : expand2x(card);
+      btn.textContent = expanded ? '⤢' : '⤡';
+      btn.title = expanded ? 'Expand' : 'Collapse';
+      return;
+    }
+    if (btn.classList.contains('chart-sort')) { chartStates[id].sort = chartStates[id].sort==='asc'?'desc':'asc'; renderChartCard(card); return; }
+    if (btn.classList.contains('chart-dl')) {
+      const cv = card.querySelector('canvas');
+      const name = (card.querySelector('header h3')?.textContent || 'chart')
+                    .trim().replace(/\s+/g,'_').toLowerCase() + '.jpg';
+      downloadCanvasAsJpg(cv, name);
+      return;
+    }
+  });
+
+  $('#chartGrid')?.addEventListener('change', (e) => {
+    const sel = e.target.closest('.chart-field'); if (!sel) return;
+    renderChartCard(sel.closest('.chart-card'));
+  });
+
+  // Keep charts sized correctly if the grid reflows (breakpoints, etc.)
+  const grid = document.getElementById('chartGrid');
+  if (grid && 'ResizeObserver' in window) {
+    const ro = new ResizeObserver(() => resizeAllChartsSoon());
+    ro.observe(grid);
+  }
+
+  /* === Multi-select UX: click-to-toggle + auto-apply === */
+  function setupAttributeMultiselects(root = document){
+    $$('.filter-row.attr select.ms', root).forEach(sel => {
+      if (sel._msEnhanced) return; // idempotent
+      sel._msEnhanced = true;
+
+      // Click without modifiers toggles selection (no Ctrl/Cmd needed)
+      sel.addEventListener('mousedown', (e) => {
+        const opt = e.target;
+        if (!opt || opt.tagName !== 'OPTION') return;
+        e.preventDefault();
+        const scrollTop = sel.scrollTop; // keep scroll position stable
+        opt.selected = !opt.selected;
+        sel.scrollTop = scrollTop;
+        // bubble so chips/filters can react immediately
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+
+      // Prevent text-select while dragging across options (only while mouse is down)
+      sel.addEventListener('mousemove', (e) => { if (e.buttons === 1) e.preventDefault(); });
+
+      // Re-apply filters as user changes selections (uses your existing apply pipeline)
+      sel.addEventListener('change', () => {
+        // If you prefer the explicit "Apply" button only, comment the next line.
+        if (typeof applyFilters === 'function') applyFilters();
+      });
+    });
+  }
+
+  /* === Add "All / None" quick actions under each attribute list === */
+  function injectAllNoneControls(root = document){
+    $$('.filter-row.attr', root).forEach(row => {
+      if (row.querySelector('.ms-controls')) return; // only once per row
+      const sel = row.querySelector('select.ms');
+      if (!sel) return;
+
+      const ctrls = document.createElement('div');
+      ctrls.className = 'ms-controls';
+      ctrls.style.display = 'flex';
+      ctrls.style.gap = '.35rem';
+      ctrls.style.marginTop = '.35rem';
+
+      const allBtn = document.createElement('button');
+      allBtn.type = 'button';
+      allBtn.className = 'btn ghost sm';
+      allBtn.textContent = 'All';
+      allBtn.title = 'Select all options';
+
+      const noneBtn = document.createElement('button');
+      noneBtn.type = 'button';
+      noneBtn.className = 'btn ghost sm';
+      noneBtn.textContent = 'None';
+      noneBtn.title = 'Clear selection';
+
+      ctrls.appendChild(allBtn);
+      ctrls.appendChild(noneBtn);
+      row.appendChild(ctrlls);
+
+      allBtn.addEventListener('click', () => {
+        Array.from(sel.options).forEach(o => o.selected = true);
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      noneBtn.addEventListener('click', () => {
+        Array.from(sel.options).forEach(o => o.selected = false);
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    });
+  }
+
+  /* === Run once at startup === */
+  setupAttributeMultiselects();
+  injectAllNoneControls();
+
+  /* === Keep enhancements after options are (re)populated === */
+  const filtersBodyEl = document.getElementById('filtersBody');
+  if (filtersBodyEl && 'MutationObserver' in window){
+    const mo = new MutationObserver(() => {
+      setupAttributeMultiselects(filtersBodyEl);
+      injectAllNoneControls(filtersBodyEl);
+    });
+    mo.observe(filtersBodyEl, { childList: true, subtree: true });
+  }
+
+  /* === Optional: ensure chips Clear restores focus to the select === */
+  document.getElementById('chips')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    setTimeout(() => {
+      const firstMs = document.querySelector('.filter-row.attr select.ms');
+      firstMs?.focus();
+    }, 0);
+  });
+
+  /* =============================================================
+   * Attribute selection highlighting (badges + option highlighting)
+   * ============================================================= */
+  (function attributeSelectionHighlight(){
+    function injectHighlightStyles(){
+      if (document.getElementById('ms-highlight-styles')) return;
+      const css = `
+      .filter-row.attr select.ms option:checked{
+        background: linear-gradient(135deg, var(--accent), var(--accent2)) !important;
+        color:#031018 !important; font-weight:700; outline:2px solid var(--accent2); text-shadow:none;
+      }
+      .filter-row.attr.has-selection > label{ font-weight:700; color: var(--accent); }
+      .filter-row.attr > label[data-count]::after{ content: " (" attr(data-count) ")"; font-weight:700; opacity:.9; margin-left:.15rem; }
+      .ms-selected-preview{ display:none; flex-wrap:wrap; gap:.35rem; margin-top:.35rem; pointer-events:none; }
+      .ms-selected-preview.show{ display:flex; }
+      .ms-chip{ display:inline-flex; align-items:center; padding:.15rem .45rem; border-radius:999px; border:1px solid var(--border); background:var(--panel); font-size:.8rem; }
+      .ms-chip.more{ opacity:.85; }
+      `;
+      const style = document.createElement('style');
+      style.id = 'ms-highlight-styles';
+      style.textContent = css; document.head.appendChild(style);
+    }
+
+    function ensurePreview(row){
+      let pv = row.querySelector('.ms-selected-preview');
+      if (!pv){ pv = document.createElement('div'); pv.className = 'ms-selected-preview'; row.appendChild(pv); }
+      return pv;
+    }
+
+    function renderPreview(row, values){
+      const pv = ensurePreview(row);
+      pv.innerHTML = '';
+      const max = 6;
+      values.slice(0, max).forEach(v => {
+        const s = document.createElement('span'); s.className = 'ms-chip'; s.textContent = v; pv.appendChild(s);
+      });
+      const remain = values.length - max;
+      if (remain > 0){ const m = document.createElement('span'); m.className='ms-chip more'; m.textContent = `+${remain} more`; pv.appendChild(m); }
+      pv.classList.toggle('show', values.length>0);
+    }
+
+    function refreshAttributeHighlights(root = document){
+      $$('.filter-row.attr', root).forEach(row => {
+        const sel = row.querySelector('select.ms'); if (!sel) return;
+        const selected = Array.from(sel.selectedOptions).map(o=>o.value);
+        row.classList.toggle('has-selection', selected.length>0);
+        const lab = row.querySelector('label');
+        if (lab){
+          if (selected.length) lab.setAttribute('data-count', String(selected.length));
+          else lab.removeAttribute('data-count');
+        }
+        renderPreview(row, selected);
+      });
+    }
+
+    function setupHighlightSync(root = document){
+      $$('.filter-row.attr select.ms', root).forEach(sel => {
+        if (sel._highlightBound) return; sel._highlightBound = true;
+        sel.addEventListener('change', () => refreshAttributeHighlights(root));
+      });
+
+      const filtersBodyEl = document.getElementById('filtersBody');
+      if (filtersBodyEl && !filtersBodyEl._msHighlightObserver){
+        const mo = new MutationObserver(() => {
+          setupHighlightSync(filtersBodyEl);
+          refreshAttributeHighlights(filtersBodyEl);
+        });
+        mo.observe(filtersBodyEl, { childList: true, subtree: true });
+        filtersBodyEl._msHighlightObserver = mo;
+      }
+
+      document.getElementById('drawerClearBtn')?.addEventListener('click', () => setTimeout(() => refreshAttributeHighlights(root), 0));
+      document.getElementById('resetBtn')?.addEventListener('click', () => setTimeout(() => refreshAttributeHighlights(root), 0));
+    }
+
+    injectHighlightStyles();
+    setupHighlightSync();
+    refreshAttributeHighlights();
+  })();
+
+})();
   </script>
 </body>
 </html>
