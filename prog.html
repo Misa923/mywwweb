@@ -1,216 +1,81 @@
-<!--Program enrollment/exit-->
+<!-- Program enrollment/exit (updated with fixed column map) -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-
   <title>Program Case Load Dashboard</title>
-<link rel="stylesheet" href="quicklinks.css">
-<script>
-  // (Optional) Customize once per page BEFORE quicklinks.js loads
-  // window.QL_NEW_TAB = false; // set true to open in a new tab
-  // window.QL_LABEL = 'Pages'; // change the handle text if you want
-  // window.QL_PAGES = [ ... ]; // override links if a page lives in a different folder
-</script>
-<script defer src="quicklinks.js"></script>
 
+  <link rel="stylesheet" href="quicklinks.css">
+  <script>
+    // (Optional) Customize once per page BEFORE quicklinks.js loads
+    // window.QL_NEW_TAB = false;
+    // window.QL_LABEL = 'Pages';
+    // window.QL_PAGES = [ ... ];
+  </script>
+  <script defer src="quicklinks.js"></script>
 
   <style>
     :root{ --bg:#0b1220; --panel:#0f172a; --muted:#93a4b8; --text:#e6eef8; --accent:#23c9b9; --line:#1f2a44; }
-body{margin:0; font:14px/1.5 system-ui; background:var(--bg); color:var(--text); padding:24px; max-width:1200px; margin-inline:auto;}
-header{display:flex; gap:16px; flex-wrap:wrap}
-h1{margin:0}
-.asof{color:var(--muted)}
-.panel{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px; margin:16px 0;}
-#controls{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
-#controls input, #controls select{padding:8px; border-radius:10px; border:1px solid var(--line); background:#011313; color:var(--text)}
-#controls button{
-    padding:10px 14px; 
-    border-radius:12px; 
-    border:1px solid var(--line); 
-    background:transparent; 
-    color:var(--text); 
-    cursor:pointer;}
+    body{margin:0; font:14px/1.5 system-ui; background:var(--bg); color:var(--text); padding:24px; max-width:1200px; margin-inline:auto;}
+    header{display:flex; gap:16px; flex-wrap:wrap}
+    h1{margin:0}
+    .asof{color:var(--muted)}
+    .panel{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px; margin:16px 0;}
+    #controls{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+    #controls input, #controls select{padding:8px; border-radius:10px; border:1px solid var(--line); background:#011313; color:var(--text)}
+    #controls button{padding:10px 14px; border-radius:12px; border:1px solid var(--line); background:transparent; color:var(--text); cursor:pointer;}
+    #controls button:hover{background-color:#f600ee; border-color:var(--accent); color:var(--accent)}
+    .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px}
+    .card{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px}
+    .nums{display:flex; gap:16px}
+    .num{font-size:1.8rem; font-weight:700}
+    .label{color:var(--muted)}
+    th, td{padding:10px 8px; border-bottom:1px solid var(--line)}
+    thead th{position:sticky; top:0; background:var(--panel)}
+    th.sortable{cursor:pointer}
+    th.sortable .arrow{margin-left:6px; font-size:.8em; opacity:.7}
+    tbody tr:hover{background:#300d2a}
+    .muted{color:var(--muted)}
+    .hidden{display:none}
+    #controls .btn{padding:10px 14px; border:1px solid var(--line); border-radius:12px; cursor:pointer;}
+    #themeToggle{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#567b1b81,#91468f73);color:#061016;border:none;box-shadow:0 4px 12px rgba(35,201,185,.3);font-size:1.2rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s ease, box-shadow .2s ease;}
+    #themeToggle:hover{transform:scale(1.1);box-shadow:0 6px 16px rgba(35,201,185,.4)}
+    #controls .btn--primary{background:#3984e0;color:#000;border-color:#7d5106;}
+    #controls .btn--primary:hover{background:#7d5106;color:#eb0cb0;}
+    #controls .btn--warning{background:#3984e0;color:#111827;border-color:#7d5106;}
+    #controls .btn--warning:hover{background:#f59e0b;}
+    #controls .btn--muted{background:#3984e0;color:#000;border-color:#7d5106;}
+    #controls .btn--muted:hover{background:#7d5106;}
+    #controls .btn:focus-visible{outline:2px solid #23c9b9; outline-offset:2px;}
+    #chartWrap h3 { margin-top: 0; }
+    .total-bar { margin-top:8px; text-align:right; color:var(--text); font-weight:600; }
 
-#controls button:hover{
-    background-color: #f600ee;
-    border-color:var(--accent); color:var(--accent)}
-.cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px}
-.card{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px}
-.nums{display:flex; gap:16px}
-.num{font-size:1.8rem; font-weight:700}
-.label{color:var(--muted)}
-th, td{padding:10px 8px; border-bottom:1px solid var(--line)}
-thead th{position:sticky; top:0; background:var(--panel)}
-th.sortable{cursor:pointer}
-th.sortable .arrow{margin-left:6px; font-size:.8em; opacity:.7}
-tbody tr:hover{background:#300d2a}
-.muted{color:var(--muted)}
-.hidden{display:none}
+    /* === THEME VARIABLES === */
+    :root{ --bg:#0b1020; --panel:#0f152b; --panel-2:#131a35; --text:#e9eef6; --muted:#a9b0c2; --line:rgba(255,255,255,.08); --glow:#23c9b9; --radius:16px; --shadow:0 8px 30px rgba(0,0,0,.35); --cal-invert:1; }
+    :root.light{ --bg:#f7f9fc; --panel:#fff; --panel-2:#fff; --text:#111827; --muted:#6b7280; --line:#e5e7eb; --glow:#23c9b9; --shadow:0 8px 24px rgba(0,0,0,.08); --cal-invert:0; }
+    html,body{ color:var(--text)!important; background:var(--bg)!important; }
 
-/* Reusable button classes (override base #controls button styles) */
-#controls .btn{
-  padding:10px 14px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  cursor:pointer;
-}
+    select, input[type="date"], input[type="number"], input[type="file"]{
+      background:var(--panel-2)!important;color:var(--text)!important;border:1px solid var(--line)!important;border-radius:10px!important;padding:8px 10px!important;min-height:38px!important;appearance:none;
+    }
+    :root.light select, :root.light input[type="date"], :root.light input[type="number"], :root.light input[type="file"]{
+      background:#fff!important;color:#111827!important;border:1px solid #e5e7eb!important;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator{ filter:invert(var(--cal-invert)); opacity:.85; }
 
-/*dark - light button*/
-
-#themeToggle {
-  width: 48px;              /* Equal width and height */
-  height: 48px;
-  border-radius: 50%;       /* Makes it a circle */
-  background: linear-gradient(135deg, #567b1b81, #91468f73); /* Or use a gradient if you like */
-  color: #061016;
-  border: none;
-  box-shadow: 0 4px 12px rgba(35, 201, 185, 0.3);
-  font-size: 1.2rem;        /* Good for emoji or icon */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-#themeToggle:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(35, 201, 185, 0.4);
-}
-
-
-/* Primary (Export) */
-#controls .btn--primary{
-  background:#3984e0;
-  color:#000000;
-  border-color:#7d5106;
-}
-#controls .btn--primary:hover{ background:#7d5106;
-color:#eb0cb0; }
-
-/* Warning (Summary toggle) */
-#controls .btn--warning{
-  background:#3984e0;
-  color:#111827;
-  border-color:#7d5106;
-}
-#controls .btn--warning:hover{ background:#f59e0b; }
-
-/* Muted (Table toggle) */
-#controls .btn--muted{
-  background:#3984e0;
-  color:#000000;
-  border-color:#7d5106;
-}
-#controls .btn--muted:hover{ background:#7d5106; }
-
-/* Optional: better focus ring */
-#controls .btn:focus-visible{
-  outline:2px solid #23c9b9;
-  outline-offset:2px;
-}
-
-
-#chartWrap h3 { margin-top: 0; }
-
-.total-bar { 
-  margin-top: 8px; 
-  text-align: right; 
-  color: var(--text); 
-  font-weight: 600; 
-}
-
-/* === THEME VARIABLES === */
-:root{
-  /* Dark (default) */
-  --bg:#0b1020; --panel:#0f152b; --panel-2:#131a35;
-  --text:#e9eef6; --muted:#a9b0c2; --line:rgba(255,255,255,0.08);
-  --glow:#23c9b9; --radius:16px; --shadow:0 8px 30px rgba(0,0,0,.35);
-  --cal-invert:1; /* make the datepicker icon visible on dark */
-}
-
-/* Light overrides */
-:root.light{
-  --bg:#f7f9fc; --panel:#ffffff; --panel-2:#ffffff;
-  --text:#111827; --muted:#6b7280; --line:#e5e7eb;
-  --glow:#23c9b9; --shadow:0 8px 24px rgba(0,0,0,.08);
-  --cal-invert:0; /* normal icon colors on light */
-}
-
-/* Body/background uses variables, so both themes apply automatically */
-html,body{ color:var(--text) !important; background: var(--bg) !important; }
-
-/* High-contrast inputs: native controls */
-select,
-input[type="date"],
-input[type="number"],
-input[type="file"]{
-  background:var(--panel-2)!important;
-  color:var(--text)!important;
-  border:1px solid var(--line)!important;
-  border-radius:10px!important;
-  padding:8px 10px!important;
-  min-height:38px!important;
-  appearance:none;
-}
-:root.light select,
-:root.light input[type="date"],
-:root.light input[type="number"],
-:root.light input[type="file"]{
-  background:#ffffff!important;
-  color:#111827!important;
-  border:1px solid #e5e7eb!important;
-}
-
-/* Date icon visibility */
-input[type="date"]::-webkit-calendar-picker-indicator{
-  filter: invert(var(--cal-invert));
-  opacity:.85;
-}
-
-/* Choices.js – DARK defaults */
-.choices__inner{
-  background:var(--panel-2)!important;
-  color:var(--text)!important;
-  border:1px solid var(--line)!important;
-  border-radius:10px!important;
-  min-height:38px!important;
-}
-.choices__list--dropdown,
-.choices__list[aria-expanded]{
-  background:var(--panel-2)!important;
-  border:1px solid var(--line)!important;
-  color:var(--text)!important;
-}
-.choices__placeholder{ color:var(--muted)!important; }
-.choices__item--selectable.is-highlighted{
-  background:var(--panel)!important;
-}
-
-/* Choices.js – LIGHT overrides (force readable text) */
-:root.light .choices__inner{
-  background:#ffffff!important; color:#111827!important; border:1px solid #e5e7eb!important;
-}
-:root.light .choices__list--dropdown,
-:root.light .choices__list[aria-expanded]{
-  background:#ffffff!important; color:#111827!important; border:1px solid #e5e7eb!important;
-}
-:root.light .choices__placeholder{ color:#6b7280!important; }
-
-/* Buttons inherit; primary stays the same brand color */
-
-
+    .choices__inner{background:var(--panel-2)!important;color:var(--text)!important;border:1px solid var(--line)!important;border-radius:10px!important;min-height:38px!important;}
+    .choices__list--dropdown, .choices__list[aria-expanded]{background:var(--panel-2)!important;border:1px solid var(--line)!important;color:var(--text)!important;}
+    .choices__placeholder{color:var(--muted)!important;}
+    .choices__item--selectable.is-highlighted{background:var(--panel)!important;}
+    :root.light .choices__inner{background:#fff!important;color:#111827!important;border:1px solid #e5e7eb!important;}
+    :root.light .choices__list--dropdown, :root.light .choices__list[aria-expanded]{background:#fff!important;color:#111827!important;border:1px solid #e5e7eb!important;}
+    :root.light .choices__placeholder{color:#6b7280!important;}
   </style>
+
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-
-
-
-
 </head>
 <body>
   <header>
@@ -231,8 +96,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{
     <label><input type="checkbox" id="onlyCurrent"> Show only currently enrolled</label>
     <input type="text" id="search" placeholder="Search Database ID…">
     <button id="exportCsv" class="btn btn--primary">Export CSV</button>
-<button id="toggleSummary" class="btn btn--warning">Hide Summary</button>
-<button id="toggleTable" class="btn btn--muted">Hide Table</button>
+    <button id="toggleSummary" class="btn btn--warning">Hide Summary</button>
+    <button id="toggleTable" class="btn btn--muted">Hide Table</button>
   </section>
 
   <section id="cards" class="cards hidden"></section>
@@ -253,245 +118,365 @@ input[type="date"]::-webkit-calendar-picker-indicator{
       <tbody></tbody>
     </table>
     <div id="noRows" class="muted" style="display:none;">No rows match your filters.</div>
-    
-
   </section>
 
-<section id="chartWrap" class="panel hidden">
-  <h3>Enrollments per Year (<span id="chartProgram">—</span>)</h3>
-  <canvas id="enrollChart" height="120"></canvas>
-</section>
-
+  <section id="chartWrap" class="panel hidden">
+    <h3>Enrollments per Year (<span id="chartProgram">—</span>)</h3>
+    <canvas id="enrollChart" height="120"></canvas>
+  </section>
 
   <footer>
     <small>© c23m9. All rights reserved.</small>
   </footer>
+
   <script>
-    let DATA=null; let SORT={key:null,dir:'asc'};
-const asOfEl=document.getElementById('asOf'),fileInput=document.getElementById('fileInput'),fileNameEl=document.getElementById('fileName'),controls=document.getElementById('controls'),cards=document.getElementById('cards'),tableWrap=document.getElementById('tableWrap'),programSelect=document.getElementById('programSelect'),onlyCurrent=document.getElementById('onlyCurrent'),search=document.getElementById('search'),tbody=document.querySelector('#dataTable tbody'),noRows=document.getElementById('noRows'),exportBtn=document.getElementById('exportCsv'),toggleSummaryBtn=document.getElementById('toggleSummary');
-const tableTotal = document.getElementById('tableTotal');
+    // ===== FIXED COLUMN MAP (from your instructions) =====
+    const PROGRAM_COLUMN_MAP = [
+      { program: 'Reception & Placement',             entranceCol: 'L',  exitCol: 'AB' },
+      { program: 'Matching Grant',                    entranceCol: 'M',  exitCol: 'AC' },
+      { program: 'Refugee Support Services (RSS)',    entranceCol: 'N',  exitCol: 'AD' },
+      { program: 'Refugee Support Services (RSScm)',  entranceCol: 'O',  exitCol: 'AE' },
+      { program: 'Youth Services',                    entranceCol: 'P',  exitCol: 'AF' },
+      { program: 'Career Pathways',                   entranceCol: 'Q',  exitCol: 'AG' },
+      { program: 'WFTC',                              entranceCol: 'R',  exitCol: 'AH' },
+      { program: 'Refugee Cash Assistance (RCA)',     entranceCol: 'S',  exitCol: 'AI' },
+      { program: 'Refugee Medical Assistance (RMA)',  entranceCol: 'T',  exitCol: 'AJ' },
+      { program: 'Refugee Medical Screening (RMS)',   entranceCol: 'U',  exitCol: 'AK' },
+      { program: 'Preferred Communities',             entranceCol: 'V',  exitCol: 'AL' },
+      { program: 'Services to Older Refugees',        entranceCol: 'W',  exitCol: 'AM' },
+      { program: 'Entrepreneur',                      entranceCol: 'X',  exitCol: 'AN' },
+      { program: 'Immigration',                       entranceCol: 'Y',  exitCol: 'AO' },
+      { program: 'Maternal and Child Health MCH',     entranceCol: 'Z',  exitCol: 'AP' },
+      { program: 'Refugee Health Promotion RHP',      entranceCol: 'AA', exitCol: 'AQ' },
+    ];
 
-
-let CHART = null; // <-- global chart handle
-const toggleTableBtn = document.getElementById('toggleTable');
-const chartWrap = document.getElementById('chartWrap');
-const chartProgram = document.getElementById('chartProgram');
-
-
-asOfEl.textContent=new Date().toISOString().slice(0,10);
-fileInput.addEventListener('change',async e=>{
- const file=e.target.files[0]; if(!file) return;
- fileNameEl.textContent=`Loaded: ${file.name}`;
- const wb=XLSX.read(await file.arrayBuffer(),{type:'array'});
- const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:true,defval:null});
- const header=rows[4],dataRows=rows.slice(5);
- const dbIdIdx=header.findIndex(h=>String(h).trim()==='Database ID');
- const programPairs=[];
- for(let i=0;i<header.length;i++){
-   const name=header[i],next=header[i+1];
-   if(typeof name==='string'&&/entrance/i.test(name)&&typeof next==='string'&&/exit/i.test(next)){
-     programPairs.push({program:name.replace(/\s*entrance\s*$/i,''),entranceIdx:i,exitIdx:i+1});
-   }
- }
- function toDateISO(v){if(v==null||v==='')return null;if(typeof v==='number'){const d=XLSX.SSF.parse_date_code(v);if(d) return new Date(Date.UTC(d.y,d.m-1,d.d)).toISOString().slice(0,10);}const t=new Date(v);return isNaN(t)?null:t.toISOString().slice(0,10);}
- const today=new Date(),clients=[];
- for(const r of dataRows){
-   const dbid=r[dbIdIdx]; if(!dbid) continue;
-   const client={database_id:String(dbid).replace(/\.0$/,''),programs:{}};
-   for(const p of programPairs){
-     const start=toDateISO(r[p.entranceIdx]),end=toDateISO(r[p.exitIdx]);
-     if(!start&&!end) continue;
-     const days=start?Math.floor(((end?new Date(end):today)-new Date(start))/(1000*60*60*24)):null;
-     client.programs[p.program]={entrance:start,exit:end,duration_days:days};
-   }
-   if(Object.keys(client.programs).length) clients.push(client);
- }
- const case_load={};
- for(const p of programPairs){
-   let current=0,total=0;
-   for(const r of dataRows){
-     const e=toDateISO(r[p.entranceIdx]),x=toDateISO(r[p.exitIdx]);
-     if(e||x) total++; if(e&&!x) current++;
-   }
-   case_load[p.program]={current,total_ever:total};
- }
- DATA={as_of:new Date().toISOString().slice(0,10),programs:programPairs.map(p=>p.program),case_load,clients};
- renderAll();
-});
-
-function renderAll(){
- controls.classList.remove('hidden');
- cards.classList.remove('hidden');
- tableWrap.classList.remove('hidden');
- chartWrap.classList.remove('hidden');
- chartWrap.classList.remove('hidden');
- asOfEl.textContent=DATA.as_of;
- programSelect.innerHTML='';
- DATA.programs.forEach(p=>{let o=document.createElement('option');o.value=p;o.textContent=p;programSelect.appendChild(o);});
- programSelect.value=DATA.programs[0];
- cards.innerHTML='';
- DATA.programs.forEach(p=>{
-   let c=document.createElement('div');
-   c.className='card';
-   c.innerHTML=`<h3>${p}</h3><div class="nums"><div><div class="num">${DATA.case_load[p].current}</div><div class="label">Current</div></div><div><div class="num">${DATA.case_load[p].total_ever}</div><div class="label">Total Ever</div></div></div>`;
-   cards.appendChild(c);
- });
- programSelect.onchange = () => { renderTable(); renderChart(); };
- onlyCurrent.onchange=renderTable;
- search.oninput=renderTable;
- exportBtn.onclick=exportCsv;
- toggleTableBtn.onclick = () => {
-  tableWrap.classList.toggle('hidden');
-  toggleTableBtn.textContent = tableWrap.classList.contains('hidden') ? 'Show Table' : 'Hide Table';
-};
-
- toggleSummaryBtn.onclick=()=>{cards.classList.toggle('hidden');toggleSummaryBtn.textContent=cards.classList.contains('hidden')?'Show Summary':'Hide Summary';};
-
-
- document.querySelectorAll('#dataTable thead th.sortable').forEach(th=>{
-   th.addEventListener('click',()=>{
-     const key=th.getAttribute('data-key');
-     SORT.key===key?SORT.dir=(SORT.dir==='asc'?'desc':'asc'):(SORT.key=key,SORT.dir='asc');
-     updateSortIndicators();
-     renderTable();
-   });
- });
- updateSortIndicators();
- renderTable();
- renderChart();
-}
-
-function getFilteredRows(){
- const program=programSelect.value,q=(search.value||'').trim().toLowerCase();
- const rows=[];
- for(const client of DATA.clients){
-   const p=client.programs[program];
-   if(!p) continue;
-   if(onlyCurrent.checked&&p.exit!==null) continue;
-   if(q&&!String(client.database_id).toLowerCase().includes(q)) continue;
-   const months=p.duration_days?(p.duration_days/30).toFixed(1):'';
-   rows.push({database_id:client.database_id,program,entrance:p.entrance??'',exit:p.exit??'',duration_days:p.duration_days??'',duration_months:months});
- }
- return rows;
-}
-
-function renderTable(){
- let rows=getFilteredRows();
- if(SORT.key){
-   const key=SORT.key,dir=SORT.dir==='asc'?1:-1;
-   rows.sort((a,b)=>{
-     const va=a[key],vb=b[key];
-     const na=['duration_days','duration_months','database_id'].includes(key)?Number(va):NaN;
-     const nb=['duration_days','duration_months','database_id'].includes(key)?Number(vb):NaN;
-     if(!Number.isNaN(na)&&!Number.isNaN(nb)) return (na-nb)*dir;
-     return String(va).localeCompare(String(vb))*dir;
-   });
- }
- tbody.innerHTML='';
- for(const r of rows){
-   const tr=document.createElement('tr');
-   tr.innerHTML=`<td>${r.database_id}</td><td>${r.program}</td><td>${r.entrance||'<span class="muted">—</span>'}</td><td>${r.exit||'<span class="muted">—</span>'}</td><td>${r.duration_days===''?'<span class="muted">—</span>':r.duration_days}</td><td>${r.duration_months===''?'<span class="muted">—</span>':r.duration_months}</td>`;
-   tbody.appendChild(tr);
- }
- noRows.style.display=rows.length?'none':'block';
- tableTotal.textContent = `Total: ${rows.length}`;
-
-}
-
-function updateSortIndicators(){
- document.querySelectorAll('#dataTable thead th.sortable').forEach(th=>{
-   const key=th.getAttribute('data-key'),arrowEl=th.querySelector('.arrow');
-   arrowEl.textContent=(SORT.key===key)?(SORT.dir==='asc'?'▲':'▼'):'';
- });
-}
-
-function exportCsv(){
- const rows=getFilteredRows();
- const header=['Database ID','Program','Entrance','Exit','Duration (days)','Duration (months)'];
- const csv=[header.join(',')].concat(rows.map(r=>[r.database_id,r.program,r.entrance,r.exit,r.duration_days,r.duration_months].map(v=>'"'+String(v).replaceAll('"','""')+'"').join(','))).join('\n');
- const blob=new Blob([csv],{type:'text/csv'});
- const url=URL.createObjectURL(blob);
- const a=document.createElement('a');
- a.href=url;
- a.download=`program_caseload_${programSelect.value.replace(/\W+/g,'_')}.csv`;
- a.click();
- URL.revokeObjectURL(url);
-}
-
-function renderChart(){
-  const program = programSelect.value;
-  chartProgram.textContent = program || '—';
-
-  // Count enrollments by ENTRANCE year
-  const counts = {};
-  for (const c of DATA.clients){
-    const p = c.programs[program];
-    if (!p || !p.entrance) continue;
-    const year = p.entrance.slice(0, 4);
-    counts[year] = (counts[year] || 0) + 1;
-  }
-
-  const labels = Object.keys(counts).sort();
-  const values = labels.map(y => counts[y]);
-
-  const ctx = document.getElementById('enrollChart').getContext('2d');
-  if (CHART) CHART.destroy();
-  CHART = new Chart(ctx, {
-    type: 'bar',
-    data: { labels, datasets: [{ label: 'Enrollments', data: values }] },
-    options: {
-      responsive: true,
-      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
-      plugins: { legend: { display: false } }
+    // Convert Excel column letters (e.g., 'AB') to zero-based index
+    function col2idx(col){
+      col = String(col).toUpperCase().trim();
+      let n = 0;
+      for (let i = 0; i < col.length; i++){
+        n = n * 26 + (col.charCodeAt(i) - 64); // 'A' -> 1
+      }
+      return n - 1; // zero-based
     }
-  });
-}
 
-  </script>
-<script>
-(() => {
-  const STORAGE_KEY = 'c23m9_theme';           // shared across your 4 pages
-  const prefersLight = () => window.matchMedia('(prefers-color-scheme: light)').matches;
+    // Build index map once
+    const PROGRAM_INDEX_MAP = PROGRAM_COLUMN_MAP.map(p => ({
+      program: p.program,
+      entranceIdx: col2idx(p.entranceCol),
+      exitIdx: col2idx(p.exitCol),
+    }));
 
-  function applyTheme(mode){
-    // mode: 'light' | 'dark'
-    document.documentElement.classList.toggle('light', mode === 'light');
-    const btn = document.getElementById('themeToggle');
-    if (btn) btn.textContent = mode === 'light' ? '🌙' : '☀️';
+    let DATA = null;
+    let SORT = { key:null, dir:'asc' };
+    const asOfEl = document.getElementById('asOf'),
+          fileInput = document.getElementById('fileInput'),
+          fileNameEl = document.getElementById('fileName'),
+          controls = document.getElementById('controls'),
+          cards = document.getElementById('cards'),
+          tableWrap = document.getElementById('tableWrap'),
+          programSelect = document.getElementById('programSelect'),
+          onlyCurrent = document.getElementById('onlyCurrent'),
+          search = document.getElementById('search'),
+          tbody = document.querySelector('#dataTable tbody'),
+          noRows = document.getElementById('noRows'),
+          exportBtn = document.getElementById('exportCsv'),
+          toggleSummaryBtn = document.getElementById('toggleSummary'),
+          tableTotal = document.getElementById('tableTotal'),
+          toggleTableBtn = document.getElementById('toggleTable'),
+          chartWrap = document.getElementById('chartWrap'),
+          chartProgram = document.getElementById('chartProgram');
 
-    // If you have charts on this page, refresh them for grid color changes
-    if (window.Chart) {
-      // Update any known chart instances
-      if (window.chartInstance?.update) window.chartInstance.update();
-      // Or trigger a resize to make Chart.js recalc canvas sizes
-      window.dispatchEvent(new Event('resize'));
-    }
-  }
+    let CHART = null;
 
-  // Initialize from localStorage or system preference
-  const saved = localStorage.getItem(STORAGE_KEY);
-  const initial = saved || (prefersLight() ? 'light' : 'dark');
-  applyTheme(initial);
+    asOfEl.textContent = new Date().toISOString().slice(0,10);
 
-  // Wire the toggle
-  const toggle = document.getElementById('themeToggle');
-  if (toggle) {
-    toggle.addEventListener('click', () => {
-      const next = document.documentElement.classList.contains('light') ? 'dark' : 'light';
-      localStorage.setItem(STORAGE_KEY, next);
-      applyTheme(next);
+    fileInput.addEventListener('change', async e => {
+      const file = e.target.files[0]; if (!file) return;
+      fileNameEl.textContent = `Loaded: ${file.name}`;
+
+      const wb = XLSX.read(await file.arrayBuffer(), { type:'array' });
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header:1, raw:true, defval:null });
+
+      // Your file layout: header row is rows[4], data begins at rows[5]
+      const header = rows[4] || [];
+      const dataRows = rows.slice(5);
+
+      // Locate Database ID column by header text
+      const dbIdIdx = header.findIndex(h => String(h).trim() === 'Database ID');
+
+      // Helper: normalize date to YYYY-MM-DD (handles Excel serials)
+      function toDateISO(v){
+        if (v==null || v==='') return null;
+        if (typeof v === 'number'){
+          const d = XLSX.SSF.parse_date_code(v);
+          if (d) return new Date(Date.UTC(d.y, d.m-1, d.d)).toISOString().slice(0,10);
+        }
+        const t = new Date(v);
+        return isNaN(t) ? null : t.toISOString().slice(0,10);
+      }
+
+      const today = new Date();
+      const clients = [];
+
+      // Build client -> program entries using FIXED indices
+      for (const r of dataRows){
+        const dbid = dbIdIdx >= 0 ? r[dbIdIdx] : r[0];
+        if (!dbid) continue;
+
+        const client = { database_id: String(dbid).replace(/\.0$/,''), programs:{} };
+
+        for (const p of PROGRAM_INDEX_MAP){
+          const start = toDateISO(r[p.entranceIdx]);
+          const end   = toDateISO(r[p.exitIdx]);
+
+          if (!start && !end) continue; // no data for this program
+
+          const days = start
+            ? Math.floor(((end ? new Date(end) : today) - new Date(start)) / (1000*60*60*24))
+            : null;
+
+          client.programs[p.program] = { entrance:start, exit:end, duration_days:days };
+        }
+
+        if (Object.keys(client.programs).length) clients.push(client);
+      }
+
+      // Case load summary (per program)
+      const case_load = {};
+      for (const p of PROGRAM_INDEX_MAP){
+        let current = 0, total = 0;
+        for (const r of dataRows){
+          const e = toDateISO(r[p.entranceIdx]);
+          const x = toDateISO(r[p.exitIdx]);
+          if (e || x) total++;
+          if (e && !x) current++;
+        }
+        case_load[p.program] = { current, total_ever: total };
+      }
+
+      DATA = {
+        as_of: new Date().toISOString().slice(0,10),
+        programs: PROGRAM_INDEX_MAP.map(p => p.program),
+        case_load,
+        clients
+      };
+
+      renderAll();
     });
-  }
 
-  // Keep in sync if user changes OS theme (only when user hasn't explicitly chosen)
-  const mq = window.matchMedia('(prefers-color-scheme: light)');
-  mq.addEventListener?.('change', e => {
-    const manual = localStorage.getItem(STORAGE_KEY);
-    if (!manual) applyTheme(e.matches ? 'light' : 'dark');
-  });
-})();
-</script>
+    function renderAll(){
+      controls.classList.remove('hidden');
+      cards.classList.remove('hidden');
+      tableWrap.classList.remove('hidden');
+      chartWrap.classList.remove('hidden');
 
+      asOfEl.textContent = DATA.as_of;
 
+      // Program selector
+      programSelect.innerHTML = '';
+      DATA.programs.forEach(p => {
+        const o = document.createElement('option');
+        o.value = o.textContent = p;
+        programSelect.appendChild(o);
+      });
+      programSelect.value = DATA.programs[0];
+
+      // Summary cards
+      cards.innerHTML = '';
+      DATA.programs.forEach(p => {
+        const c = document.createElement('div');
+        c.className = 'card';
+        c.innerHTML = `
+          <h3>${p}</h3>
+          <div class="nums">
+            <div>
+              <div class="num">${DATA.case_load[p].current}</div>
+              <div class="label">Current</div>
+            </div>
+            <div>
+              <div class="num">${DATA.case_load[p].total_ever}</div>
+              <div class="label">Total Ever</div>
+            </div>
+          </div>`;
+        cards.appendChild(c);
+      });
+
+      programSelect.onchange = () => { renderTable(); renderChart(); };
+      onlyCurrent.onchange = renderTable;
+      search.oninput = renderTable;
+      exportBtn.onclick = exportCsv;
+
+      toggleTableBtn.onclick = () => {
+        tableWrap.classList.toggle('hidden');
+        toggleTableBtn.textContent = tableWrap.classList.contains('hidden') ? 'Show Table' : 'Hide Table';
+      };
+
+      toggleSummaryBtn.onclick = () => {
+        cards.classList.toggle('hidden');
+        toggleSummaryBtn.textContent = cards.classList.contains('hidden') ? 'Show Summary' : 'Hide Summary';
+      };
+
+      document.querySelectorAll('#dataTable thead th.sortable').forEach(th => {
+        th.addEventListener('click', () => {
+          const key = th.getAttribute('data-key');
+          SORT.key === key ? (SORT.dir = (SORT.dir === 'asc' ? 'desc' : 'asc')) : (SORT.key = key, SORT.dir = 'asc');
+          updateSortIndicators();
+          renderTable();
+        });
+      });
+
+      updateSortIndicators();
+      renderTable();
+      renderChart();
+    }
+
+    function getFilteredRows(){
+      const program = programSelect.value;
+      const q = (search.value || '').trim().toLowerCase();
+      const rows = [];
+
+      for (const client of DATA.clients){
+        const p = client.programs[program];
+        if (!p) continue;
+        if (onlyCurrent.checked && p.exit !== null) continue;
+        if (q && !String(client.database_id).toLowerCase().includes(q)) continue;
+
+        const months = p.duration_days ? (p.duration_days / 30).toFixed(1) : '';
+        rows.push({
+          database_id: client.database_id,
+          program,
+          entrance: p.entrance ?? '',
+          exit: p.exit ?? '',
+          duration_days: p.duration_days ?? '',
+          duration_months: months
+        });
+      }
+      return rows;
+    }
+
+    function renderTable(){
+      let rows = getFilteredRows();
+
+      if (SORT.key){
+        const key = SORT.key, dir = SORT.dir === 'asc' ? 1 : -1;
+        rows.sort((a,b) => {
+          const va = a[key], vb = b[key];
+          const na = ['duration_days','duration_months','database_id'].includes(key) ? Number(va) : NaN;
+          const nb = ['duration_days','duration_months','database_id'].includes(key) ? Number(vb) : NaN;
+          if (!Number.isNaN(na) && !Number.isNaN(nb)) return (na - nb) * dir;
+          return String(va).localeCompare(String(vb)) * dir;
+        });
+      }
+
+      tbody.innerHTML = '';
+      for (const r of rows){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.database_id}</td>
+          <td>${r.program}</td>
+          <td>${r.entrance || '<span class="muted">—</span>'}</td>
+          <td>${r.exit || '<span class="muted">—</span>'}</td>
+          <td>${r.duration_days === '' ? '<span class="muted">—</span>' : r.duration_days}</td>
+          <td>${r.duration_months === '' ? '<span class="muted">—</span>' : r.duration_months}</td>`;
+        tbody.appendChild(tr);
+      }
+
+      noRows.style.display = rows.length ? 'none' : 'block';
+      tableTotal.textContent = `Total: ${rows.length}`;
+    }
+
+    function updateSortIndicators(){
+      document.querySelectorAll('#dataTable thead th.sortable').forEach(th => {
+        const key = th.getAttribute('data-key');
+        const arrowEl = th.querySelector('.arrow');
+        arrowEl.textContent = (SORT.key === key) ? (SORT.dir === 'asc' ? '▲' : '▼') : '';
+      });
+    }
+
+    function exportCsv(){
+      const rows = getFilteredRows();
+      const header = ['Database ID','Program','Entrance','Exit','Duration (days)','Duration (months)'];
+      const csv = [header.join(',')].concat(
+        rows.map(r => [r.database_id,r.program,r.entrance,r.exit,r.duration_days,r.duration_months]
+          .map(v => '"' + String(v).replaceAll('"','""') + '"')
+          .join(',')
+        )
+      ).join('\n');
+
+      const blob = new Blob([csv], { type:'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `program_caseload_${programSelect.value.replace(/\W+/g,'_')}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function renderChart(){
+      const program = programSelect.value;
+      chartProgram.textContent = program || '—';
+
+      // Count enrollments by ENTRANCE year
+      const counts = {};
+      for (const c of DATA.clients){
+        const p = c.programs[program];
+        if (!p || !p.entrance) continue;
+        const year = p.entrance.slice(0,4);
+        counts[year] = (counts[year] || 0) + 1;
+      }
+
+      const labels = Object.keys(counts).sort();
+      const values = labels.map(y => counts[y]);
+
+      const ctx = document.getElementById('enrollChart').getContext('2d');
+      if (CHART) CHART.destroy();
+      CHART = new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Enrollments', data: values }] },
+        options: {
+          responsive: true,
+          scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+  </script>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = 'c23m9_theme';
+      const prefersLight = () => window.matchMedia('(prefers-color-scheme: light)').matches;
+
+      function applyTheme(mode){
+        document.documentElement.classList.toggle('light', mode === 'light');
+        const btn = document.getElementById('themeToggle');
+        if (btn) btn.textContent = mode === 'light' ? '🌙' : '☀️';
+        if (window.Chart) {
+          if (window.chartInstance?.update) window.chartInstance.update();
+          window.dispatchEvent(new Event('resize'));
+        }
+      }
+
+      const saved = localStorage.getItem(STORAGE_KEY);
+      const initial = saved || (prefersLight() ? 'light' : 'dark');
+      applyTheme(initial);
+
+      const toggle = document.getElementById('themeToggle');
+      if (toggle) {
+        toggle.addEventListener('click', () => {
+          const next = document.documentElement.classList.contains('light') ? 'dark' : 'light';
+          localStorage.setItem(STORAGE_KEY, next);
+          applyTheme(next);
+        });
+      }
+
+      const mq = window.matchMedia('(prefers-color-scheme: light)');
+      mq.addEventListener?.('change', e => {
+        const manual = localStorage.getItem(STORAGE_KEY);
+        if (!manual) applyTheme(e.matches ? 'light' : 'dark');
+      });
+    })();
+  </script>
 </body>
 </html>
