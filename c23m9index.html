@@ -1,631 +1,492 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>c23m9 Web&Database Engineer</title>
-
-  <!-- Libs -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Misa's Art</title>
+  <meta name="description" content="A funky, futuristic, 3D mosaic inspired by SuperRare — showcasing a remarkable Mayan watercolor artist." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#0b1020; --panel:#0f152b; --panel-2:#131a35;
-      --text:#e9eef6; --muted:#a9b0c2; --line:rgba(255,255,255,0.08);
-      --glow:#23c9b9; --radius:16px; --shadow:0 8px 30px rgba(0,0,0,.35);
+      --tile-size: 200px; /* requested size */
+      --radius: 360px;    /* 3D orbit radius */
+      --bg-1: #06080f;
+      --bg-2: #0b0f21;
+      --accent: #9ef9f3;   /* aqua */
+      --accent-2: #ff7dea; /* magenta */
+      --accent-3: #77ff88; /* lime */
+      --txt: #f1f5ff;
+      --muted: #a6b0c9;
+      --glass-1: rgba(255,255,255,.06);
+      --glass-2: rgba(255,255,255,.12);
+      --shadow: 0 20px 60px rgba(0,0,0,.45), 0 2px 10px rgba(0,0,0,.3);
     }
-    *{box-sizing:border-box}
+
     html,body{height:100%}
     body{
-      margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
-      background: radial-gradient(1200px 1200px at 20% -10%, rgba(35,201,185,.15), transparent 60%), var(--bg);
-      color:var(--text);
+      margin:0; color:var(--txt);
+      font-family:"Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans";
+      background:
+        radial-gradient(1200px 900px at 10% -10%, #1c1f43 0%, transparent 50%),
+        radial-gradient(1000px 700px at 90% 0%, #132a30 0%, transparent 55%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-2));
+      overflow-x:hidden;
     }
 
-    header{
-      position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.2) blur(10px);
-      background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));
-      border-bottom:1px solid var(--line)
-    }
-    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px}
-    .brand{display:flex;gap:10px;align-items:center}
+    /* Subtle texture */
+    .noise{position:fixed;inset:0;pointer-events:none;mix-blend-mode:overlay;opacity:.08;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.4"/></svg>');}
+
+    /* Top nav + ticker */
+    .nav{position:sticky; top:0; z-index:100; background:rgba(5,7,16,.6); backdrop-filter: blur(8px); border-bottom:1px solid rgba(255,255,255,.08)}
+    .nav-inner{display:flex; align-items:center; gap:16px; padding:12px 18px;}
+    .logo{font-family:"Space Grotesk", system-ui; font-weight:700; letter-spacing:.02em}
+    .pill{margin-left:auto; padding:6px 12px; border:1px solid rgba(255,255,255,.18); border-radius:999px; background:linear-gradient(120deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); font-size:.85rem}
+
+    .ticker{position:relative; overflow:hidden; border-top:1px solid rgba(255,255,255,.08); border-bottom:1px solid rgba(255,255,255,.08)}
+    .ticker-track{display:flex; gap:32px; padding:8px 0; white-space:nowrap; will-change: transform}
+    .tag{font-family:"Space Grotesk"; letter-spacing:.1em; text-transform:uppercase; font-weight:700; font-size:.78rem; opacity:.9}
+    .tag::before{content:"✦"; margin-right:10px; color:var(--accent)}
+
+    header.hero{padding: 64px 24px 32px; position: relative;}
     .badge{
-      width:36px;height:36px;border-radius:10px;
-      background:conic-gradient(from 210deg,var(--glow),#7adcd2 25%,#1d9d8f 60%,var(--glow));
-      box-shadow:0 0 24px rgba(35,201,185,.35)
+      display:inline-flex; gap:.5rem; align-items:center; padding:8px 12px; border-radius:999px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; font-size:.72rem;
+      background: linear-gradient(120deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
     }
-    h1{margin:0;font-size:1.05rem;letter-spacing:.3px}
+    .badge .dot{width:8px;height:8px;border-radius:50%; background:conic-gradient(from 0deg, var(--accent), var(--accent-2), var(--accent-3), var(--accent)); box-shadow:0 0 12px var(--accent-2);}
 
-    main{padding:22px;display:grid;gap:18px;max-width:1200px;margin:0 auto}
+    h1.title{font-family:"Space Grotesk"; font-size: clamp(2rem, 4vw + 1rem, 4.25rem); line-height:1.05; margin:.6rem 0; font-weight:700; letter-spacing:.01em;}
+    .title .fx{background: linear-gradient(100deg, var(--accent), var(--accent-2) 45%, var(--accent-3)); -webkit-background-clip:text; background-clip:text; color:transparent; filter: drop-shadow(0 8px 24px rgba(158,249,243,.15));}
+    .subt{text-align:center; color:rgb(194, 194, 43);}
+    
 
-    .btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;font-size:.92rem}
-    .btn.primary{background:linear-gradient(180deg,#23c9b9,#1aa998);color:#061016;border-color:transparent}
-    .btn:hover{filter:brightness(1.05)} .btn:disabled{opacity:.6;cursor:not-allowed}
+    /* 3D Orbit Showcase */
+    .orbit-wrap{ perspective: 1600px; margin: 18px auto 40px; max-width: 1200px; }
+    .orbit-scene{ position:relative; height: 380px; transform-style: preserve-3d; border-radius: 22px; overflow:hidden; background: radial-gradient(700px 320px at 20% 0%, rgba(158,249,243,.08), transparent 40%), radial-gradient(700px 320px at 80% 100%, rgba(255,125,234,.08), transparent 40%); border:1px solid rgba(255,255,255,.12); box-shadow: var(--shadow); backdrop-filter: blur(6px); }
+    .orbit{ position:absolute; inset:0; transform-style: preserve-3d; }
+    .orbit-item{ position:absolute; top:50%; left:50%; width: 200px; height: 200px; transform-style: preserve-3d; translate: -50% -50%; }
+    .orbit-item .card{ position:absolute; inset:0; border-radius: 18px; overflow:hidden; border:1px solid rgba(255,255,255,.16); background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); box-shadow: var(--shadow); }
+    .orbit-item img{ width:100%; height:100%; object-fit: contain; background: radial-gradient(400px 200px at 50% 50%, rgba(255,255,255,.06), rgba(255,255,255,.02)); image-rendering:auto; }
 
-    .filterbar{
-      display:grid;gap:14px;grid-template-columns:1fr;padding:14px;border-radius:var(--radius);
-      background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
-      border:1px solid var(--line);box-shadow:var(--shadow)
+    /* Main gallery frame */
+    .frame{ position:relative; margin: 24px auto 0; max-width: 1200px; padding: 18px; border-radius: 24px; background: linear-gradient(115deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.16); box-shadow: var(--shadow); backdrop-filter: blur(8px); }
+
+    .gallery{display:grid; grid-template-columns:repeat(auto-fit, minmax(var(--tile-size), 1fr)); gap:18px; align-items:start}
+
+    .tile{ position:relative; width:100%; height: var(--tile-size); aspect-ratio: 1/1; perspective: 800px; transform-style: preserve-3d; isolation:isolate;}
+    .tile .tilt{ position:absolute; inset:0; border-radius: 18px; overflow:hidden; transform: translateZ(0); background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015)); border: 1px solid rgba(255,255,255,.12); box-shadow: var(--shadow); transition: transform .18s ease, box-shadow .3s ease, border-color .3s ease; }
+    .tile:hover .tilt{ box-shadow: 0 30px 90px rgba(0,0,0,.6), 0 8px 20px rgba(0,0,0,.4); border-color: rgba(255,255,255,.28) }
+    .title {
+      text-align: center;}
+    /* holographic border */
+    .tile .tilt::before{ content:""; position:absolute; inset:-1px; border-radius: 18px; z-index:2; pointer-events:none; background: conic-gradient(from 180deg at 50% 50%, rgba(255,255,255,.0), rgba(158,249,243,.35), rgba(255,125,234,.40), rgba(119,255,136,.35), rgba(255,255,255,.0)); mask: linear-gradient(#000, #000) content-box, linear-gradient(#000,#000); -webkit-mask-composite: xor; mask-composite: exclude; padding:1px; opacity:.85; filter: blur(.45px); }
+    .tile .tilt::after{ content:""; position:absolute; inset:0; background: radial-gradient(600px 300px at 20% 0%, rgba(158,249,243,.10), transparent 40%), radial-gradient(500px 300px at 80% 100%, rgba(255,125,234,.10), transparent 40%); opacity:.5; z-index:1; }
+
+    /* Ensure FULL artwork content in tiles (no cropping) */
+    .media{ position:absolute; inset:8px; display:grid; place-items:center; }
+    .media img{ width:100%; height:100%; object-fit: contain; object-position:center; background: rgba(255,255,255,.02); border-radius: 12px; }
+
+    .chip{position:absolute; right:10px; top:10px; z-index:5; font-size:.72rem; padding:6px 10px; border-radius:999px; letter-spacing:.06em; text-transform:uppercase; font-weight:700; color:var(--txt); background: linear-gradient(135deg, rgba(255,255,255,.09), rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.16); backdrop-filter: blur(6px); box-shadow: 0 4px 14px rgba(0,0,0,.35), inset 0 0 24px rgba(158,249,243,.18); }
+
+    /* Lightbox — two‑panel layout (image at left, details at right) */
+    .lightbox{ position: fixed; inset:0; display:none; place-items:center; background: radial-gradient(1200px 800px at 50% 50%, rgba(13,16,34,.85), rgba(6,8,18,.94)); z-index:1000; }
+    .lightbox.open{ display:grid; }
+    .lightbox .viewport{ position:relative; width:min(94vw, 1400px); height:min(90vh, 920px); border-radius:20px; overflow:hidden; border:1px solid rgba(255,255,255,.16); background: rgba(0,0,0,.32); box-shadow: var(--shadow); backdrop-filter: blur(8px); }
+
+    .lb-layout{ position:absolute; inset:0; display:grid; grid-template-columns: 1fr minmax(300px, 36%); }
+    .lb-media{ position:relative; background: radial-gradient(700px 320px at 15% 0%, rgba(158,249,243,.08), transparent 40%), radial-gradient(700px 320px at 85% 100%, rgba(255,125,234,.08), transparent 40%); }
+    .lb-media img{ position:absolute; inset:0; width:100%; height:100%; object-fit: contain; object-position:center; }
+
+    .lb-panel{ position:relative; display:flex; flex-direction:column; gap:14px; padding:24px; border-left:1px solid rgba(255,255,255,.14); background: linear-gradient(180deg, rgba(8,10,22,.45), rgba(8,10,22,.75)); }
+    .lb-title{ margin:0; font-family:"Space Grotesk"; font-size:1.25rem; letter-spacing:.02em }
+    .lb-price{ font-weight:800; font-size:1.1rem; background: linear-gradient(100deg, var(--accent), var(--accent-2) 45%, var(--accent-3)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .lb-desc{ margin-top:6px; color:var(--muted); line-height:1.5; }
+    .lb-cta{ display:flex; gap:10px; margin-top:6px; }
+    .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.10); color:var(--txt); text-decoration:none; cursor:pointer; box-shadow: var(--shadow); }
+    .btn:hover{ background: rgba(255,255,255,.16) }
+    .btn.primary{ background: linear-gradient(135deg, rgba(158,249,243,.25), rgba(255,125,234,.25)); border-color: rgba(255,255,255,.22); font-weight:700 }
+
+    .lb-meta{ margin-top:auto; font-size:.9rem; color:var(--muted); opacity:.9 }
+
+    .lb-btn{ position:absolute; top:10px; width:42px; height:42px; display:grid; place-items:center; border-radius:12px; border:1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.10); backdrop-filter: blur(8px); cursor:pointer; box-shadow: var(--shadow); z-index:50; pointer-events:auto; }
+    .lb-btn:hover{ background: rgba(255,255,255,.16) }
+    .btn-close{ right:10px }
+    .btn-prev{ left:10px; top: calc(50% - 21px) }
+    .btn-next{ right:10px; top: calc(50% - 21px) }
+    .lb-btn svg{ width:20px; height:20px; fill:none; stroke:#fff; stroke-width:2;}
+
+    .starts {
+  display: none;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  animation: sparkle 1.5s infinite;
+}
+
+.contact {
+  position: relative;
+  padding: 12px 24px;
+  background: linear-gradient(to right, #ff6ec4, #7873f5);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.contact:hover .starts {
+  display: block;
+  filter: drop-shadow(0 0 10px #fffdef);
+}
+
+@keyframes sparkle {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+#store {
+  text-align: center;
+  color:#e5e8f0
+}
+    /* Contact */
+    section#contact{ max-width: 1100px; margin: 56px auto; padding: 0 24px; }
+    section#contact .card{ margin-top:16px; padding: 22px; border-radius:16px; border:1px solid rgba(255,255,255,.16); background: linear-gradient(120deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); backdrop-filter: blur(8px); box-shadow: var(--shadow); }
+    section#contact a{ color: var(--accent); text-decoration: none; }
+    section#contact a:hover{ text-decoration: underline; }
+
+    footer{ color: var(--muted); text-align:center; padding:40px 20px; }
+
+    /* Responsiveness */
+    @media (max-width: 980px){
+      .lb-layout{ grid-template-columns: 1fr; grid-template-rows: minmax(40vh, 1.4fr) minmax(40vh, 1fr); }
+      .lb-panel{ border-left:none; border-top:1px solid rgba(255,255,255,.14); }
     }
-    .filter-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
-    .field{display:flex;flex-direction:column;gap:6px;min-width:180px}
-    .field label{font-size:.78rem;color:var(--muted)}
-
-    /* High-contrast inputs */
-    select,input[type="date"],input[type="number"],input[type="file"]{
-      background:var(--panel-2)!important;color:var(--text)!important;border:1px solid var(--line)!important;
-      border-radius:10px!important;padding:8px 10px!important;min-height:38px!important;appearance:none
-    }
-    select:focus,input:focus{outline:2px solid rgba(35,201,185,.5)}
-    ::placeholder{color:var(--muted);opacity:.9}
-
-    /* Choices.js (dark) */
-    .choices__inner{background:var(--panel-2)!important;color:var(--text)!important;border:1px solid var(--line)!important;border-radius:10px!important;min-height:38px!important}
-    .choices__list--dropdown,.choices__list[aria-expanded]{background:var(--panel-2)!important;border:1px solid var(--line)!important;color:var(--text)!important}
-    .choices__list--multiple .choices__item{background:#1a7f77;border-color:#1a7f77}
-    .choices__item--selectable.is-highlighted{background:var(--panel)!important}
-    .choices__input{background:transparent!important;color:var(--text)!important}
-
-    /* STRICT default hidden for all date-mode sections */
-    .mode-range, .mode-month, .mode-quarter { display: none; }
-    .mode-range.show, .mode-month.show, .mode-quarter.show { display: flex; }
-
-    .kpis{display:grid;gap:16px;grid-template-columns:repeat(12,minmax(0,1fr))}
-    .kpi{
-      grid-column:span 3 / span 3;background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
-      border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)
-    }
-    .kpi h3{margin:0;font-size:.9rem;color:var(--muted)}
-    .kpi .big{margin-top:6px;font-size:1.8rem;font-weight:700;letter-spacing:.4px}
-    .list{margin:0;padding-left:18px;font-size:.94rem}.list li{margin:4px 0}
-
-    .grid{display:grid;gap:16px;grid-template-columns:2fr 1fr}
-    .panel{
-      background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
-      border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 12px 16px;min-height:260px
-    }
-    .panel h4{margin:8px 8px 12px;color:var(--muted)}
-    .chart-wrap{height:460px;position:relative;padding:8px}
-    canvas{width:100%!important;height:100%!important}
-    .ranking{max-height:420px;overflow:auto;margin:0;padding:0;list-style:none}
-    .ranking li{display:flex;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);margin:6px 8px}
-    .empty{text-align:center;padding:40px 10px;color:var(--muted)}
-
-    @media (max-width:1200px){.kpi{grid-column:span 4 / span 4}}
-    @media (max-width:900px){.grid{grid-template-columns:1fr}.kpi{grid-column:span 6 / span 6}}
-    @media (max-width:600px){.kpi{grid-column:span 12 / span 12}}
-
-    /* =========================
-       Floating Quick Links Tab
-       ========================= */
-    .quicklinks{
-      position:fixed; left:12px; top:50%; transform:translateY(-50%);
-      z-index:9999; display:flex; align-items:center; gap:10px; pointer-events:auto;
-    }
-    .ql-handle{
-      writing-mode:vertical-rl; transform:rotate(180deg);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border:1px solid var(--line); border-right:none;
-      border-radius:12px 0 0 12px; padding:10px 8px; cursor:pointer;
-      color:var(--text); font-weight:600; letter-spacing:.4px;
-      box-shadow:0 8px 30px rgba(0,0,0,.35), 0 0 0 1px rgba(35,201,185,.15) inset;
-      backdrop-filter: blur(10px) saturate(1.2);
-      transition:filter .2s ease, transform .2s ease;
-    }
-    .ql-handle .ql-icon{font-size:1rem; margin-top:6px; opacity:.9}
-    .ql-handle:hover{filter:brightness(1.1)}
-    .ql-handle:focus{outline:2px solid rgba(35,201,185,.5); outline-offset:2px}
-
-    .ql-panel{
-      position:absolute; left:100%; margin-left:10px; width:240px;
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-      border:1px solid var(--line); border-radius:14px; padding:12px;
-      box-shadow:var(--shadow); backdrop-filter: blur(12px) saturate(1.2);
-      transform:translateX(-12px); opacity:0; pointer-events:none;
-      transition:transform .28s ease, opacity .28s ease;
-    }
-    .quicklinks.open .ql-panel{transform:translateX(0); opacity:1; pointer-events:auto}
-
-    .ql-head{
-      font-size:.8rem; color:var(--muted); margin:2px 6px 8px;
-      text-transform:uppercase; letter-spacing:.12em;
-    }
-    .ql-panel a{
-      display:flex; align-items:center; gap:8px; text-decoration:none; color:var(--text);
-      padding:10px 12px; margin:6px 0; border-radius:10px; background:var(--panel-2);
-      border:1px solid transparent; transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
-    }
-    .ql-panel a:hover{
-      border-color:var(--glow);
-      box-shadow:0 0 0 3px rgba(35,201,185,.18) inset;
-      transform:translateY(-1px);
-    }
-    .ql-panel a span{opacity:.9}
-
-    /* Mobile: move to bottom-left and make handle horizontal */
-    @media (max-width:700px){
-      .quicklinks{left:10px; bottom:14px; top:auto; transform:none;}
-      .ql-handle{writing-mode:horizontal-tb; transform:none; border-radius:12px; border-right:1px solid var(--line)}
-      .ql-panel{
-        position:fixed; left:10px; right:10px; bottom:64px; top:auto; width:auto; margin:0;
-      }
-    }
+    @media (max-width: 430px){:root{ --tile-size: 160px; --radius: 260px; }}
 
     @media (prefers-reduced-motion: reduce){
-      .ql-panel, .ql-handle{transition:none}
+      .tile .tilt, .tile img, .orbit, .ticker-track{ transition:none; animation:none }
     }
+
+    .chip.sold{
+  background: linear-gradient(135deg, rgba(255,0,77,.35), rgba(255,255,255,.08));
+  border-color: rgba(255,0,77,.45);
+  box-shadow: 0 4px 14px rgba(255,0,77,.35), inset 0 0 24px rgba(255,0,77,.22);
+  letter-spacing:.12em;
+}
+
+.tile.is-sold .media img{
+  filter: grayscale(100%) contrast(95%) opacity(.85);
+}
+
+
   </style>
 </head>
 <body>
-  <header>
-    <div class="topbar">
-      <div class="brand">
-        <div class="badge" aria-hidden="true"></div>
-        <h1>Service Interaction Dashboard</h1>
-      </div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="logo">Mayan Watercolor</div>
+      <div button="bhome" style="margin-left:auto; color:var(--muted); font-size:.9rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase; cursor:pointer;" onclick="location.href='/index.html'">Back to Home</div>
     </div>
-  </header>
-
-  <main>
-    <!-- Filter Bar -->
-    <section class="filterbar" aria-label="Filters">
-      <div class="filter-row">
-        <div class="field" style="min-width:220px">
-          <label for="filterType">Date Mode</label>
-          <select id="filterType" autocomplete="off">
-            <option value="">— Select —</option>
-            <option value="range">Date Range</option>
-            <option value="month">Month</option>
-            <option value="quarter">Quarter</option>
-          </select>
-        </div>
-
-        <!-- Range -->
-        <div class="field mode-range">
-          <label for="startDate">Start</label>
-          <input type="date" id="startDate" autocomplete="off"/>
-        </div>
-        <div class="field mode-range">
-          <label for="endDate">End</label>
-          <input type="date" id="endDate" autocomplete="off"/>
-        </div>
-
-        <!-- Month -->
-        <div class="field mode-month">
-          <label for="monthDropdown">Month</label>
-          <select id="monthDropdown" autocomplete="off">
-            <option value="">— Select —</option>
-            <option value="0">January</option><option value="1">February</option><option value="2">March</option>
-            <option value="3">April</option><option value="4">May</option><option value="5">June</option>
-            <option value="6">July</option><option value="7">August</option><option value="8">September</option>
-            <option value="9">October</option><option value="10">November</option><option value="11">December</option>
-          </select>
-        </div>
-        <div class="field mode-month">
-          <label for="monthYearDropdown">Year</label>
-          <select id="monthYearDropdown" autocomplete="off"></select>
-        </div>
-
-        <!-- Quarter -->
-        <div class="field mode-quarter">
-          <label for="quarterSelect">Quarter</label>
-          <select id="quarterSelect" autocomplete="off">
-            <option value="Q1">Jan–Mar</option>
-            <option value="Q2">Apr–Jun</option>
-            <option value="Q3">Jul–Sep</option>
-            <option value="Q4">Oct–Dec</option>
-          </select>
-        </div>
-        <div class="field mode-quarter">
-          <label for="quarterYear">Year</label>
-          <input type="number" id="quarterYear" min="2000" max="2100" placeholder="2025" autocomplete="off"/>
-        </div>
-
-        <!-- Multi-selects -->
-        <div class="field" style="min-width:260px">
-          <label for="userFilter">User</label>
-          <select id="userFilter" multiple></select>
-        </div>
-        <div class="field" style="min-width:260px">
-          <label for="serviceFilter">Service</label>
-          <select id="serviceFilter" multiple></select>
-        </div>
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track" id="tickerTrack">
+        <span class="tag">Mayan Glyphs</span>
+        <span class="tag">Watercolor</span>
+        <span class="tag">Highlands</span>
+        <span class="tag">Jaguar Spirit</span>
+        <span class="tag">Butterfly Dream</span>
+        <span class="tag">Guardians</span>
+        <span class="tag">Tradition × Future</span>
+        <span class="tag">Hand‑Painted</span>
       </div>
-
-      <div class="filter-row">
-        <div class="field" style="min-width:260px">
-          <label for="fileInput">Upload Data</label>
-          <input type="file" id="fileInput" accept=".xlsx,.xls,.csv"/>
-        </div>
-        <div style="display:flex; gap:10px; align-items:end; flex-wrap:wrap">
-          <button class="btn primary" id="btnApply">Apply Filters</button>
-          <button class="btn" id="btnClear">Clear</button>
-          <button class="btn" id="btnExportCsv">Export CSV</button>
-          <button class="btn" id="btnExportXlsx">Export Excel</button>
-        </div>
-      </div>
-
-      <small class="muted">Pick a date mode first; only its fields will appear.</small>
-    </section>
-
-    <!-- KPIs -->
-    <section class="kpis" aria-label="Summary">
-      <div class="kpi"><h3>Unique Case Numbers</h3><div class="big" id="uniqueCases">0</div></div>
-      <div class="kpi"><h3>Total Services Provided</h3><div class="big" id="totalServices">0</div></div>
-      <div class="kpi">
-        <h3>Most Recent Interaction</h3>
-        <div class="big" id="mostRecentInteraction">—</div>
-      </div>
-      <div class="kpi" style="grid-column: span 6 / span 6">
-        <h3>Top 5 Most Common Services</h3>
-        <ol class="list" id="mostCommonService"></ol>
-      </div>
-    </section>
-
-    <!-- Content -->
-    <section class="grid">
-      <div class="panel">
-        <h4>All Services Provided</h4>
-        <div class="chart-wrap">
-          <canvas id="serviceChart" aria-label="Services frequency chart" role="img"></canvas>
-          <div id="chartEmpty" class="empty" hidden>No data yet. Upload a file or adjust filters.</div>
-        </div>
-      </div>
-      <div class="panel">
-        <h4>👥 Users by Interactions</h4>
-        <ul class="ranking" id="userRankingList"></ul>
-      </div>
-    </section>
-  </main>
-
-  <!-- Floating Quick Links -->
-  <nav class="quicklinks" id="quicklinks" aria-label="Quick Links">
-    <button class="ql-handle" id="qlToggle" aria-expanded="false" aria-controls="qlPanel" title="Open quick links">
-      <span class="ql-icon" aria-hidden="true">☰</span>
-      <span class="ql-label">Pages</span>
-    </button>
-    <div class="ql-panel" id="qlPanel" role="menu">
-      <div class="ql-head">Jump to</div>
-      <a href="employment.html" role="menuitem">💼 <span>Employment</span></a>
-      <a href="immigration.html" role="menuitem">🛂 <span>Immigration</span></a>
-      <a href="orr.html" role="menuitem">🏛️ <span>ORR</span></a>
-      <a href="prog.html" role="menuitem">📋 <span>Program Enrollment</span></a>
     </div>
   </nav>
 
+  <header class="hero" role="banner">
+    <div> 
+    <a href="#contact" class="contact">Contact Artist<span class='starts'>✨✨✨✨✨✨✨</span></a>
+    <h1 class="title"><span class="fx" position="center">A Watercolor Journey</span></h1>
+    <!--  <h2 class="title"><span class="fx">A Living Mosaic of Color</span></h2>-->
+    <p class="subt">100% watercolor base paintings, a mosaic honoring all the remarkable Mayan artists.</p>
+  </header>
+
+  <!-- 3D ORBIT SHOWCASE -->
+  <section class="orbit-wrap" aria-label="3D featured artwork carousel">
+    <div class="orbit-scene">
+      <div class="orbit" id="orbit"></div>
+    </div>
+  </section>
+  <h2 id="store">Store</h2>
+  <main class="frame" id="main" role="main">
+    <div class="gallery" id="gallery" aria-label="Artwork gallery, 200 by 200 pixel mosaic"></div>
+  </main>
+
+  <!-- LIGHTBOX (image left, details right) -->
+  <div class="lightbox" id="lightbox" aria-modal="true" role="dialog" aria-labelledby="artTitle" aria-describedby="artDesc">
+    <div class="viewport">
+      <button class="lb-btn btn-close" id="btnClose" aria-label="Close viewer" title="Close">
+        <svg viewBox="0 0 24 24"><path d="M6 6L18 18M6 18L18 6"/></svg>
+      </button>
+      <button class="lb-btn btn-prev" id="btnPrev" aria-label="Previous" title="Previous">
+        <svg viewBox="0 0 24 24"><path d="M15 6L9 12L15 18"/></svg>
+      </button>
+      <button class="lb-btn btn-next" id="btnNext" aria-label="Next" title="Next">
+        <svg viewBox="0 0 24 24"><path d="M9 6L15 12L9 18"/></svg>
+      </button>
+
+      <div class="lb-layout">
+        <div class="lb-media">
+          <img id="lightboxImg" alt="Selected artwork" />
+        </div>
+        <aside class="lb-panel">
+          <h3 class="lb-title" id="artTitle"></h3>
+          <div class="lb-price" id="artPrice"></div>
+          <p class="lb-desc" id="artDesc"></p>
+          <div class="lb-cta">
+            <a id="btnBuy" class="btn primary" href="#" target="_blank" rel="noopener">Purchase</a>
+            <button id="btnShare" class="btn" type="button">Share</button>
+          </div>
+          <div class="lb-meta" id="artMeta"></div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <section id="contact" aria-labelledby="contactTitle">
+    <h2 id="contactTitle">Artist Contact</h2>
+    <div class="card">
+      <p><strong>Name:</strong> <span id="artistName">Misael Ramirez</span></p>
+      <p><strong>Email:</strong> <a href="mailto:artist@example.com">misa@c23m9.com</a></p>
+      <p><strong>Instagram:</strong> <a id="instaLink" href="https://instagram.com/misa_c23m9" target="_blank" rel="noopener">@WatercolorsByMisa</a></p>
+      <p><strong>Commission inquiries:</strong> Hand‑painted originals and limited prints available upon request.</p>
+    </div>
+  </section>
+
+  <footer>
+    © <span id="year"></span> Designed by c23m9
+  </footer>
+
   <script>
-    /* ===== State ===== */
-    let chartInstance, rawData=[], filteredData=[];
-    let userChoices, serviceChoices;
+    // ---------- Data (update filenames & prices as needed) ----------
+    const ARTWORKS = [
+      { id: 'Butterfly', title: 'Butterfly', file: 'images/Butterfly.jpg', price: 'sold', desc: 'Delicate wings and sacred geometry—watercolor layers shimmering like dawn over the highlands.' },
+      { id: 'Ix',        title: 'Ix',        file: 'images/Ix.jpg',        price: 2800, desc: 'Ix (jaguar) as guardian—brushwork echoes ancient glyphs and the rhythm of the forest.' },
+      { id: 'Master',    title: 'Master',    file: 'images/Master.jpg',    price: 2200, desc: 'Portrait of mastery—quiet strength rendered in translucent washes and woven motifs.' },
+      { id: 'Protector', title: 'Protector', file: 'images/Protector.jpg', price: 2900, desc: 'A sentinel in color—the protector’s gaze, vivid as volcanic soil after rain.' },
+      { id: 'Remeros', title: 'Remeros', file: 'images/Remeros.jpg', price: 'sold', desc: 'Inspired by the Maya creation story, this piece captures the sacred journey of life emerging from the underworld.  The canoe drifts through shadowed waters, carried by unseen forces, as it ferries corn seeds destined to nourish the Earth. Surrounding it are animal spirits. Their presence evokes the Popol Vuh’s mythic voyage, where creation is not a single act, but a sacred passage through darkness, guided by nature and encoded in bone.' },
+      { id: 'Yellow Submarine', title: 'Yellow Submarine', file: 'images/Yellow.jpg', price: 4900, desc: 'A tribute to the power of family unity—father, mother, and child—captured through three luminous watercolor drops. Each drop symbolizes a soul bound by love, resilience, and shared memory. The yellow submarine echoes a beloved song that once united the artist and their family in laughter and harmony. The painting blends Mayan energy with personal nostalgia, creating a mosaic of warmth, loyalty, and the invisible threads that hold us together.' },
+      { id: 'Brothers', title: 'Brothers', file: 'images/Brothers.jpg', price: 'sold', desc: '"It represents loyalty and team power, blending Mayan energy with vibrant symbolism. Each brushstroke channels the spirit of unity—warriors, artisans, and celestial guides moving in harmony. The composition radiates strength through interwoven patterns and sacred geometry, echoing the rhythm of ancient rituals. With deep ochres and luminous blues, the painting honors collective resilience and the timeless bond between purpose and people.' }
+    ];
 
-    const els = {
-      filterType: document.getElementById('filterType'),
-      fileInput: document.getElementById('fileInput'),
-      userFilter: document.getElementById('userFilter'),
-      serviceFilter: document.getElementById('serviceFilter'),
-      uniqueCases: document.getElementById('uniqueCases'),
-      totalServices: document.getElementById('totalServices'),
-      serviceList: document.getElementById('mostCommonService'),
-      userRankingList: document.getElementById('userRankingList'),
-      serviceChart: document.getElementById('serviceChart'),
-      chartEmpty: document.getElementById('chartEmpty'),
-      startDate: document.getElementById('startDate'),
-      endDate: document.getElementById('endDate'),
-      monthDropdown: document.getElementById('monthDropdown'),
-      monthYearDropdown: document.getElementById('monthYearDropdown'),
-      quarterSelect: document.getElementById('quarterSelect'),
-      quarterYear: document.getElementById('quarterYear'),
-      btnApply: document.getElementById('btnApply'),
-      btnClear: document.getElementById('btnClear'),
-      btnExportCsv: document.getElementById('btnExportCsv'),
-      btnExportXlsx: document.getElementById('btnExportXlsx'),
-    };
+    // ---------- Build Mosaic ----------
+    const $gallery = document.getElementById('gallery');
+    const $lb = document.getElementById('lightbox');
+    const $img = document.getElementById('lightboxImg');
+    const $title = document.getElementById('artTitle');
+    const $desc = document.getElementById('artDesc');
+    const $price = document.getElementById('artPrice');
+    const $meta = document.getElementById('artMeta');
+    const $btnBuy = document.getElementById('btnBuy');
+    const $btnShare = document.getElementById('btnShare');
+    const $btnPrev = document.getElementById('btnPrev');
+    const $btnNext = document.getElementById('btnNext');
+    const $btnClose = document.getElementById('btnClose');
 
-    /* ===== Visibility controller ===== */
-    function toggleDateInputs(){
-      const mode = els.filterType.value;
-      document.querySelectorAll('.mode-range,.mode-month,.mode-quarter').forEach(el => el.classList.remove('show'));
-      if(mode === 'range') document.querySelectorAll('.mode-range').forEach(el => el.classList.add('show'));
-      else if(mode === 'month') document.querySelectorAll('.mode-month').forEach(el => el.classList.add('show'));
-      else if(mode === 'quarter') document.querySelectorAll('.mode-quarter').forEach(el => el.classList.add('show'));
+    let currentIndex = 0;
+
+    function createTile(item, index){
+      const tile = document.createElement('button');
+      tile.className = 'tile';
+      tile.setAttribute('aria-label', `${item.title}, open viewer`);
+      tile.innerHTML = `
+        <div class="tilt">
+          <span class="chip">Art · ${String(index+1).padStart(2,'0')}</span>
+          <div class="media"><img src="${item.file}" alt="${item.title}" loading="lazy" /></div>
+        </div>`;
+
+      // Tilt effect
+      const tilt = tile.querySelector('.tilt');
+      tile.addEventListener('mousemove', (e) => {
+        const r = tile.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - .5;
+        const y = (e.clientY - r.top) / r.height - .5;
+        tilt.style.transform = `rotateX(${(-y*8).toFixed(2)}deg) rotateY(${(x*10).toFixed(2)}deg)`;
+      });
+      tile.addEventListener('mouseleave', ()=>{ tilt.style.transform = 'rotateX(0) rotateY(0)'; });
+
+      tile.addEventListener('click', ()=> openLightbox(index));
+      return tile;
     }
 
-    /* ===== Helpers ===== */
-    function persistSelections(){
-      const state = {
-        users: userChoices ? userChoices.getValue(true) : [],
-        services: serviceChoices ? serviceChoices.getValue(true) : []
-      };
-      localStorage.setItem('c23m9.selections', JSON.stringify(state));
+    ARTWORKS.forEach((item, i)=> $gallery.appendChild(createTile(item, i)));
+
+    // ---------- Lightbox ----------
+    function openLightbox(i){
+      currentIndex = i;
+      const item = ARTWORKS[i];
+      $img.src = item.file;
+      $img.alt = item.title;
+      $title.textContent = item.title;
+      $desc.textContent = item.desc;
+      if(typeof item.price === 'number'){
+        $price.textContent = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'}).format(item.price);
+        $price.style.display = '';
+        // Build a mailto Purchase link using contact email on page
+        const contactEmail = (document.querySelector('#contact a[href^="mailto:"]')?.getAttribute('href')||'mailto:artist@example.com').replace('mailto:','');
+        const subject = encodeURIComponent(`Purchase inquiry: ${item.title}`);
+        const body = encodeURIComponent(`Hello,
+
+I would like to purchase \"${item.title}\" listed at ${new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(item.price)}.
+
+Please let me know the next steps.
+
+Thank you!`);
+        $btnBuy.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
+        $btnBuy.textContent = 'Purchase';
+        $btnBuy.style.display = '';
+      } else {
+        $price.style.display = 'none';
+        $btnBuy.textContent = 'Inquire';
+        $btnBuy.href = document.querySelector('#contact a[href^="mailto:"]')?.getAttribute('href') || '#';
+        $btnBuy.style.display = '';
+      }
+      $meta.textContent = `ID: ${item.id} • One of One`;
+      $lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      [i-1, i+1].forEach(idx=>{ if(ARTWORKS[idx]){ const p = new Image(); p.src = ARTWORKS[idx].file; }});
     }
-    function restoreSelections(){
-      const raw = localStorage.getItem('c23m9.selections');
-      if(!raw) return;
+    function closeLightbox(){ $lb.classList.remove('open'); document.body.style.overflow = ''; }
+    function nav(delta){ let next = (currentIndex + delta + ARTWORKS.length) % ARTWORKS.length; openLightbox(next); }
+    $btnPrev.addEventListener('click', ()=> nav(-1));
+    $btnNext.addEventListener('click', ()=> nav(1));
+    $btnClose.addEventListener('click', closeLightbox);
+    $lb.addEventListener('click', (e)=>{ if(e.target === $lb) closeLightbox(); });
+    window.addEventListener('keydown', (e)=>{ if(!$lb.classList.contains('open')) return; if(e.key === 'Escape') closeLightbox(); if(e.key === 'ArrowLeft') nav(-1); if(e.key === 'ArrowRight') nav(1); });
+
+    // Share button copies a prefilled message
+    $btnShare.addEventListener('click', async ()=>{
+      const item = ARTWORKS[currentIndex];
+      const price = typeof item.price==='number' ? new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(item.price) : '';
+      const text = `Mayan Watercolor — ${item.title} ${price ? `(${price})` : ''}`.trim();
       try{
-        const s = JSON.parse(raw);
-        if(Array.isArray(s.users)) userChoices.setChoiceByValue(s.users);
-        if(Array.isArray(s.services)) serviceChoices.setChoiceByValue(s.services);
-      }catch(e){}
-    }
-    function monthEnd(y,m){ return new Date(y, m+1, 0, 23,59,59,999); }
-    function computeDateRange(){
-      const mode = els.filterType.value;
-      let startDate, endDate;
-      if(mode === 'range'){
-        if(els.startDate.value) startDate = new Date(els.startDate.value);
-        if(els.endDate.value){ endDate = new Date(els.endDate.value); endDate.setHours(23,59,59,999); }
-      } else if(mode === 'month'){
-        const m = els.monthDropdown.value, y = els.monthYearDropdown.value;
-        if(m !== '' && y !== ''){ startDate = new Date(+y, +m, 1); endDate = monthEnd(+y, +m); }
-      } else if(mode === 'quarter'){
-        const q = els.quarterSelect.value; const y = parseInt(els.quarterYear.value,10);
-        if(y){
-          const map = {Q1:[0,2],Q2:[3,5],Q3:[6,8],Q4:[9,11]};
-          const [sm,em] = map[q] || [0,2];
-          startDate = new Date(y, sm, 1); endDate = monthEnd(y, em);
-        }
-      }
-      return { startDate, endDate };
-    }
+        if(navigator.share){ await navigator.share({title:item.title, text, url:location.href}); }
+        else { await navigator.clipboard.writeText(`${text} — ${location.href}`); alert('Share link copied to clipboard'); }
+      }catch(_){ /* user cancelled */ }
+    });
 
-    // Read the "Interaction date" from each row robustly
-    function getInteractionDateFromRow(row) {
-      if (!row) return null;
-      const key = Object.keys(row).find(k => {
-        const s = k.trim().toLowerCase().replace(/\s+|_/g, '');
-        return s === 'interactiondate';
-      });
-      const v = key ? row[key] : null;
+    // ---------- 3D Orbit ----------
+    const $orbit = document.getElementById('orbit');
+    const radius = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--radius')) || 360;
+    const count = ARTWORKS.length;
 
-      if (v instanceof Date && !isNaN(v)) return v;      // already a Date
-      if (typeof v === 'number') {                      // Excel serial
-        const p = XLSX.SSF.parse_date_code(v);
-        if (p) return new Date(Date.UTC(p.y,(p.m||1)-1,p.d||1,p.H||0,p.M||0,p.S||0));
-      }
-      if (typeof v === 'string') {                      // parse string
-        const t = v.trim();
-        const d1 = new Date(t);
-        if (!isNaN(d1)) return d1;
-        const mdy = t.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
-        if (mdy) {
-          let mm = parseInt(mdy[1],10)-1, dd = parseInt(mdy[2],10), yy = parseInt(mdy[3],10);
-          if (yy < 100) yy += 2000;
-          return new Date(yy, mm, dd);
-        }
-      }
-      return null;
-    }
+    ARTWORKS.forEach((item, i)=>{
+      const angle = (360 / count) * i;
+      const node = document.createElement('div');
+      node.className = 'orbit-item';
+      node.style.transform = `translateZ(0) rotateY(${angle}deg) translateZ(${radius}px) rotateY(${-angle}deg)`;
+      node.innerHTML = `<div class="card"><img src="${item.file}" alt="${item.title}" /></div>`;
+      node.addEventListener('click', ()=> openLightbox(i));
+      $orbit.appendChild(node);
+    });
 
-    /* ===== File load ===== */
-    els.fileInput.addEventListener('change', handleFile);
-    function handleFile(e){
-      const file = e.target.files[0]; if(!file) return;
-      const reader = new FileReader();
-      reader.onload = function(ev){
-        try{
-          const data = new Uint8Array(ev.target.result);
-          const workbook = XLSX.read(data, { type:'array', cellDates:true });
-          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    let rotY = 0; let vx = 0.02; // base angular velocity
+    let rafId = null;
+    function tick(){ rotY += vx; $orbit.style.transform = `translateZ(-200px) rotateX(-8deg) rotateY(${rotY}deg)`; rafId = requestAnimationFrame(tick); }
+    tick();
 
-          // Keep raw so dates are Date/number; defval:'' to keep columns consistent
-          const json = XLSX.utils.sheet_to_json(sheet, { defval:'', raw:true });
+    // Drag to spin
+    let dragging = false; let lastX = 0;
+    $orbit.parentElement.addEventListener('pointerdown', (e)=>{ dragging = true; lastX = e.clientX; $orbit.parentElement.setPointerCapture(e.pointerId); });
+    window.addEventListener('pointermove', (e)=>{ if(!dragging) return; const dx = e.clientX - lastX; lastX = e.clientX; rotY += dx * 0.25; vx = dx * 0.02; });
+    window.addEventListener('pointerup', ()=>{ dragging = false; vx *= 0.96; });
 
-          // Attach parsed date directly from the row's Interaction date
-          rawData = json.map(row => ({ ...row, _parsedDate: getInteractionDateFromRow(row) }));
+    // ---------- Ticker (infinite scroll) ----------
+    const track = document.getElementById('tickerTrack');
+    let t = 0; function moveTicker(){ t -= 0.6; track.style.transform = `translateX(${t}px)`; if(Math.abs(t) > track.scrollWidth/2){ t = 0; } requestAnimationFrame(moveTicker); } moveTicker();
 
-          filteredData = rawData.slice();
-          populateDropdowns(rawData);
-          updateDashboard(filteredData);
-          persistSelections();
-        }catch(err){
-          alert("Couldn't read the file. Please ensure it's a valid .xlsx/.xls/.csv");
-          console.error(err);
-        }
-      };
-      reader.readAsArrayBuffer(file);
-    }
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-    function initYearDropdown(){
-      if(!els.monthYearDropdown.options.length){
-        const currentYear = new Date().getFullYear();
-        for(let y=currentYear-10; y<=currentYear+5; y++){
-          const opt = document.createElement('option'); opt.value = y; opt.textContent = y;
-          els.monthYearDropdown.appendChild(opt);
-        }
-      }
-    }
-    initYearDropdown();
+    function createTile(item, index){
+  const tile = document.createElement('button');
+  tile.className = 'tile';
+  tile.setAttribute('aria-label', `${item.title}, open viewer`);
+  tile.innerHTML = `
+    <div class="tilt">
+      <span class="chip">Art · ${String(index+1).padStart(2,'0')}</span>
+      <div class="media"><img src="${item.file}" alt="${item.title}" loading="lazy" /></div>
+    </div>`;
 
-    function populateDropdowns(data){
-      const users = Array.from(new Set(data.map(r => (r['User']||'').trim()).filter(Boolean))).sort();
-      const services = Array.from(new Set(data.map(r => (r['Service']||'').trim()).filter(Boolean))).sort();
-      els.userFilter.innerHTML=''; els.serviceFilter.innerHTML='';
-      users.forEach(u=>{const o=document.createElement('option');o.value=u;o.textContent=u;els.userFilter.appendChild(o);});
-      services.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;els.serviceFilter.appendChild(o);});
+  // 👉 make chip say SOLD when price === 'sold'
+  const chip = tile.querySelector('.chip');
+  if (String(item.price).toLowerCase() === 'sold') {
+    chip.textContent = 'SOLD';
+    chip.classList.add('sold');
+    tile.classList.add('is-sold'); // (optional, for styling below)
+  }
 
-      if(userChoices) userChoices.destroy(); if(serviceChoices) serviceChoices.destroy();
-      userChoices = new Choices(els.userFilter,{removeItemButton:true,placeholder:true,placeholderValue:'All users'});
-      serviceChoices = new Choices(els.serviceFilter,{removeItemButton:true,placeholder:true,placeholderValue:'All services'});
 
-      restoreSelections();
-    }
+  function openLightbox(i){
+  currentIndex = i;
+  const item = ARTWORKS[i];
+  $img.src = item.file;
+  $img.alt = item.title;
+  $title.textContent = item.title;
+  $desc.textContent = item.desc;
 
-    /* ===== Actions ===== */
-    function applyFilters(){
-      const { startDate, endDate } = computeDateRange();
-      const selectedUsers = userChoices ? userChoices.getValue(true) : [];
-      const selectedServices = serviceChoices ? serviceChoices.getValue(true) : [];
+  if (typeof item.price === 'number'){
+    $price.textContent = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'}).format(item.price);
+    $price.style.display = '';
+    const contactEmail = (document.querySelector('#contact a[href^="mailto:"]')?.getAttribute('href')||'mailto:artist@example.com').replace('mailto:','');
+    const subject = encodeURIComponent(`Purchase inquiry: ${item.title}`);
+    const body = encodeURIComponent(`Hello,
 
-      filteredData = rawData.filter(row=>{
-        const d = row._parsedDate;
-        const user = (row['User']||'').trim();
-        const service = (row['Service']||'').trim();
-        const dateMatch = (!startDate || !d || isNaN(d)) ? true : (d >= startDate && (!endDate || d <= endDate));
-        const userMatch = selectedUsers.length===0 || selectedUsers.includes(user);
-        const serviceMatch = selectedServices.length===0 || selectedServices.includes(service);
-        return dateMatch && userMatch && serviceMatch;
-      });
+I would like to purchase "${item.title}" listed at ${new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(item.price)}.
 
-      updateDashboard(filteredData);
-      if(filteredData.length===0) alert("No results found with the selected filters.");
-      persistSelections();
-    }
+Please let me know the next steps.
 
-    function clearFilters(){
-      els.filterType.value = '';
-      toggleDateInputs();
-      els.startDate.value = ''; els.endDate.value = '';
-      els.monthDropdown.selectedIndex = 0; els.monthYearDropdown.selectedIndex = 0;
-      els.quarterSelect.value = 'Q1'; els.quarterYear.value = '';
-      if(userChoices) userChoices.removeActiveItems();
-      if(serviceChoices) serviceChoices.removeActiveItems();
-      filteredData = rawData.slice();
-      updateDashboard(filteredData);
-      persistSelections();
-    }
+Thank you!`);
+    $btnBuy.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
+    $btnBuy.textContent = 'Purchase';
+    $btnBuy.style.display = '';
+  } else if (String(item.price).toLowerCase() === 'sold') {
+    // 👉 explicitly show SOLD and hide the purchase button
+    $price.textContent = 'SOLD';
+    $price.style.display = '';
+    $btnBuy.style.display = 'none';
+  } else {
+    // non-numeric, not 'sold' → generic inquire
+    $price.style.display = 'none';
+    $btnBuy.textContent = 'Inquire';
+    $btnBuy.href = document.querySelector('#contact a[href^="mailto:"]')?.getAttribute('href') || '#';
+    $btnBuy.style.display = '';
+  }
 
-    els.filterType.addEventListener('change', toggleDateInputs);
-    els.btnApply.addEventListener('click', applyFilters);
-    els.btnClear.addEventListener('click', clearFilters);
-    els.btnExportCsv.addEventListener('click', exportToCSV);
-    els.btnExportXlsx.addEventListener('click', exportToExcel);
+  $meta.textContent = `ID: ${item.id} • One of One`;
+  $lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  [i-1, i+1].forEach(idx=>{ if(ARTWORKS[idx]){ const p = new Image(); p.src = ARTWORKS[idx].file; }});
+}
 
-    // Formatting + latest date helpers
-    function formatDateShort(d) {
-      return (d instanceof Date && !isNaN(d))
-        ? d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
-        : '—';
-    }
-    function mostRecentInteractionDate(data) {
-      const today = new Date();
-      today.setHours(23, 59, 59, 999);          // end of today (local time)
-      const MIN_YEAR = 1990;                    // sanity floor (adjust if needed)
-      const MAX_YEAR = today.getFullYear() + 1; // ignore far-future typos like 3023
+  // Tilt effect
+  const tilt = tile.querySelector('.tilt');
+  tile.addEventListener('mousemove', (e) => {
+    const r = tile.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - .5;
+    const y = (e.clientY - r.top) / r.height - .5;
+    tilt.style.transform = `rotateX(${(-y*8).toFixed(2)}deg) rotateY(${(x*10).toFixed(2)}deg)`;
+  });
+  tile.addEventListener('mouseleave', ()=>{ tilt.style.transform = 'rotateX(0) rotateY(0)'; });
 
-      let bestPast = null;  // newest date <= today
-      let bestAny  = null;  // fallback: newest date overall
+  tile.addEventListener('click', ()=> openLightbox(index));
+  return tile;
+}
 
-      for (const row of (data || [])) {
-        const d = row._parsedDate;
-        if (!(d instanceof Date) || isNaN(d)) continue;
-
-        const y = d.getFullYear();
-        if (y < MIN_YEAR || y > MAX_YEAR) continue; // drop unrealistic years
-
-        if (!bestAny || d > bestAny) bestAny = d;   // track absolute max
-        if (d <= today && (!bestPast || d > bestPast)) bestPast = d; // track latest in the past
-      }
-      return bestPast || bestAny || null;  // prefer past; fallback to absolute max if all are future
-    }
-
-    /* ===== Dashboard ===== */
-    function updateDashboard(data){
-      const uniqueCases=new Set(), serviceCount=new Map(), userCount=new Map();
-      for(const row of data){
-        const cn=(row['Case number']||'').toString().trim();
-        const sv=(row['Service']||'').toString().trim();
-        const us=(row['User']||'').toString().trim();
-        if(cn) uniqueCases.add(cn);
-        if(sv) serviceCount.set(sv,(serviceCount.get(sv)||0)+1);
-        if(us) userCount.set(us,(userCount.get(us)||0)+1);
-      }
-      els.uniqueCases.textContent = uniqueCases.size.toLocaleString();
-      els.totalServices.textContent = data.length.toLocaleString();
-
-      const sortedServices = [...serviceCount.entries()].sort((a,b)=>b[1]-a[1]);
-      els.serviceList.innerHTML='';
-      sortedServices.slice(0,5).forEach(([n,c])=>{
-        const li=document.createElement('li'); li.textContent=`${n} (${c.toLocaleString()})`; els.serviceList.appendChild(li);
-      });
-
-      drawServiceChart(sortedServices);
-
-      // Most recent Interaction date (from column "Interaction date")
-      const latest = mostRecentInteractionDate(data);
-      document.getElementById('mostRecentInteraction').textContent = formatDateShort(latest);
-
-      const sortedUsers = [...userCount.entries()].sort((a,b)=>b[1]-a[1]);
-      els.userRankingList.innerHTML='';
-      sortedUsers.forEach(([u,c],i)=>{
-        const li=document.createElement('li');
-        li.innerHTML=`<span>${i+1}. ${u || '<span class="muted">Unknown</span>'}</span><span class="muted">${c.toLocaleString()}</span>`;
-        els.userRankingList.appendChild(li);
-      });
-    }
-
-    function drawServiceChart(services){
-      if(chartInstance){ chartInstance.destroy(); chartInstance=null; }
-      const labels = services.map(([k])=>k);
-      const values = services.map(([,v])=>v);
-      if(values.length===0){ els.chartEmpty.hidden=false; return; }
-      els.chartEmpty.hidden=true;
-      chartInstance = new Chart(els.serviceChart.getContext('2d'),{
-        type:'bar',
-        data:{ labels, datasets:[{ label:'Service frequency', data:values, borderWidth:1.5,
-          backgroundColor: values.map(()=> 'rgba(35,201,185,0.28)'),
-          borderColor: values.map(()=> 'rgba(35,201,185,0.9)'),
-          maxBarThickness:40 }]},
-        options:{ responsive:true, maintainAspectRatio:false, animation:{duration:600,easing:'easeOutQuart'},
-          plugins:{ legend:{display:false} },
-          scales:{ x:{ticks:{autoSkip:true,maxRotation:0},grid:{color:'rgba(255,255,255,0.05)'}},
-                   y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'}} } }
-      });
-    }
-
-    /* ===== Export ===== */
-    function exportToCSV(){
-      if(!filteredData.length){ alert('No data to export.'); return; }
-      const headers = Object.keys(filteredData[0]).filter(k=>k!=='_parsedDate');
-      const rows = filteredData.map(r=> headers.map(k=>`"${(r[k]??'').toString().replace(/"/g,'""')}"`).join(','));
-      const csv = [headers.join(','), ...rows].join('\n');
-      const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
-      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='filtered_data.csv';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    }
-    function exportToExcel(){
-      if(!filteredData.length){ alert('No data to export.'); return; }
-      const exportData = filteredData.map(({_parsedDate,...rest})=> rest);
-      const ws=XLSX.utils.json_to_sheet(exportData), wb=XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Filtered Data'); XLSX.writeFile(wb, 'filtered_data.xlsx');
-    }
-
-    /* ===== Init ===== */
-    els.filterType.value = '';
-    toggleDateInputs();
-
-    /* ===== Quick Links toggle (floating) ===== */
-    (function(){
-      const root = document.getElementById('quicklinks');
-      const btn  = document.getElementById('qlToggle');
-      const panel= document.getElementById('qlPanel');
-
-      if(!root || !btn || !panel) return;
-
-      function open(){ root.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
-      function close(){ root.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
-
-      btn.addEventListener('click', () => {
-        if(root.classList.contains('open')) close(); else open();
-      });
-
-      // Close on outside click
-      document.addEventListener('click', (e)=>{
-        if(!root.contains(e.target)) close();
-      });
-
-      // Close on Escape
-      document.addEventListener('keydown', (e)=>{
-        if(e.key === 'Escape') close();
-      });
-
-      // Close after navigating
-      panel.querySelectorAll('a').forEach(a=>{
-        a.addEventListener('click', () => close());
-      });
-    })();
   </script>
 </body>
 </html>
