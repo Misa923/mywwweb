@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Client Hub — Doula Care</title>
+  <meta name="description" content="Client Hub — Doula Care" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body id="top">
+
+<header>
+  <div class="container nav">
+    <a class="brand" href="index.html">
+      <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 5h-2v6l5 3 .9-1.45-3.9-2.3V7z"/></svg></span>
+      <span>Doula Care</span>
+    </a>
+    <button class="btn menu" aria-expanded="false" aria-controls="menu">Menu</button>
+    <nav aria-label="Primary">
+      <ul id="menu">
+        <li><a href="index.html">Home</a></li>
+<li><a href="about.html">About Me</a></li>
+<li><a href="services.html">Services</a></li>
+<li><a href="testimonials.html">Testimonials</a></li>
+<li><a href="faq.html">FAQ</a></li>
+<li><a href="hub.html">Client Hub</a></li>
+<li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn" href="contact.html">Ask a question</a>
+      <a class="btn primary" href="contact.html">Schedule a free call</a>
+    </div>
+  </div>
+</header>
+
+  <main>
+    <section>
+      <div class="container" style="max-width:var(--maxw-narrow)">
+        <h1 class="title center">Client Hub</h1>
+        <p class="subtitle center">This area is typically password‑protected on the reference site. A real lock requires a backend; below is a lightweight demo gate.</p>
+        <form id="hubGate" class="card" style="padding:1rem 1.25rem">
+          <div class="field"><label for="hubPass">Password</label><input id="hubPass" type="password" autocomplete="current-password" required></div>
+          <button class="btn" type="submit">Enter</button>
+          <p id="hubNote" class="subtitle"></p>
+        </form>
+        <div id="hubContent" class="card" style="display:none">
+          <h3>Welcome!</h3>
+          <p>Here you could link prenatal yoga videos, checklists, and partner guides.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+<footer>
+  <div class="container" style="display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between">
+    <small>© <span id="year"></span>  c23m9</small>
+    <div style="display:flex;gap:.5rem;align-items:center">
+      <a class="btn" href="#top">Back to top</a>
+    </div>
+  </div>
+</footer>
+<script src="assets/main.js"></script>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+</body>
+</html>
