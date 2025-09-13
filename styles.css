@@ -269,3 +269,5 @@ footer a.pill:hover { background: var(--bg-elev); }
 .badge-row .pill { user-select: none; }
 .section-block.full { padding-top: 2.2rem; }
 pre code { font-family: var(--font-mono); }
+
+

@@ -8,23 +8,22 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --tile-size: 200px; /* requested size */
-      --radius: 360px;    /* 3D orbit radius */
+      --tile-size: 200px;
+      --radius: 360px;
       --bg-1: #06080f;
       --bg-2: #0b0f21;
-      --accent: #9ef9f3;   /* aqua */
-      --accent-2: #ff7dea; /* magenta */
-      --accent-3: #77ff88; /* lime */
+      --accent: #9ef9f3;
+      --accent-2: #ff7dea;
+      --accent-3: #77ff88;
       --txt: #f1f5ff;
       --muted: #a6b0c9;
-      --glass-1: rgba(255,255,255,.06);
-      --glass-2: rgba(255,255,255,.12);
       --shadow: 0 20px 60px rgba(0,0,0,.45), 0 2px 10px rgba(0,0,0,.3);
     }
 
-    html,body{height:100%}
+    html, body { height: 100%; }
     body{
       margin:0; color:var(--txt);
       font-family:"Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans";
@@ -42,30 +41,18 @@
     .nav{position:sticky; top:0; z-index:100; background:rgba(5,7,16,.6); backdrop-filter: blur(8px); border-bottom:1px solid rgba(255,255,255,.08)}
     .nav-inner{display:flex; align-items:center; gap:16px; padding:12px 18px;}
     .logo{font-family:"Space Grotesk", system-ui; font-weight:700; letter-spacing:.02em}
-    .pill{margin-left:auto; padding:6px 12px; border:1px solid rgba(255,255,255,.18); border-radius:999px; background:linear-gradient(120deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); font-size:.85rem}
-
     .ticker{position:relative; overflow:hidden; border-top:1px solid rgba(255,255,255,.08); border-bottom:1px solid rgba(255,255,255,.08)}
     .ticker-track{display:flex; gap:32px; padding:8px 0; white-space:nowrap; will-change: transform}
     .tag{font-family:"Space Grotesk"; letter-spacing:.1em; text-transform:uppercase; font-weight:700; font-size:.78rem; opacity:.9}
     .tag::before{content:"✦"; margin-right:10px; color:var(--accent)}
 
-    header.hero{padding: 64px 24px 32px; position: relative;}
-    .badge{
-      display:inline-flex; gap:.5rem; align-items:center; padding:8px 12px; border-radius:999px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; font-size:.72rem;
-      background: linear-gradient(120deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border:1px solid rgba(255,255,255,.12);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(6px);
-    }
-    .badge .dot{width:8px;height:8px;border-radius:50%; background:conic-gradient(from 0deg, var(--accent), var(--accent-2), var(--accent-3), var(--accent)); box-shadow:0 0 12px var(--accent-2);}
-
-    h1.title{font-family:"Space Grotesk"; font-size: clamp(2rem, 4vw + 1rem, 4.25rem); line-height:1.05; margin:.6rem 0; font-weight:700; letter-spacing:.01em;}
+    header.hero{padding: 56px 24px 28px; position: relative;}
+    h1.title{font-family:"Space Grotesk"; font-size: clamp(2rem, 4vw + 1rem, 4.25rem); line-height:1.05; margin:.6rem 0; font-weight:700; letter-spacing:.01em; text-align:center;}
     .title .fx{background: linear-gradient(100deg, var(--accent), var(--accent-2) 45%, var(--accent-3)); -webkit-background-clip:text; background-clip:text; color:transparent; filter: drop-shadow(0 8px 24px rgba(158,249,243,.15));}
-    .subt{text-align:center; color:rgb(194, 194, 43);}
-    
+    .subt{text-align:center; color:rgb(194, 194, 43); margin:0 24px;}
 
     /* 3D Orbit Showcase */
-    .orbit-wrap{ perspective: 1600px; margin: 18px auto 40px; max-width: 1200px; }
+    .orbit-wrap{ perspective: 1600px; margin: 18px auto 40px; max-width: 1200px; position:relative; }
     .orbit-scene{ position:relative; height: 380px; transform-style: preserve-3d; border-radius: 22px; overflow:hidden; background: radial-gradient(700px 320px at 20% 0%, rgba(158,249,243,.08), transparent 40%), radial-gradient(700px 320px at 80% 100%, rgba(255,125,234,.08), transparent 40%); border:1px solid rgba(255,255,255,.12); box-shadow: var(--shadow); backdrop-filter: blur(6px); }
     .orbit{ position:absolute; inset:0; transform-style: preserve-3d; }
     .orbit-item{ position:absolute; top:50%; left:50%; width: 200px; height: 200px; transform-style: preserve-3d; translate: -50% -50%; }
@@ -74,33 +61,26 @@
 
     /* Main gallery frame */
     .frame{ position:relative; margin: 24px auto 0; max-width: 1200px; padding: 18px; border-radius: 24px; background: linear-gradient(115deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.16); box-shadow: var(--shadow); backdrop-filter: blur(8px); }
-
     .gallery{display:grid; grid-template-columns:repeat(auto-fit, minmax(var(--tile-size), 1fr)); gap:18px; align-items:start}
-
     .tile{ position:relative; width:100%; height: var(--tile-size); aspect-ratio: 1/1; perspective: 800px; transform-style: preserve-3d; isolation:isolate;}
     .tile .tilt{ position:absolute; inset:0; border-radius: 18px; overflow:hidden; transform: translateZ(0); background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015)); border: 1px solid rgba(255,255,255,.12); box-shadow: var(--shadow); transition: transform .18s ease, box-shadow .3s ease, border-color .3s ease; }
     .tile:hover .tilt{ box-shadow: 0 30px 90px rgba(0,0,0,.6), 0 8px 20px rgba(0,0,0,.4); border-color: rgba(255,255,255,.28) }
-    .title {
-      text-align: center;}
-    /* holographic border */
     .tile .tilt::before{ content:""; position:absolute; inset:-1px; border-radius: 18px; z-index:2; pointer-events:none; background: conic-gradient(from 180deg at 50% 50%, rgba(255,255,255,.0), rgba(158,249,243,.35), rgba(255,125,234,.40), rgba(119,255,136,.35), rgba(255,255,255,.0)); mask: linear-gradient(#000, #000) content-box, linear-gradient(#000,#000); -webkit-mask-composite: xor; mask-composite: exclude; padding:1px; opacity:.85; filter: blur(.45px); }
     .tile .tilt::after{ content:""; position:absolute; inset:0; background: radial-gradient(600px 300px at 20% 0%, rgba(158,249,243,.10), transparent 40%), radial-gradient(500px 300px at 80% 100%, rgba(255,125,234,.10), transparent 40%); opacity:.5; z-index:1; }
-
-    /* Ensure FULL artwork content in tiles (no cropping) */
     .media{ position:absolute; inset:8px; display:grid; place-items:center; }
     .media img{ width:100%; height:100%; object-fit: contain; object-position:center; background: rgba(255,255,255,.02); border-radius: 12px; }
 
     .chip{position:absolute; right:10px; top:10px; z-index:5; font-size:.72rem; padding:6px 10px; border-radius:999px; letter-spacing:.06em; text-transform:uppercase; font-weight:700; color:var(--txt); background: linear-gradient(135deg, rgba(255,255,255,.09), rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.16); backdrop-filter: blur(6px); box-shadow: 0 4px 14px rgba(0,0,0,.35), inset 0 0 24px rgba(158,249,243,.18); }
+    .chip.sold{ background: linear-gradient(135deg, rgba(255,0,77,.35), rgba(255,255,255,.08)); border-color: rgba(255,0,77,.45); box-shadow: 0 4px 14px rgba(255,0,77,.35), inset 0 0 24px rgba(255,0,77,.22); letter-spacing:.12em; }
+    .tile.is-sold .media img{ filter: grayscale(100%) contrast(95%) opacity(.85); }
 
-    /* Lightbox — two‑panel layout (image at left, details at right) */
+    /* Lightbox (image left, details right) */
     .lightbox{ position: fixed; inset:0; display:none; place-items:center; background: radial-gradient(1200px 800px at 50% 50%, rgba(13,16,34,.85), rgba(6,8,18,.94)); z-index:1000; }
     .lightbox.open{ display:grid; }
     .lightbox .viewport{ position:relative; width:min(94vw, 1400px); height:min(90vh, 920px); border-radius:20px; overflow:hidden; border:1px solid rgba(255,255,255,.16); background: rgba(0,0,0,.32); box-shadow: var(--shadow); backdrop-filter: blur(8px); }
-
     .lb-layout{ position:absolute; inset:0; display:grid; grid-template-columns: 1fr minmax(300px, 36%); }
     .lb-media{ position:relative; background: radial-gradient(700px 320px at 15% 0%, rgba(158,249,243,.08), transparent 40%), radial-gradient(700px 320px at 85% 100%, rgba(255,125,234,.08), transparent 40%); }
     .lb-media img{ position:absolute; inset:0; width:100%; height:100%; object-fit: contain; object-position:center; }
-
     .lb-panel{ position:relative; display:flex; flex-direction:column; gap:14px; padding:24px; border-left:1px solid rgba(255,255,255,.14); background: linear-gradient(180deg, rgba(8,10,22,.45), rgba(8,10,22,.75)); }
     .lb-title{ margin:0; font-family:"Space Grotesk"; font-size:1.25rem; letter-spacing:.02em }
     .lb-price{ font-weight:800; font-size:1.1rem; background: linear-gradient(100deg, var(--accent), var(--accent-2) 45%, var(--accent-3)); -webkit-background-clip:text; background-clip:text; color:transparent; }
@@ -109,9 +89,7 @@
     .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.10); color:var(--txt); text-decoration:none; cursor:pointer; box-shadow: var(--shadow); }
     .btn:hover{ background: rgba(255,255,255,.16) }
     .btn.primary{ background: linear-gradient(135deg, rgba(158,249,243,.25), rgba(255,125,234,.25)); border-color: rgba(255,255,255,.22); font-weight:700 }
-
     .lb-meta{ margin-top:auto; font-size:.9rem; color:var(--muted); opacity:.9 }
-
     .lb-btn{ position:absolute; top:10px; width:42px; height:42px; display:grid; place-items:center; border-radius:12px; border:1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.10); backdrop-filter: blur(8px); cursor:pointer; box-shadow: var(--shadow); z-index:50; pointer-events:auto; }
     .lb-btn:hover{ background: rgba(255,255,255,.16) }
     .btn-close{ right:10px }
@@ -119,45 +97,12 @@
     .btn-next{ right:10px; top: calc(50% - 21px) }
     .lb-btn svg{ width:20px; height:20px; fill:none; stroke:#fff; stroke-width:2;}
 
-    .starts {
-  display: none;
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  animation: sparkle 1.5s infinite;
-}
-
-.contact {
-  position: relative;
-  padding: 12px 24px;
-  background: linear-gradient(to right, #ff6ec4, #7873f5);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.contact:hover .starts {
-  display: block;
-  filter: drop-shadow(0 0 10px #fffdef);
-}
-
-@keyframes sparkle {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.5); opacity: 0.5; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-#store {
-  text-align: center;
-  color:#e5e8f0
-}
     /* Contact */
+    #store { text-align:center; color:#e5e8f0; }
     section#contact{ max-width: 1100px; margin: 56px auto; padding: 0 24px; }
     section#contact .card{ margin-top:16px; padding: 22px; border-radius:16px; border:1px solid rgba(255,255,255,.16); background: linear-gradient(120deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); backdrop-filter: blur(8px); box-shadow: var(--shadow); }
     section#contact a{ color: var(--accent); text-decoration: none; }
     section#contact a:hover{ text-decoration: underline; }
-
     footer{ color: var(--muted); text-align:center; padding:40px 20px; }
 
     /* Responsiveness */
@@ -171,27 +116,69 @@
       .tile .tilt, .tile img, .orbit, .ticker-track{ transition:none; animation:none }
     }
 
-    .chip.sold{
-  background: linear-gradient(135deg, rgba(255,0,77,.35), rgba(255,255,255,.08));
-  border-color: rgba(255,0,77,.45);
-  box-shadow: 0 4px 14px rgba(255,0,77,.35), inset 0 0 24px rgba(255,0,77,.22);
-  letter-spacing:.12em;
-}
+    /* =========================
+       ALIEN "COLOR SPREAD" LOADER
+       ========================= */
+    .alien-loader{
+      position:fixed; inset:0; z-index:2000;
+      display:grid; place-items:center; overflow:hidden;
+      background: radial-gradient(circle at 50% 50%, #060815, #090a18 80%);
+      opacity:1; visibility:visible; transition: opacity .6s ease, visibility .6s step-end;
+    }
+    .alien-loader.is-done{ opacity:0; visibility:hidden; }
 
-.tile.is-sold .media img{
-  filter: grayscale(100%) contrast(95%) opacity(.85);
-}
-
+    .alien-loader .blob{
+      position:absolute; width:140vmax; height:140vmax;
+      top:50%; left:50%; transform: translate(-50%,-50%);
+      border-radius: 42% 58% 40% 60% / 58% 42% 60% 40%;
+      filter: blur(72px) saturate(160%);
+      mix-blend-mode: screen;
+      pointer-events:none;
+      animation: drift 16s ease-in-out infinite alternate;
+    }
+    .alien-loader .blob.bl1{
+      background: radial-gradient(closest-side, rgba(0,255,200,.35), rgba(0,0,0,0) 70%),
+                  conic-gradient(from 0deg, rgba(0,255,200,.22), rgba(120,0,255,.32), rgba(0,200,255,.28), rgba(0,255,200,.22));
+      animation-duration: 18s;
+    }
+    .alien-loader .blob.bl2{
+      background: radial-gradient(closest-side, rgba(255,0,180,.35), rgba(0,0,0,0) 70%),
+                  conic-gradient(from 160deg, rgba(255,0,180,.28), rgba(0,255,160,.30), rgba(0,200,255,.28), rgba(255,200,0,.25));
+      animation-duration: 22s; animation-direction: reverse;
+    }
+    .alien-loader .blob.bl3{
+      background: radial-gradient(closest-side, rgba(255,200,0,.28), rgba(0,0,0,0) 70%),
+                  conic-gradient(from 80deg, rgba(255,200,0,.22), rgba(0,255,240,.30), rgba(120,0,255,.28), rgba(255,0,180,.26));
+      animation-duration: 26s;
+    }
+    .alien-loader .caption{
+      position:relative; z-index:5; color:#fff; font-family:"Space Grotesk", system-ui; font-weight:700;
+      text-shadow: 0 0 18px rgba(0,255,255,.6); letter-spacing:.02em;
+      animation: pulse 2.2s ease-in-out infinite;
+    }
+    @keyframes drift{
+      0%{ transform: translate(-52%,-51%) scale(1) rotate(0deg); }
+      100%{ transform: translate(-48%,-49%) scale(1.15) rotate(180deg); }
+    }
+    @keyframes pulse{ 0%,100%{opacity:1; transform:scale(1)} 50%{opacity:.7; transform:scale(1.05)} }
 
   </style>
 </head>
 <body>
   <div class="noise" aria-hidden="true"></div>
 
+  <!-- ALIEN LOADER OVERLAY -->
+  <div id="alienLoader" class="alien-loader" aria-live="polite" role="status">
+    <div class="blob bl1"></div>
+    <div class="blob bl2"></div>
+    <div class="blob bl3"></div>
+    <div class="caption">Preparing the Mayan Pigments…</div>
+  </div>
+
   <nav class="nav">
     <div class="nav-inner">
       <div class="logo">Mayan Watercolor Art</div>
-      <div button="bhome" style="margin-left:auto; color:var(--muted); font-size:.9rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase; cursor:pointer;" onclick="location.href='/index.html'">Back to Home</div>
+      <div style="margin-left:auto; color:var(--muted); font-size:.9rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase; cursor:pointer;" onclick="location.href='/index.html'">Back to Home</div>
     </div>
     <div class="ticker" aria-hidden="true">
       <div class="ticker-track" id="tickerTrack">
@@ -202,16 +189,13 @@
         <span class="tag">Butterfly Dream</span>
         <span class="tag">Guardians</span>
         <span class="tag">Tradition × Future</span>
-        <span class="tag">Hand‑Painted</span>
+        <span class="tag">Hand-Painted</span>
       </div>
     </div>
   </nav>
 
   <header class="hero" role="banner">
-    <div> 
-    <a href="#contact" class="contact">Contact Artist<span class='starts'>✨✨✨✨✨✨✨</span></a>
-    <h1 class="title"><span class="fx" position="center">A Watercolor Journey</span></h1>
-    <!--  <h2 class="title"><span class="fx">A Living Mosaic of Color</span></h2>-->
+    <h1 class="title"><span class="fx">A Watercolor Journey</span></h1>
     <p class="subt">100% watercolor base paintings, a mosaic honoring all the remarkable Mayan artists.</p>
   </header>
 
@@ -221,6 +205,7 @@
       <div class="orbit" id="orbit"></div>
     </div>
   </section>
+
   <h2 id="store">Store</h2>
   <main class="frame" id="main" role="main">
     <div class="gallery" id="gallery" aria-label="Artwork gallery, 200 by 200 pixel mosaic"></div>
@@ -263,7 +248,7 @@
       <p><strong>Name:</strong> <span id="artistName">Misael Ramirez</span></p>
       <p><strong>Email:</strong> <a href="mailto:artist@example.com">misa@c23m9.com</a></p>
       <p><strong>Instagram:</strong> <a id="instaLink" href="https://instagram.com/misa_c23m9" target="_blank" rel="noopener">@WatercolorsByMisa</a></p>
-      <p><strong>Commission inquiries:</strong> Hand‑painted originals and limited prints available upon request.</p>
+      <p><strong>Commission inquiries:</strong> Hand-painted originals and limited prints available upon request.</p>
     </div>
   </section>
 
@@ -272,19 +257,26 @@
   </footer>
 
   <script>
-    // ---------- Data (update filenames & prices as needed) ----------
+    // ---------- Data ----------
     const ARTWORKS = [
-      { id: 'Butterfly', title: 'Butterfly', file: 'images/Butterfly.jpg', price: 'sold', desc: 'Delicate wings and sacred geometry—watercolor layers shimmering like dawn over the highlands.' },
-      { id: 'Ix',        title: 'Ix',        file: 'images/Ix.jpg',        price: 2800, desc: 'Ix (jaguar) as guardian—brushwork echoes ancient glyphs and the rhythm of the forest.' },
-      { id: 'Master',    title: 'Master',    file: 'images/Master.jpg',    price: 2200, desc: 'Portrait of mastery—quiet strength rendered in translucent washes and woven motifs.' },
-      { id: 'Protector', title: 'Protector', file: 'images/Protector.jpg', price: 2900, desc: 'A sentinel in color—the protector’s gaze, vivid as volcanic soil after rain.' },
-      { id: 'Remeros', title: 'Remeros', file: 'images/Remeros.jpg', price: 'sold', desc: 'Inspired by the Maya creation story, this piece captures the sacred journey of life emerging from the underworld.  The canoe drifts through shadowed waters, carried by unseen forces, as it ferries corn seeds destined to nourish the Earth. Surrounding it are animal spirits. Their presence evokes the Popol Vuh’s mythic voyage, where creation is not a single act, but a sacred passage through darkness, guided by nature and encoded in bone.' },
-      { id: 'Yellow Submarine', title: 'Yellow Submarine', file: 'images/Yellow.jpg', price: 4900, desc: 'A tribute to the power of family unity—father, mother, and child—captured through three luminous watercolor drops. Each drop symbolizes a soul bound by love, resilience, and shared memory. The yellow submarine echoes a beloved song that once united the artist and their family in laughter and harmony. The painting blends Mayan energy with personal nostalgia, creating a mosaic of warmth, loyalty, and the invisible threads that hold us together.' },
-      { id: 'Brothers', title: 'Brothers', file: 'images/Brothers.jpg', price: 'sold', desc: '"It represents loyalty and team power, blending Mayan energy with vibrant symbolism. Each brushstroke channels the spirit of unity—warriors, artisans, and celestial guides moving in harmony. The composition radiates strength through interwoven patterns and sacred geometry, echoing the rhythm of ancient rituals. With deep ochres and luminous blues, the painting honors collective resilience and the timeless bond between purpose and people.' }
+      { id:'Butterfly', title:'Butterfly', file:'images/Butterfly.jpg', price:'sold', desc:'Delicate wings and sacred geometry—watercolor layers shimmering like dawn over the highlands.' },
+      { id:'Ix',        title:'Ix',        file:'images/Ix.jpg',        price:2800, desc:'Ix (jaguar) as guardian—brushwork echoes ancient glyphs and the rhythm of the forest.' },
+      { id:'Master',    title:'Master',    file:'images/Master.jpg',    price:2200, desc:'Portrait of mastery—quiet strength rendered in translucent washes and woven motifs.' },
+      { id:'Protector', title:'Protector', file:'images/Protector.jpg', price:2900, desc:'A sentinel in color—the protector’s gaze, vivid as volcanic soil after rain.' },
+      { id:'Remeros',   title:'Remeros',   file:'images/Remeros.jpg',   price:'sold', desc:'Inspired by the Maya creation story, a sacred journey through shadowed waters.' },
+      { id:'Yellow Submarine', title:'Yellow Submarine', file:'images/Yellow.jpg', price:4900, desc:'A tribute to family unity—three luminous drops bound by love and memory.' },
+      { id:'Brothers',  title:'Brothers',  file:'images/Brothers.jpg',  price:'sold', desc:'Team power and loyalty—vibrant symbolism and interwoven patterns.' },
+      { id:'Calendar',  title:'Calendar',  file:'images/Calendar.jpg',  price:'sold', desc:'Interlocking cycles reflecting astronomy and spirituality.' },
+      { id:'Grandma',   title:'Grandma',   file:'images/Grandma.jpg',   price:1900, desc:'Abuela’s wisdom—warmth, guidance, and deep cultural memory.' },
+      { id:'Mother',    title:'Mother',    file:'images/Mother.jpg',    price:'sold', desc:'Devotion, stability, and encouragement—love rendered in watercolor.' },
+      { id:'Silence',   title:'Silence',   file:'images/Silence.png',   price:'sold', desc:'Quiet traditions balancing modern influences and family expectations.' },
+      { id:'Valentines',title:'Valentines',file:'images/Valentines.jpg',price:'sold', desc:'Celebration of love and the connections that make life meaningful.' }
     ];
 
-    // ---------- Build Mosaic ----------
+    // ---------- Elements ----------
     const $gallery = document.getElementById('gallery');
+    const $orbit = document.getElementById('orbit');
+
     const $lb = document.getElementById('lightbox');
     const $img = document.getElementById('lightboxImg');
     const $title = document.getElementById('artTitle');
@@ -297,8 +289,9 @@
     const $btnNext = document.getElementById('btnNext');
     const $btnClose = document.getElementById('btnClose');
 
-    let currentIndex = 0;
+    document.getElementById('year').textContent = new Date().getFullYear();
 
+    // ---------- Build Tiles ----------
     function createTile(item, index){
       const tile = document.createElement('button');
       tile.className = 'tile';
@@ -308,8 +301,12 @@
           <span class="chip">Art · ${String(index+1).padStart(2,'0')}</span>
           <div class="media"><img src="${item.file}" alt="${item.title}" loading="lazy" /></div>
         </div>`;
-
-      // Tilt effect
+      const chip = tile.querySelector('.chip');
+      if (String(item.price).toLowerCase() === 'sold') {
+        chip.textContent = 'SOLD';
+        chip.classList.add('sold');
+        tile.classList.add('is-sold');
+      }
       const tilt = tile.querySelector('.tilt');
       tile.addEventListener('mousemove', (e) => {
         const r = tile.getBoundingClientRect();
@@ -318,7 +315,6 @@
         tilt.style.transform = `rotateX(${(-y*8).toFixed(2)}deg) rotateY(${(x*10).toFixed(2)}deg)`;
       });
       tile.addEventListener('mouseleave', ()=>{ tilt.style.transform = 'rotateX(0) rotateY(0)'; });
-
       tile.addEventListener('click', ()=> openLightbox(index));
       return tile;
     }
@@ -326,6 +322,7 @@
     ARTWORKS.forEach((item, i)=> $gallery.appendChild(createTile(item, i)));
 
     // ---------- Lightbox ----------
+    let currentIndex = 0;
     function openLightbox(i){
       currentIndex = i;
       const item = ARTWORKS[i];
@@ -333,15 +330,15 @@
       $img.alt = item.title;
       $title.textContent = item.title;
       $desc.textContent = item.desc;
-      if(typeof item.price === 'number'){
+
+      if (typeof item.price === 'number'){
         $price.textContent = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'}).format(item.price);
         $price.style.display = '';
-        // Build a mailto Purchase link using contact email on page
         const contactEmail = (document.querySelector('#contact a[href^="mailto:"]')?.getAttribute('href')||'mailto:artist@example.com').replace('mailto:','');
         const subject = encodeURIComponent(`Purchase inquiry: ${item.title}`);
         const body = encodeURIComponent(`Hello,
 
-I would like to purchase \"${item.title}\" listed at ${new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(item.price)}.
+I would like to purchase "${item.title}" listed at ${new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(item.price)}.
 
 Please let me know the next steps.
 
@@ -349,12 +346,17 @@ Thank you!`);
         $btnBuy.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
         $btnBuy.textContent = 'Purchase';
         $btnBuy.style.display = '';
+      } else if (String(item.price).toLowerCase() === 'sold') {
+        $price.textContent = 'SOLD';
+        $price.style.display = '';
+        $btnBuy.style.display = 'none';
       } else {
         $price.style.display = 'none';
         $btnBuy.textContent = 'Inquire';
         $btnBuy.href = document.querySelector('#contact a[href^="mailto:"]')?.getAttribute('href') || '#';
         $btnBuy.style.display = '';
       }
+
       $meta.textContent = `ID: ${item.id} • One of One`;
       $lb.classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -368,22 +370,9 @@ Thank you!`);
     $lb.addEventListener('click', (e)=>{ if(e.target === $lb) closeLightbox(); });
     window.addEventListener('keydown', (e)=>{ if(!$lb.classList.contains('open')) return; if(e.key === 'Escape') closeLightbox(); if(e.key === 'ArrowLeft') nav(-1); if(e.key === 'ArrowRight') nav(1); });
 
-    // Share button copies a prefilled message
-    $btnShare.addEventListener('click', async ()=>{
-      const item = ARTWORKS[currentIndex];
-      const price = typeof item.price==='number' ? new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(item.price) : '';
-      const text = `Mayan Watercolor — ${item.title} ${price ? `(${price})` : ''}`.trim();
-      try{
-        if(navigator.share){ await navigator.share({title:item.title, text, url:location.href}); }
-        else { await navigator.clipboard.writeText(`${text} — ${location.href}`); alert('Share link copied to clipboard'); }
-      }catch(_){ /* user cancelled */ }
-    });
-
     // ---------- 3D Orbit ----------
-    const $orbit = document.getElementById('orbit');
     const radius = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--radius')) || 360;
     const count = ARTWORKS.length;
-
     ARTWORKS.forEach((item, i)=>{
       const angle = (360 / count) * i;
       const node = document.createElement('div');
@@ -393,100 +382,43 @@ Thank you!`);
       node.addEventListener('click', ()=> openLightbox(i));
       $orbit.appendChild(node);
     });
-
-    let rotY = 0; let vx = 0.02; // base angular velocity
-    let rafId = null;
-    function tick(){ rotY += vx; $orbit.style.transform = `translateZ(-200px) rotateX(-8deg) rotateY(${rotY}deg)`; rafId = requestAnimationFrame(tick); }
-    tick();
-
+    let rotY = 0; let vx = 0.02;
+    (function tick(){ rotY += vx; $orbit.style.transform = `translateZ(-200px) rotateX(-8deg) rotateY(${rotY}deg)`; requestAnimationFrame(tick); })();
     // Drag to spin
     let dragging = false; let lastX = 0;
     $orbit.parentElement.addEventListener('pointerdown', (e)=>{ dragging = true; lastX = e.clientX; $orbit.parentElement.setPointerCapture(e.pointerId); });
     window.addEventListener('pointermove', (e)=>{ if(!dragging) return; const dx = e.clientX - lastX; lastX = e.clientX; rotY += dx * 0.25; vx = dx * 0.02; });
     window.addEventListener('pointerup', ()=>{ dragging = false; vx *= 0.96; });
 
-    // ---------- Ticker (infinite scroll) ----------
+    // ---------- Ticker ----------
     const track = document.getElementById('tickerTrack');
-    let t = 0; function moveTicker(){ t -= 0.6; track.style.transform = `translateX(${t}px)`; if(Math.abs(t) > track.scrollWidth/2){ t = 0; } requestAnimationFrame(moveTicker); } moveTicker();
+    let t = 0; (function moveTicker(){ t -= 0.6; track.style.transform = `translateX(${t}px)`; if(Math.abs(t) > track.scrollWidth/2){ t = 0; } requestAnimationFrame(moveTicker); })();
 
-    // Footer year
-    document.getElementById('year').textContent = new Date().getFullYear();
+    // ---------- FUTURISTIC LOADER CONTROL ----------
+    const loader = document.getElementById('alienLoader');
+    let loaderDone = false;
+    function hideLoader(){
+      if (loaderDone) return;
+      loaderDone = true;
+      loader.classList.add('is-done');
+      setTimeout(()=> loader.remove(), 700);
+    }
+    // Preload all artwork images, but don't block longer than maxWait
+    function preloadAll(srcs){
+      return Promise.all(srcs.map(src => new Promise(resolve => {
+        const img = new Image();
+        img.onload = img.onerror = resolve; // resolve even on error so we never get stuck
+        img.src = src;
+      })));
+    }
+    const MAX_WAIT_MS = 7000;
+    Promise.race([
+      preloadAll(ARTWORKS.map(a => a.file)),
+      new Promise(r => setTimeout(r, MAX_WAIT_MS))
+    ]).then(hideLoader);
 
-    function createTile(item, index){
-  const tile = document.createElement('button');
-  tile.className = 'tile';
-  tile.setAttribute('aria-label', `${item.title}, open viewer`);
-  tile.innerHTML = `
-    <div class="tilt">
-      <span class="chip">Art · ${String(index+1).padStart(2,'0')}</span>
-      <div class="media"><img src="${item.file}" alt="${item.title}" loading="lazy" /></div>
-    </div>`;
-
-  // 👉 make chip say SOLD when price === 'sold'
-  const chip = tile.querySelector('.chip');
-  if (String(item.price).toLowerCase() === 'sold') {
-    chip.textContent = 'SOLD';
-    chip.classList.add('sold');
-    tile.classList.add('is-sold'); // (optional, for styling below)
-  }
-
-
-  function openLightbox(i){
-  currentIndex = i;
-  const item = ARTWORKS[i];
-  $img.src = item.file;
-  $img.alt = item.title;
-  $title.textContent = item.title;
-  $desc.textContent = item.desc;
-
-  if (typeof item.price === 'number'){
-    $price.textContent = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD'}).format(item.price);
-    $price.style.display = '';
-    const contactEmail = (document.querySelector('#contact a[href^="mailto:"]')?.getAttribute('href')||'mailto:artist@example.com').replace('mailto:','');
-    const subject = encodeURIComponent(`Purchase inquiry: ${item.title}`);
-    const body = encodeURIComponent(`Hello,
-
-I would like to purchase "${item.title}" listed at ${new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(item.price)}.
-
-Please let me know the next steps.
-
-Thank you!`);
-    $btnBuy.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
-    $btnBuy.textContent = 'Purchase';
-    $btnBuy.style.display = '';
-  } else if (String(item.price).toLowerCase() === 'sold') {
-    // 👉 explicitly show SOLD and hide the purchase button
-    $price.textContent = 'SOLD';
-    $price.style.display = '';
-    $btnBuy.style.display = 'none';
-  } else {
-    // non-numeric, not 'sold' → generic inquire
-    $price.style.display = 'none';
-    $btnBuy.textContent = 'Inquire';
-    $btnBuy.href = document.querySelector('#contact a[href^="mailto:"]')?.getAttribute('href') || '#';
-    $btnBuy.style.display = '';
-  }
-
-  $meta.textContent = `ID: ${item.id} • One of One`;
-  $lb.classList.add('open');
-  document.body.style.overflow = 'hidden';
-  [i-1, i+1].forEach(idx=>{ if(ARTWORKS[idx]){ const p = new Image(); p.src = ARTWORKS[idx].file; }});
-}
-
-  // Tilt effect
-  const tilt = tile.querySelector('.tilt');
-  tile.addEventListener('mousemove', (e) => {
-    const r = tile.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - .5;
-    const y = (e.clientY - r.top) / r.height - .5;
-    tilt.style.transform = `rotateX(${(-y*8).toFixed(2)}deg) rotateY(${(x*10).toFixed(2)}deg)`;
-  });
-  tile.addEventListener('mouseleave', ()=>{ tilt.style.transform = 'rotateX(0) rotateY(0)'; });
-
-  tile.addEventListener('click', ()=> openLightbox(index));
-  return tile;
-}
-
+    // Absolute fallback: when the whole page reports loaded, hide anyway
+    window.addEventListener('load', () => setTimeout(hideLoader, 400));
   </script>
 </body>
 </html>

@@ -3,89 +3,200 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Doula Care — Home</title>
-  <meta name="description" content="Doula Care — Home" />
-  <link rel="stylesheet" href="assets/styles.css" />
+  <title>Robin - DoulaCare</title>
+  <meta name="description" content="Balanced, evidence-informed doula care." />
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body id="top">
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand brand--sig" href="index.html" aria-label="Robin Doula Care">
+  <svg class="brand__mark" viewBox="0 0 24 24" aria-hidden="true">
+    <defs>
+      <linearGradient id="brandGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%"  stop-color="var(--brand-9)"/>
+        <stop offset="55%" stop-color="var(--brand-9)"/>
+        <stop offset="100%" stop-color="var(--brand-9)"/>
+      </linearGradient>
+    </defs>
+    <!-- halo -->
+    <circle cx="12" cy="12" r="9.2" fill="none" stroke="url(#brandGrad)" stroke-width="1.5"/>
+    <!-- baby dot -->
+    <circle cx="14.2" cy="10.3" r="1.6" fill="url(#brandGrad)"/>
+    <!-- cradling curve -->
+    <path d="M6.6 13.6c2.4-2.6 5.8-2.6 8.2 0 1.4 1.7 3.9 2.9 3 4.6-1.3 2.3-8.1 2.3-11.2-.2"
+          fill="none" stroke="url(#brandGrad)" stroke-width="1.6" stroke-linecap="round"/>
+  </svg>
 
-<header>
-  <div class="container nav">
-    <a class="brand" href="index.html">
-      <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 5h-2v6l5 3 .9-1.45-3.9-2.3V7z"/></svg></span>
-      <span>Doula Care</span>
-    </a>
-    <button class="btn menu" aria-expanded="false" aria-controls="menu">Menu</button>
-    <nav aria-label="Primary">
-      <ul id="menu">
-        <li><a href="index.html">Home</a></li>
-<li><a href="about.html">About Me</a></li>
-<li><a href="services.html">Services</a></li>
-<li><a href="testimonials.html">Testimonials</a></li>
-<li><a href="faq.html">FAQ</a></li>
-<li><a href="hub.html">Client Hub</a></li>
-<li><a href="contact.html">Contact</a></li>
-<li><a href='/index.html'> Home</a></li>
-      </ul>
-    </nav>
-    <div class="nav-cta">
-      
-      <a class="btn primary" href="contact.html">Schedule a free call</a>
+  <span class="brand__word" style="font-size:2rem;">Robin</span>
+  
+  <span class="brand__sub" style="font-size:1.2rem; color:rgb(76, 124, 104);">Doula Care</span>
+</a>
+      <nav>
+        <ul class="menu">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About Me</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="testimonials-faq.html">Testimonials & FAQ</a></li>
+         <li><a class="btn regular" href="#contact" style="color:rgb(241, 241, 226); font-weight:bold">Free call</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="home">
+    <!-- HERO now uses the parallax background -->
+    <section class="parallax parallax--hero" data-parallax data-speed="0.55" style="--bg: url('images/im7.jpg');">
+      <div class="container hero-grid parallax__content">
+        <div>
+          <div class="eyebrow">Balanced • Evidence informed • Compassionate</div>
+          <h1>Support through pregnancy, birth, and the fourth trimester.</h1>
+          <p class="lead">Practical guidance, comfort measures, and calm presence, tailored to your plan.</p>
+          <div class="actions">
+            <a class="btn primary" href="#services">Explore services</a>
+            <a class="btn" href="testimonials-faq.html">Read client love</a>
+          </div>
+        <!--</div>
+        <aside class="hero-card" aria-hidden="true">
+          <div class="card-sheen"></div>
+        </aside>
+      </div>-->
+    </section>
+
+   <!-- About (PARALLAX) -->
+
+
+  <!-- About (PARALLAX) -->
+<section id="about" class="parallax parallax--content" data-parallax data-speed="0.25" style="--bg: url('images/im8.png');">
+  <div class="parallax__content">
+    <div class="container split">
+      <div>
+        <h2>About Me</h2>
+        <p class="subtitle">Warm, inclusive, and practical support for every family.</p>
+        <p>Hi, I’m <strong>Your Name</strong>, a DONA-certified birth doula. I blend calm coaching, comfort techniques, and clear information so you feel seen and supported throughout pregnancy, birth, and postpartum.</p>
+      </div>
+      <aside class="card">
+        <h3>Training & Tools</h3>
+        <ul>
+          <li>DONA Birth Doula</li>
+          <li>Lactation coursework</li>
+          <li>Hypnobirthing techniques</li>
+          <li>Rebozo comfort measures</li>
+          <li>CPR (Infant & Adult)</li>
+        </ul>
+      </aside>
     </div>
   </div>
-</header>
+</section>
 
-  <main>
-    <section class="hero">
-      <div class="container hero-grid">
-        <div>
-          <div class="eyebrow">Balanced • Evidence‑informed • Compassionate</div>
-          <h1>Supporting families through pregnancy, birth, and the fourth trimester.</h1>
-          <p class="lead">A clean, fast, and accessible doula website modeled after Breathe & Blossom’s structure.</p>
-          <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem">
-            <a class="btn primary" href="services.html">Explore services</a>
-            <a class="btn" href="testimonials.html">Read client love</a>
-          </div>
-        </div>
-        <aside class="mock" aria-label="Hero mockup">
-          <div class="screen">
-            <svg viewBox="0 0 600 375" width="100%" height="100%" aria-label="UI preview"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#c38ec7"/><stop offset="1" stop-color="#8ec7bd"/></linearGradient></defs><rect width="600" height="375" rx="16" fill="#0f1220"/><rect x="24" y="24" width="552" height="60" rx="12" fill="url(#g)"/><rect x="24" y="104" width="172" height="120" rx="12" fill="#16192b" stroke="#262b46"/><rect x="214" y="104" width="172" height="120" rx="12" fill="#16192b" stroke="#262b46"/><rect x="404" y="104" width="172" height="120" rx="12" fill="#16192b" stroke="#262b46"/><rect x="24" y="244" width="552" height="107" rx="12" fill="#16192b" stroke="#262b46"/></svg>
-          </div>
-        </aside>
-      </div>
-    </section>
-    <section>
-      <div class="container grid-2">
-        <div>
-          <h2 class="title">About Me</h2>
-          <p class="subtitle">Introduce the doula, credentials, and approach in a warm and inclusive way.</p>
-          <p>Hi, I’m <strong>Your Name</strong>, a DONA‑certified birth doula and mom. I provide emotional, physical, and informational support—so you feel informed, seen, and supported.</p>
-          <p><a class="btn" href="about.html">Learn more</a></p>
-        </div>
-        <aside class="card">
-          <h3>Training & Education</h3>
-          <ul>
-            <li>Birth Doula (DONA)</li>
-            <li>Lactation coursework</li>
-            <li>Hypnobirthing tools</li>
-            <li>Rebozo techniques</li>
-            <li>CPR (Infant & Adult)</li>
+
+    <!-- Services (PARALLAX) -->
+<section id="services" class="parallax parallax--content" data-parallax data-speed="0.22" style="--bg: url('images/im6.png');">
+  <div class="parallax__content">
+    <div class="container">
+      <h2>Services</h2>
+      <div class="grid-3">
+        <article class="card service">
+          <h3>Birth Doula</h3>
+          <p>Prenatal prep, on-call support, labor presence, and immediate postpartum help.</p>
+          <ul class="bullets">
+            <li>2 prenatal visits</li>
+            <li>Text support</li>
+            <li>Continuous labor support</li>
           </ul>
-        </aside>
+        </article>
+        <article class="card service">
+          <h3>Postpartum Care</h3>
+          <p>Recovery support, newborn care tips, and feeding guidance in the first weeks.</p>
+          <ul class="bullets">
+            <li>Daytime visits</li>
+            <li>Feeding support</li>
+            <li>Care planning</li>
+          </ul>
+        </article>
+        <article class="card service">
+          <h3>Virtual Support</h3>
+          <p>Flexible prep and presence via video, plus resource guides and check-ins.</p>
+          <ul class="bullets">
+            <li>Flexible scheduling</li>
+            <li>Recorded resources</li>
+            <li>Follow-ups</li>
+          </ul>
+        </article>
       </div>
-    </section>
-  </main>
-
-
-<footer>
-  <div class="container" style="display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between">
-    <small>© <span id="year"></span>  c23m9</small>
-    <div style="display:flex;gap:.5rem;align-items:center">
-      <a class="btn" href="#top">Back to top</a>
     </div>
   </div>
-</footer>
-<script src="assets/main.js"></script>
-<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+</section>
+
+
+    <!-- Parallax #2 -->
+    <section class="parallax" data-parallax data-speed="0.5" style="--bg: url('images/im2.jpg');">
+      <div class="parallax__content">
+        <h2>Care that centers you</h2>
+        <p>Every family’s path is unique. Let’s build a plan that fits yours.</p>
+        <a class="btn light" href="#contact">Schedule a free call</a>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="container contact">
+  <h2 style="color:black">Get in touch</h2>
+  <p style="color:black">I’ll reply within one business day.</p>
+
+  <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+    <label>
+      Name*
+      <input type="text" name="name" required>
+    </label>
+
+    <label>
+      Email*
+      <input type="email" name="email" required>
+    </label>
+
+    <label>
+      Phone*
+      <input type="tel" name="phone" required>
+    </label>
+<label for="services">Services you’re interested in*</label>
+<select id="services" name="services" required>
+  <option value="" disabled selected hidden>Choose a service…</option>
+  <option value="Labor Prep">Labor Prep</option>
+  <option value="Whole Journey Doula Package">Whole Journey Doula Package</option>
+  <option value="Second Time Parent Package">Second Time Parent Package</option>
+  <option value="Placenta Encapsulation">Placenta Encapsulation</option>
+  <option value="Prenatal Yoga">Prenatal Yoga</option>
+  <option value="Childbirth Education">Childbirth Education</option>
+  <option value="Newborn Classes">Newborn Classes</option>
+  <option value="Other">Other (please specify)</option>
+</select>
+
+<!-- shown only if "Other" is selected -->
+<input type="text" id="services_other" name="services_other"
+       placeholder="Tell me what you have in mind" hidden>
+    <label>
+      Timeline & goals*
+      <textarea name="message" rows="5" required></textarea>
+    </label>
+
+    <!-- Honeypot (spam trap) -->
+    <input type="text" name="_gotcha" style="display:none">
+
+    <!-- Optional: subject line -->
+    <input type="hidden" name="_subject" value="Doula Inquiry from website">
+
+    <button class="btn primary" type="submit">Send message</button>
+  </form>
+</section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <small>© <span id="year"></span> c23m9.com</small>
+      <a class="btn small back-to-top" href="#home" aria-hidden="true">Back to top</a>
+      
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
 </body>
 </html>
