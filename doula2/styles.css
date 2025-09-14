@@ -1,3 +1,40 @@
+
+:root{
+  --font-sans: "DM Sans", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif:"Lora", Georgia, "Times New Roman", serif;
+}
+
+html{
+  font-family: var(--font-sans);
+  font-size: 17px;               /* bump to 17–18px if you like */
+  font-optical-sizing: auto;      /* variable fonts behave nicely */
+  -webkit-text-size-adjust: 100%;
+}
+
+body{
+  font-family: inherit;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+}
+
+/* Headings feel warm & confident */
+h1,h2,h3,h4,h5,h6{
+  font-family: var(--font-serif);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Utility for comfortable reading width when needed */
+.measure{ max-width: 65ch; }
+
+/* If any components hard-set a different font, normalize them */
+*, *::before, *::after{ font-family: inherit; }
+
+
+
+
+
 :root{
   --bg-1:#f8f8f3; --bg-2:#efecf3; --ink:#ffffff; --muted:#c9ccda;
   --brand:#c38ec7b6; --brand-2:#8ec7bd; --brand-3: rgba(161, 157, 157, 0.452); --brand-4:#473d33b4; 
@@ -12,22 +49,55 @@ a{color:var(--brand)}
 .container{color:black; width:min(1100px,92vw);margin-inline:auto}
 
 /* Header */
-.site-header{position:sticky;top:0;z-index:10;background:rgb(221, 186, 172);backdrop-filter:saturate(140%) blur(8px);border-bottom:1px solid rgba(255,255,255,.07)}
+.site-header{position:sticky;top:0;z-index:10;background:linear-gradient(150deg,rgb(239, 250, 254),rgb(228, 245, 254),rgb(246, 218, 207),rgb(245, 194, 174),  rgb(251, 179, 150), rgba(251, 179, 150, 1)  );backdrop-filter:saturate(140%) blur(8px);border-bottom:1px solid rgba(255,255,255,.07)}
 .nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 0}
 .brand{font-weight:700;color:var(--brand-7);text-decoration:none;letter-spacing:.2px}
 .menu{display:flex;gap:1rem;list-style:none;margin:0;padding:0}
-.menu a{color:var(--ink);text-decoration:none;opacity:.9}
+.menu a{color:var(--ink);font-size:0.75rem; text-decoration:none;opacity:100}
 .menu a:hover{opacity:1}
-.btn{background: linear-gradient(150deg,var(--brand-3),var(--brand-4),var(--brand-5),var(--brand-4), pink); display:inline-block;padding:.6rem .9rem;border:1px solid rgba(255,255,255,.2);border-radius:999px;color:var(--ink);text-decoration:none}
-.btn.primary{background:linear-gradient(130deg,rgb(214, 174, 181),var(--brand-6),var(--brand-6));
+.btn{background: linear-gradient(150deg,rgb(60, 215, 166),rgb(57, 201, 155),rgb(117, 230, 194)); display:inline-block;padding:.6rem .9rem;border:1px solid rgba(255,255,255,.2);border-radius:999px;color:rgb(3, 3, 3);text-decoration:none}
+.btn.primary{background:linear-gradient(260deg,rgba(223, 190, 190, 0.233),rgba(215, 177, 177, 0.228),rgba(144, 235, 206, 0.324));
   opacity:.95;
-  transform:scale(1.02);
+  transform:none;
   transition:all .2s ease-in-out;
   position: relative;      /* needed for sparkles */
   overflow: hidden;        /* clip sparkles */
   isolation: isolate;      /* contain blend effects */
-  color: #fff;             /* ensure contrast if brand is dark */
+  color: #050505;             /* ensure contrast if brand is dark */
+ 
 }
+
+/* Base: use variables */
+.btn{
+  --py: .6rem; --px: .9rem;
+  padding: var(--py) var(--px);
+  line-height: 1.1;
+}
+.btn--compact{
+  --py: .35rem; --px: .7rem;  /* smaller without touching font-size */
+  line-height: 1.05;
+}
+
+/* Avoid global upscaling */
+.btn.primary{ transform: none; }
+
+
+/* buttons wrapper */
+.hero-copy .actions{
+  display: flex;
+  gap: .6rem;
+  margin-inline-start: 17ch;  /* ≈ “17 spaces” to the right */
+  /* fallback if you prefer px/rem: margin-left: 120px; */
+}
+
+@media (max-width: 600px){
+  .hero-copy .actions{ margin-inline-start: 0; justify-content:center; }
+}
+
+
+
+
+
 /* shiny sweep */
 .btn.primary::after{
   content:"";
@@ -42,10 +112,10 @@ a{color:var(--brand)}
       rgba(255,255,255,0) 100%);
   transform: skewX(-20deg);
   pointer-events:none;
-  animation: sweep 4.6s infinite;
+  animation: sweep 6.6s infinite;
 }
-.btn.light{background:#e6dad0;color:#0f1220;border:0;font-weight:700}
-.btn.small{background:#e6dad0;color:#0f1220;border:0;font-weight:700; padding:.35rem .7rem;font-size:.9rem}
+.btn.light{background:#5ff0dfc1;color:#0f1220;border:0;font-weight:700}
+.btn.small{background:#efa94147;color:#0f1220;border:0;font-weight:700; padding:.35rem .7rem;font-size:.9rem}
 /* your current style */
 .btn.regular{
   background:linear-gradient(90deg,var(--brand),var(--brand));
@@ -134,6 +204,27 @@ a{color:var(--brand)}
 }
 
 
+      /*about justify text*/
+
+/* justify only this block */
+.justify {
+  text-align: justify;
+  text-justify: inter-word;   /* better spacing */
+  hyphens: auto;              /* nicer breaks; needs lang="en" on <html> */
+}
+
+/* tidy spacing */
+.justify p { margin: 0 0 .75rem; }
+.justify p:last-child { margin-bottom: 0; }
+
+/* optional: keep last line ragged-left instead of stretched */
+.justify { text-align-last: left; }
+
+/* if you prefer *everything* fully justified (including last lines), use: */
+/* .justify { text-align: justify; text-align-last: justify; } */
+
+
+
 /* Hero (now inside parallax) */
 .hero-grid {
   display: grid;
@@ -145,21 +236,21 @@ a{color:var(--brand)}
 h1 { font-size: clamp(1.8rem, 4.5vw, 3rem); line-height: 1.1; margin: 0.2rem 0 0.6rem; }
 .lead { opacity: 0.95; }
 .actions { display:flex; gap:.6rem; flex-wrap:wrap; margin-top:1rem; }
-.hero-card { height: 260px; border-radius: 16px; position: relative; background: linear-gradient(135deg, #1a1f38, #0b0f20); outline: 1px solid rgba(255,255,255,.06); }
-.card-sheen { position:absolute; inset:-2px; background: radial-gradient(120px 60px at 30% 0%, rgba(255,255,255,.15), transparent 60%); mix-blend-mode: screen; border-radius: 18px; }
+.hero-card { height: 260px; border-radius: 16px; position: relative; background: linear-gradient(135deg, #381a2f, #0b0f20); outline: 1px solid rgba(255,255,255,.06); }
+.card-sheen { position:absolute; inset:-2px; background: radial-gradient(120px 60px at 30% 0%, rgba(255, 255, 255, 0.733), transparent 60%); mix-blend-mode: screen; border-radius: 18px; }
 
 
 /* Sections */
 section{padding:clamp(2rem,6vw,4rem) 0}
 .split{display:grid;grid-template-columns:1.2fr .8fr;gap:2rem;align-items:start}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
-.card{background:rgba(255, 255, 255, 0.05);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1rem}
+.card{background:rgba(238, 238, 231, 0.219);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1rem}
 .service .bullets{margin:.5rem 0 0 1rem}
 .subtitle{opacity:.9}
 
 /* Parallax */
 .parallax{
-  position:relative;min-height:70vh;display:grid;place-items:center;text-align:center;color:#fff;overflow:hidden;isolation:isolate;
+  position:relative;min-height:70vh;display:grid;place-items:center;text-align:center;color:#ffffff;overflow:hidden;isolation:isolate;
 }
 .parallax::before{
   content:"";position:absolute;inset:0;background-image:var(--bg);
@@ -167,8 +258,10 @@ section{padding:clamp(2rem,6vw,4rem) 0}
   transform:translate3d(0,var(--y,0),0);will-change:transform;z-index:-2;
   filter:saturate(105%) contrast(102%);
 }
+
+/*bkgd of the maing pic*/
 .parallax::after{
-  content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,12,20,.35),rgba(10,12,20,.55));z-index:-1;
+  content:"";position:absolute;inset:0;background:linear-gradient(290deg,rgba(218, 179, 144, 0.546),rgba(233, 224, 203, 0.655),rgba(231, 150, 150, 0),rgba(255, 255, 255, 0),rgba(255, 255, 255, 0));z-index:-1;
 }
 .parallax__content{padding:clamp(1rem,2.5vw,3rem);max-width:min(84ch,92vw)}
 .parallax__content h2{font-size:clamp(1.6rem,4vw,2.4rem);margin:0 0 .4rem}
@@ -260,10 +353,10 @@ blockquote cite{display:block;margin-top:.5rem;opacity:.8}
 /* Link fills the curved chip */
 .menu li > a{
   display:block;
-  padding:.5rem .9rem;
+  padding:.5rem .6rem;
   border-radius:inherit;
   text-decoration:none;
-  color:#fff; /* adjust if your nav is light */
+  color:#e0d4dd; /* adjust if your nav is light */
 }
 
 /* Hover/focus polish */
@@ -460,31 +553,7 @@ html.js .reveal.is-visible{ opacity:1; transform:translateY(0); }
   filter: drop-shadow(0 2px 6px rgba(0,0,0,.18));
 }
 
-/* Gradient text for "Robin" */
-.brand__word{
-  font-size: clamp(1.05rem, 2.2vw, 1.35rem);
-  background: linear-gradient(90deg, var(--brand-10), var(--brand-10),rgba(69, 180, 169, 0.603), var(--brand-8) 55%, var(--brand-8) 65%, var(--brand-8) 85%,rgba(69, 180, 169, 0.849));
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
 
-/* Divider + sublabel keep high contrast with header */
-.brand__divider{ opacity:.75; color: var(--ink); }
-.brand__sub{
-  font-weight:600; letter-spacing:.2px; color: var(--ink); opacity:.95;
-}
-
-/* Gentle shimmer on hover (contained, not flashy) */
-.brand--sig::after{
-  content:""; position:absolute; inset: -20% -10%;
-  background: linear-gradient(100deg,
-      transparent 0%,
-      rgba(255,255,255,.45) 45%,
-      transparent 60%);
-  transform: translateX(-120%) skewX(-20deg);
-  pointer-events:none; mix-blend-mode: screen; opacity:.0;
-  transition: transform .9s ease, opacity .35s ease;
-}
-.brand--sig:hover::after{ transform: translateX(120%) skewX(-20deg); opacity:.65; }
 
 /* Motion-safe */
 @media (prefers-reduced-motion: reduce){
@@ -495,4 +564,56 @@ html.js .reveal.is-visible{ opacity:1; transform:translateY(0); }
 @media (max-width: 640px){
   .brand__divider{ display:none; }
   .brand__sub{ display:none; } /* shows just “Robin” + mark on small screens */
+}
+
+.brand { display:inline-flex; align-items:center; gap:.5rem; }
+.brand__logo { height:40px; width:auto; display:block; }
+@media (min-width:768px){ .brand__logo { height:48px; } }
+
+.brand__fallback{ font-weight:700; font-size:1.05rem; color:#fff; }
+
+
+/* keep the nav height as-is */
+.site-header .nav { display:flex; align-items:center; gap:1rem; }
+.site-header { overflow: visible; }    /* allow the logo to overflow if it grows */
+.brand { display:inline-flex; align-items:center; height:75px; } /* your current nav height */
+
+/* make the logo look bigger without affecting layout */
+.brand__logo{
+  height:200px;           /* matches the slot height */
+  width:auto;
+  transform: scale(1.35);   /* ↑ tweak this */
+  transform-origin: left down;
+  pointer-events: none;     /* avoids blocking nearby menu hovers */
+}
+
+/* keep menu on the right */
+.site-header .nav nav { margin-left:auto; }
+
+
+
+
+            /* main message moved to the right*/
+
+/* make the hero a single column for now */
+.parallax--hero .hero-grid{ grid-template-columns: 1fr; }
+
+
+
+
+
+/* shove that block to the right side of the container */
+.hero-copy{
+  justify-self: end;     /* right edge of the grid/ container */
+  text-align: right;
+  max-width: 60ch;
+}
+
+
+
+
+
+/* phones: center it again if you want */
+@media (max-width: 900px){
+  .hero-copy{ justify-self:center; text-align:center; }
 }

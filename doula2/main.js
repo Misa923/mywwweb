@@ -55,9 +55,8 @@ document.querySelectorAll('#year').forEach(el => el.textContent = new Date().get
 
 // Contact "Other" field (use dedicated IDs; guard if absent)
 (() => {
-  // RECOMMENDED: rename your contact select/input ids to avoid clashing with the Services section
-  const serviceSelect = document.getElementById('contact_service');        // <select id="contact_service">
-  const serviceOther  = document.getElementById('contact_service_other');  // <input id="contact_service_other">
+  // RECOMMENDED: rename your contact select/input ids to avoid clashing with the Services sectionconst serviceSelect = document.getElementById('services');
+  const serviceOther  = document.getElementById('services_other');
   if (!serviceSelect || !serviceOther) return;
 
   function toggleOther(){
@@ -95,3 +94,13 @@ document.querySelectorAll('#year').forEach(el => el.textContent = new Date().get
     if (d.open) details.forEach(other => { if (other !== d) other.open = false; });
   }));
 })();
+
+// Logs the exact URL the browser is trying to load for the logo
+  (function(){
+    const img = document.querySelector('.brand__logo');
+    if (!img) return;
+    console.log('Logo resolves to:', new URL(img.getAttribute('src'), document.baseURI).href);
+    img.addEventListener('error', () => {
+      console.error('Logo failed to load. Check path/filename case and that the file exists.');
+    });
+  })();
