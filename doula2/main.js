@@ -33,6 +33,30 @@ document.querySelectorAll('#year').forEach(el => el.textContent = new Date().get
   window.addEventListener('resize', update);
 })();
 
+// ▼ HERO bg smooth reveal after the image actually loads (paste after PARALLAX IIFE)
+(() => {
+  const hero = document.querySelector('.parallax.parallax--hero');
+  if (!hero) return;
+
+  // Read the CSS variable value:  --bg: url('images/im9.png');
+  const raw = getComputedStyle(hero).getPropertyValue('--bg').trim();
+  const match = raw.match(/url\((?:'|")?(.*?)(?:'|")?\)/i);
+  const src = match && match[1];
+  if (!src) { hero.classList.add('is-ready'); return; }
+
+  const img = new Image();
+  img.onload  = () => hero.classList.add('is-ready');
+  img.onerror = () => hero.classList.add('is-ready'); // fail safe so it doesn't stay hidden
+  img.decoding = 'async';
+  img.src = src;
+
+  // If cached, onload may not fire—cover that case:
+  if (img.complete) hero.classList.add('is-ready');
+})();
+
+
+
+
 // Back to top (guard if absent)
 (() => {
   const backTop = document.querySelector('.back-to-top');
@@ -104,3 +128,5 @@ document.querySelectorAll('#year').forEach(el => el.textContent = new Date().get
       console.error('Logo failed to load. Check path/filename case and that the file exists.');
     });
   })();
+
+  

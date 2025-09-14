@@ -259,6 +259,42 @@ section{padding:clamp(2rem,6vw,4rem) 0}
   filter:saturate(105%) contrast(102%);
 }
 
+/* ▼ Smooth entrance for HERO background (paste directly after .parallax::before) */
+.parallax--hero::before{
+  opacity: 0;  /* start hidden */
+  transform: scale(1.04) translate3d(0, var(--y, 0), 0); /* tiny zoom-in */
+  transition: opacity .9s ease, transform 1.2s cubic-bezier(.22,.61,.36,1);
+  will-change: opacity, transform;
+}
+
+/* When JS marks it ready, fade in and settle */
+.parallax--hero.is-ready::before{
+  opacity: 1;
+  transform: scale(1) translate3d(0, var(--y, 0), 0);
+}
+
+/* Optional: also fade the color overlay so the effect is obvious */
+.parallax--hero::after{
+  transition: opacity .9s ease;
+  opacity: .0;            /* start transparent */
+}
+.parallax--hero.is-ready::after{
+  opacity: 1;             /* restore overlay after the fade */
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .parallax--hero::before,
+  .parallax--hero.is-ready::before,
+  .parallax--hero::after,
+  .parallax--hero.is-ready::after{
+    transition: none;
+    transform: translate3d(0, var(--y, 0), 0);
+    opacity: 1;
+  }
+}
+
+
 /*bkgd of the maing pic*/
 .parallax::after{
   content:"";position:absolute;inset:0;background:linear-gradient(290deg,rgba(218, 179, 144, 0.546),rgba(233, 224, 203, 0.655),rgba(231, 150, 150, 0),rgba(255, 255, 255, 0),rgba(255, 255, 255, 0));z-index:-1;
@@ -617,3 +653,5 @@ html.js .reveal.is-visible{ opacity:1; transform:translateY(0); }
 @media (max-width: 900px){
   .hero-copy{ justify-self:center; text-align:center; }
 }
+
+
