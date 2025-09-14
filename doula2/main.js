@@ -1,6 +1,4 @@
 // Year stamp
-document.documentElement.classList.add('js');
-document.documentElement.classList.add('js');
 document.querySelectorAll('#year').forEach(el => el.textContent = new Date().getFullYear());
 
 // PARALLAX (desktop + mobile)
@@ -33,12 +31,11 @@ document.querySelectorAll('#year').forEach(el => el.textContent = new Date().get
   window.addEventListener('resize', update);
 })();
 
-// ▼ HERO bg smooth reveal after the image actually loads (paste after PARALLAX IIFE)
+// HERO bg smooth reveal after the image actually loads
 (() => {
   const hero = document.querySelector('.parallax.parallax--hero');
   if (!hero) return;
 
-  // Read the CSS variable value:  --bg: url('images/im9.png');
   const raw = getComputedStyle(hero).getPropertyValue('--bg').trim();
   const match = raw.match(/url\((?:'|")?(.*?)(?:'|")?\)/i);
   const src = match && match[1];
@@ -46,21 +43,17 @@ document.querySelectorAll('#year').forEach(el => el.textContent = new Date().get
 
   const img = new Image();
   img.onload  = () => hero.classList.add('is-ready');
-  img.onerror = () => hero.classList.add('is-ready'); // fail safe so it doesn't stay hidden
+  img.onerror = () => hero.classList.add('is-ready');
   img.decoding = 'async';
   img.src = src;
 
-  // If cached, onload may not fire—cover that case:
   if (img.complete) hero.classList.add('is-ready');
 })();
-
-
-
 
 // Back to top (guard if absent)
 (() => {
   const backTop = document.querySelector('.back-to-top');
-  if (!backTop) return; // <-- prevents crash
+  if (!backTop) return;
 
   const revealAt = 200;
   function toggleBackTop(){
@@ -77,26 +70,33 @@ document.querySelectorAll('#year').forEach(el => el.textContent = new Date().get
   });
 })();
 
-// Contact "Other" field (use dedicated IDs; guard if absent)
+// Contact "Other" field (single, guarded, crash-proof)
 (() => {
-  // RECOMMENDED: rename your contact select/input ids to avoid clashing with the Services sectionconst serviceSelect = document.getElementById('services');
-  const serviceOther  = document.getElementById('services_other');
-  if (!serviceSelect || !serviceOther) return;
+  try {
+    const serviceSelect = document.getElementById('services');
+    const serviceOther  = document.getElementById('services_other');
+    if (!serviceSelect || !serviceOther) return;
 
-  function toggleOther(){
-    const show = serviceSelect.value === 'Other';
-    serviceOther.hidden = !show;
-    serviceOther.required = show;
-    if (!show) serviceOther.value = '';
+    function toggleOther(){
+      const show = serviceSelect.value === 'Other';
+      serviceOther.hidden   = !show;
+      serviceOther.required = show;
+      if (!show) serviceOther.value = '';
+    }
+    serviceSelect.addEventListener('change', toggleOther);
+    toggleOther();
+  } catch (err) {
+    console.warn('Contact “Other” script skipped:', err);
   }
-  serviceSelect.addEventListener('change', toggleOther);
-  toggleOther();
 })();
 
-// Reveal on scroll for testimonials + FAQ (guarded; with fallback)
+// Reveal on scroll for testimonials + FAQ
 (() => {
   const items = document.querySelectorAll('.reveal');
   if (!items.length) return;
+
+  // mark HTML only when reveal feature is ready
+  document.documentElement.classList.add('js');
 
   if (!('IntersectionObserver' in window)) {
     items.forEach(el => el.classList.add('is-visible'));
@@ -119,14 +119,12 @@ document.querySelectorAll('#year').forEach(el => el.textContent = new Date().get
   }));
 })();
 
-// Logs the exact URL the browser is trying to load for the logo
-  (function(){
-    const img = document.querySelector('.brand__logo');
-    if (!img) return;
-    console.log('Logo resolves to:', new URL(img.getAttribute('src'), document.baseURI).href);
-    img.addEventListener('error', () => {
-      console.error('Logo failed to load. Check path/filename case and that the file exists.');
-    });
-  })();
-
-  
+// Logo URL debug (optional)
+(() => {
+  const img = document.querySelector('.brand__logo');
+  if (!img) return;
+  console.log('Logo resolves to:', new URL(img.getAttribute('src'), document.baseURI).href);
+  img.addEventListener('error', () => {
+    console.error('Logo failed to load. Check path/filename case and that the file exists.');
+  });
+})();
