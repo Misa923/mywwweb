@@ -36,9 +36,19 @@ document.querySelectorAll('#year').forEach(el => el.textContent = new Date().get
   const hero = document.querySelector('.parallax.parallax--hero');
   if (!hero) return;
 
-  const raw = getComputedStyle(hero).getPropertyValue('--bg').trim();
-  const match = raw.match(/url\((?:'|")?(.*?)(?:'|")?\)/i);
+    // Prefer mobile var on small screens
+  const mqlMobile = window.matchMedia('(max-width: 900px)');
+  const preferVar = mqlMobile.matches ? '--bg-mobile' : '--bg';
+
+  // Try preferred var, fall back to --bg
+  let raw = getComputedStyle(hero).getPropertyValue(preferVar).trim();
+  if (!raw || raw === 'none') {
+    raw = getComputedStyle(hero).getPropertyValue('--bg').trim();
+  }
+
+  const match = raw && raw.match(/url\((?:'|")?(.*?)(?:'|")?\)/i);
   const src = match && match[1];
+
   if (!src) { hero.classList.add('is-ready'); return; }
 
   const img = new Image();
@@ -127,4 +137,50 @@ document.querySelectorAll('#year').forEach(el => el.textContent = new Date().get
   img.addEventListener('error', () => {
     console.error('Logo failed to load. Check path/filename case and that the file exists.');
   });
+})();
+
+
+// MOBILE NAV (≤900px only)
+(() => {
+  const toggle = document.querySelector('.nav-toggle');
+  const menu   = document.getElementById('site-menu');
+  if (!toggle || !menu) return;
+
+  const mql = window.matchMedia('(max-width: 900px)');
+
+  const open  = () => {
+    toggle.setAttribute('aria-expanded','true');
+    menu.classList.add('is-open');
+    document.body.classList.add('nav-open');
+  };
+  const close = () => {
+    toggle.setAttribute('aria-expanded','false');
+    menu.classList.remove('is-open');
+    document.body.classList.remove('nav-open');
+  };
+
+  // only toggle when in mobile range
+  toggle.addEventListener('click', (e) => {
+    if (!mql.matches) return; // ignore on desktop
+    e.preventDefault();
+    const isOpen = menu.classList.contains('is-open');
+    isOpen ? close() : open();
+  });
+
+  // close on link click (mobile only)
+  menu.addEventListener('click', (e) => {
+    if (!mql.matches) return;
+    if (e.target.closest('a')) close();
+  });
+
+  // close on ESC (mobile only)
+  window.addEventListener('keydown', (e) => {
+    if (!mql.matches) return;
+    if (e.key === 'Escape') close();
+  }, { passive: true });
+
+  // if user resizes to desktop, ensure everything is reset
+  const handleChange = () => { if (!mql.matches) close(); };
+  mql.addEventListener ? mql.addEventListener('change', handleChange)
+                       : mql.addListener(handleChange);
 })();

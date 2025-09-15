@@ -26,8 +26,16 @@
            fetchpriority="high" />
     </a>
 
+<!-- mobile burger (hidden on desktop, shown ≤900px) -->
+<button class="nav-toggle" aria-controls="site-menu" aria-expanded="false">
+  <span class="sr-only">Toggle menu</span>
+  <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+</button>
 
-  <nav>
+
+  <nav id="site-menu">
     <ul class="menu">
       <li><a href="#home" style="color:rgb(0, 0, 0)">Home</a></li>
       <li><a href="#about" style="color:rgb(0, 0, 0)">About Me</a></li>
@@ -42,7 +50,9 @@
 
   <main id="home">
     <!-- HERO - parallax background -->
-    <section class="parallax parallax--hero" data-parallax data-speed="0.85" style="--bg: url('images/im9.png');">
+    <section class="parallax parallax--hero" data-parallax data-speed="0.28"
+         style="--bg:url('images/im9.png'); --bg-mobile:url('images/im7.jpg')">
+
       <div class="container hero-grid parallax__content">
         
   <div class="hero-copy">

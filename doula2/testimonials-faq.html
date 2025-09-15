@@ -17,7 +17,16 @@
            decoding="async"
            fetchpriority="high" />
     </a>
-      <nav>
+
+    <!-- mobile burger (hidden on desktop, shown ≤900px) -->
+<button class="nav-toggle" aria-controls="site-menu" aria-expanded="false">
+  <span class="sr-only">Toggle menu</span>
+  <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+</button>
+
+      <nav id="site-menu">
         <ul class="menu" >
           <li><a href="index.html#home" style="color:black">Home</a></li>
           <li><a href="index.html#about" style="color:black">About Me</a></li>
@@ -30,7 +39,7 @@
 
   <main>
   <!-- Parallax #1 (title strip) -->
-  <section class="parallax parallax--half" data-parallax data-speed="0.28" style="--bg:url('images/im11.jpg')">
+  <section class="parallax parallax--half" data-parallax data-speed="0.28" style="--bg:url('images/im11.jpg');">
     <div class="parallax__content">
       <h1>What families say</h1>
       <p class="lead xl">Real words from real births and early weeks at home.</p>
