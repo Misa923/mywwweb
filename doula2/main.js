@@ -100,25 +100,7 @@ document.querySelectorAll('#year').forEach(el => el.textContent = new Date().get
   }
 })();
 
-// Reveal on scroll for testimonials + FAQ
-(() => {
-  const items = document.querySelectorAll('.reveal');
-  if (!items.length) return;
 
-  // mark HTML only when reveal feature is ready
-  document.documentElement.classList.add('js');
-
-  if (!('IntersectionObserver' in window)) {
-    items.forEach(el => el.classList.add('is-visible'));
-    return;
-  }
-
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('is-visible'); });
-  }, { threshold: 0.15 });
-
-  items.forEach(el => io.observe(el));
-})();
 
 // Only one FAQ open at a time (guard if section absent)
 (() => {
@@ -147,24 +129,36 @@ document.querySelectorAll('#year').forEach(el => el.textContent = new Date().get
   if (!toggle || !menu) return;
 
   const mql = window.matchMedia('(max-width: 900px)');
+  let lastFocused = null;
+
+  const firstLink = () => menu.querySelector('a, button, [tabindex]:not([tabindex="-1"])');
 
   const open  = () => {
+    lastFocused = document.activeElement;
     toggle.setAttribute('aria-expanded','true');
     menu.classList.add('is-open');
     document.body.classList.add('nav-open');
+    // focus first interactive element in the drawer
+    const f = firstLink();
+    if (f) setTimeout(() => f.focus(), 0);
+    // aria for assistive tech when closed/open
+    menu.setAttribute('aria-hidden','false');
   };
+
   const close = () => {
     toggle.setAttribute('aria-expanded','false');
     menu.classList.remove('is-open');
     document.body.classList.remove('nav-open');
+    menu.setAttribute('aria-hidden','true');
+    // return focus to the toggler if we opened from it
+    if (lastFocused && lastFocused instanceof HTMLElement) lastFocused.focus();
   };
 
   // only toggle when in mobile range
   toggle.addEventListener('click', (e) => {
     if (!mql.matches) return; // ignore on desktop
     e.preventDefault();
-    const isOpen = menu.classList.contains('is-open');
-    isOpen ? close() : open();
+    menu.classList.contains('is-open') ? close() : open();
   });
 
   // close on link click (mobile only)
@@ -173,14 +167,83 @@ document.querySelectorAll('#year').forEach(el => el.textContent = new Date().get
     if (e.target.closest('a')) close();
   });
 
-  // close on ESC (mobile only)
+  // close on ESC (mobile only) — no passive option here
   window.addEventListener('keydown', (e) => {
     if (!mql.matches) return;
     if (e.key === 'Escape') close();
-  }, { passive: true });
+  });
+
+  // close when tapping/clicking outside the drawer (mobile only)
+  document.addEventListener('click', (e) => {
+    if (!mql.matches) return;
+    if (!menu.classList.contains('is-open')) return;
+    const clickInside = menu.contains(e.target) || toggle.contains(e.target);
+    if (!clickInside) close();
+  });
 
   // if user resizes to desktop, ensure everything is reset
   const handleChange = () => { if (!mql.matches) close(); };
-  mql.addEventListener ? mql.addEventListener('change', handleChange)
-                       : mql.addListener(handleChange);
+  if (mql.addEventListener) mql.addEventListener('change', handleChange);
+  else mql.addListener(handleChange);
 })();
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.querySelector('.nav-toggle');
+  const drawer = document.getElementById('site-menu');
+
+  if (!toggle || !drawer) return;
+
+  const closeDrawer = () => {
+    drawer.classList.remove('is-open');
+    document.body.classList.remove('nav-open');
+    toggle.setAttribute('aria-expanded','false');
+  };
+
+  toggle.addEventListener('click', () => {
+    const open = drawer.classList.toggle('is-open');
+    document.body.classList.toggle('nav-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+
+  // close when clicking a link
+  drawer.addEventListener('click', (e) => {
+    if (e.target.matches('a')) closeDrawer();
+  });
+
+  // close on ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeDrawer();
+  });
+
+  // close when tapping outside the drawer
+  document.addEventListener('click', (e) => {
+    if (!drawer.classList.contains('is-open')) return;
+    const clickInsideDrawer = drawer.contains(e.target) || toggle.contains(e.target);
+    if (!clickInsideDrawer) closeDrawer();
+  });
+});
+
+ // Soft reveal on scroll (single source of truth)
+(() => {
+  const els = document.querySelectorAll('.reveal');
+  if (!els.length) return;
+
+  // Reduced motion: show immediately
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    els.forEach(el => el.classList.add('is-visible'));
+    return;
+  }
+
+  const io = new IntersectionObserver((entries, obs) => {
+    for (const e of entries) {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-visible');
+        obs.unobserve(e.target); // reveal once
+      }
+    }
+  }, { root: null, rootMargin: '0px 0px -10% 0px', threshold: 0.15 });
+
+  els.forEach(el => io.observe(el));
+})();
+
