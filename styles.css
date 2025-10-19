@@ -271,3 +271,265 @@ footer a.pill:hover { background: var(--bg-elev); }
 pre code { font-family: var(--font-mono); }
 
 
+                                                    /* =========================
+   Add-on: Sophisticated Glow (drop-in, non-breaking)
+   ========================= */
+
+/* 1) Palette for glows (keeps your current theme) */
+:root{
+  --glow-cyan:  rgba(34,211,238,.28);   /* cyan-400 */
+  --glow-violet:rgba(167,139,250,.24);  /* violet-400 */
+  --glow-sky:   rgba(125,211,252,.22);  /* sky-300  */
+  --ring-grad:  linear-gradient(90deg, var(--brand), var(--brand-2));
+}
+
+/* 2) Ambient page glow that NEVER blocks clicks (pointer-events:none) */
+html::before,
+html::after{
+  content:""; position: fixed; inset: -20%;
+  pointer-events: none; z-index: -1;
+  background:
+    radial-gradient(60% 40% at 15% 10%, var(--glow-violet), transparent 60%),
+    radial-gradient(60% 40% at 85% 5%,  var(--glow-cyan),   transparent 60%),
+    radial-gradient(50% 30% at 50% 0%,  var(--glow-sky),    transparent 65%);
+  filter: blur(40px);
+  opacity:.65;
+}
+html::after{
+  transform: rotate(8deg);
+  opacity:.45;
+}
+
+/* 3) Cards: glass + border glow on hover (no layout changes) */
+.card,
+.tech-card,
+.stat{
+  position: relative;
+  background: color-mix(in oklab, var(--bg-elev) 90%, transparent);
+  border: 1px solid color-mix(in oklab, var(--border) 85%, transparent);
+  backdrop-filter: blur(10px);
+  transition: border-color .25s ease, box-shadow .25s ease, transform .18s ease;
+}
+.card:hover,
+.tech-card:hover,
+.stat:hover{
+  border-color: color-mix(in oklab, var(--border) 65%, var(--brand) 35%);
+  box-shadow:
+    0 10px 30px rgba(2,6,23,.35),
+    0 0 40px var(--glow-cyan),
+    0 0 64px var(--glow-violet);
+  transform: translateY(-2px);
+}
+
+/* soft inner sheen line (purely decorative) */
+.card::after,
+.tech-card::after,
+.stat::after{
+  content:""; position:absolute; inset:0; border-radius: inherit; pointer-events:none;
+  background: radial-gradient(120% 80% at 20% 0%,
+              rgba(255,255,255,.06), transparent 55%);
+  mix-blend-mode: screen; opacity:.7;
+}
+
+/* 4) Buttons: gradient ring + subtle shine on hover */
+.btn{
+  --pad: .75rem 1rem;
+  padding: var(--pad);
+  background:
+    linear-gradient(var(--bg-elev), var(--bg-elev)) padding-box,
+    var(--ring-grad) border-box;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  transition: transform .08s ease, box-shadow .2s ease, opacity .2s ease;
+}
+.btn:hover{
+  box-shadow:
+    0 6px 24px rgba(2,6,23,.35),
+    0 0 32px var(--glow-sky);
+}
+.btn:active{ transform: translateY(1px) scale(.99); }
+
+.btn.primary{
+  color:#0b1220;
+  background:
+    linear-gradient(#eaf2ff,#eaf2ff) padding-box,
+    var(--ring-grad) border-box;
+  border:1px solid transparent;
+  position:relative; overflow:hidden;
+}
+.btn.primary::after{
+  content:""; position:absolute; inset:-40%;
+  background: conic-gradient(from 0deg at 50% 50%,
+              rgba(255,255,255,0),
+              rgba(255,255,255,.18),
+              rgba(255,255,255,0));
+  filter: blur(24px);
+  animation: c23-shimmer 7s linear infinite;
+  pointer-events:none;
+}
+@keyframes c23-shimmer{ to{ transform: rotate(360deg); } }
+
+/* 5) Headline gradient + animated underline (accessibly decorative) */
+.headline{
+  background: linear-gradient(90deg,#fff, #c7d2fe 40%, #7dd3fc);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  position: relative;
+}
+.headline::after{
+  content:""; position:absolute; left:0; bottom:-8px; height:2px; width:30%;
+  background: var(--ring-grad);
+  filter: drop-shadow(0 0 12px var(--glow-cyan));
+  transform-origin:left center;
+  transition: width .4s ease;
+}
+.headline:hover::after{ width:64%; }
+
+/* 6) “Orb” wrapper — optional; wrap any media for a moving glow box */
+.orb{
+  position: relative; border-radius: 24px; overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--border) 85%, transparent);
+  background:
+    radial-gradient(120% 80% at 20% 10%, color-mix(in oklab, var(--brand) 35%, transparent), transparent 55%),
+    radial-gradient(120% 80% at 80% 20%, color-mix(in oklab, var(--brand-2) 35%, transparent), transparent 60%),
+    linear-gradient(180deg, color-mix(in oklab, var(--bg) 70%, transparent), transparent);
+  box-shadow: 0 10px 30px rgba(2,6,23,.35);
+}
+.orb::before{
+  content:""; position:absolute; inset:-45%;
+  background: conic-gradient(from 180deg at 50% 50%,
+              rgba(125,211,252,.16),
+              rgba(167,139,250,.16),
+              rgba(34,211,238,.16),
+              rgba(125,211,252,.16));
+  filter: blur(28px); animation: c23-spin 18s linear infinite;
+  pointer-events:none;
+}
+@keyframes c23-spin{ to{ transform: rotate(360deg); } }
+
+/* 7) Nav + footer subtle glow without changing layout or JS hooks */
+.site-header{
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 85%, transparent);
+  box-shadow: 0 6px 20px rgba(2,6,23,.25);
+}
+.primary a:hover{
+  background: rgba(148,163,184,.10);
+  box-shadow: 0 0 24px var(--glow-sky) inset;
+}
+footer{
+  backdrop-filter: blur(6px);
+  box-shadow: 0 -8px 24px rgba(2,6,23,.25);
+}
+
+/* 8) Tables: sticky header sheen + row hover glow */
+.table thead th{
+  background: color-mix(in oklab, var(--bg) 85%, transparent);
+  backdrop-filter: blur(6px);
+}
+.table tbody tr:hover{
+  background: rgba(148,163,184,.07);
+  box-shadow: inset 0 0 0 9999px rgba(125,211,252,.03);
+}
+
+/* 9) Utility classes (optional; add to any element) */
+.glow        { box-shadow: 0 0 36px var(--glow-cyan), 0 0 64px var(--glow-violet); }
+.glow-sm     { box-shadow: 0 0 16px var(--glow-sky); }
+.glow-border {
+  background:
+    linear-gradient(var(--bg-elev), var(--bg-elev)) padding-box,
+    var(--ring-grad) border-box;
+  border:1px solid transparent; border-radius: inherit;
+}
+.glass       { background: color-mix(in oklab, var(--bg-elev) 85%, transparent) !important; backdrop-filter: blur(10px); }
+.swap-on-mobile{ } /* (see media rule below) */
+
+/* 10) Mobile tidy: allow tasteful reordering without touching JS IDs/classes */
+@media (max-width: 640px){
+  .swap-on-mobile{ order: -1; } /* add to a card/section you want to float to top */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================
+   Laser Ribbons (theme-aware, non-blocking)
+   ========================= */
+#laser-bg{
+  position: fixed; inset: 0;
+  z-index: 0;                  /* behind everything */
+  pointer-events: none;        /* never blocks clicks */
+  overflow: hidden;
+}
+
+#laser-bg .laser-svg{
+  position: absolute; inset: -10vh -10vw; /* bleed to avoid edge clipping */
+  width: calc(100% + 20vw);
+  height: calc(100% + 20vh);
+  display: block;
+}
+
+/* wide, round, softly blurred strokes that blend into the scene */
+.laser-path{
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  mix-blend-mode: screen;
+  opacity: .30;                /* overall subtlety (tuned below by depth) */
+  filter: url(#laserBlur);
+}
+
+.laser-path.depth-1{ stroke-width: 28; opacity: .28; } /* far */
+.laser-path.depth-2{ stroke-width: 24; opacity: .26; }
+.laser-path.depth-3{ stroke-width: 20; opacity: .24; } /* near */
+
+/* honor motion prefs */
+@media (prefers-reduced-motion: reduce){
+  .laser-path{ opacity: .18; }
+}
+
+/* keep your sticky header visually above */
+.top-notice, .site-header { position: sticky; z-index: 40; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.btn.small{ background:#435eb9c9; color:#feffff; border:0; font-weight:700; padding:.35rem .7rem; font-size:.9rem; }

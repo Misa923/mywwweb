@@ -476,6 +476,13 @@
     return { init };
   })();
 
+
+
+
+
+
+
+
   // Init all on ready
   document.addEventListener("DOMContentLoaded", () => {
     Theme.init();
@@ -485,5 +492,44 @@
     LiveDemo.init();
     TechOverlay.init();
     Forms.init();
+    LaserRibbons.init();
   });
 })();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Back to top (guard if absent) */
+(() => {
+  const backTop = document.querySelector('.back-to-top');
+  if (!backTop) return;
+
+  const revealAt = 200;
+  function toggleBackTop(){
+    const show = window.scrollY > revealAt;
+    backTop.classList.toggle('is-visible', show);
+    backTop.setAttribute('aria-hidden', String(!show));
+  }
+  window.addEventListener('scroll', toggleBackTop, { passive: true });
+  toggleBackTop();
+
+  backTop.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+
+
+  
