@@ -194,7 +194,7 @@
           <label class="chk"><input type="checkbox" id="filterROIMain"> Marketer ROI leaders</label>
           <button class="btn ghost" id="resetFiltersMain">Reset</button>
         </div>
-        <canvas id="barChartMain" height="260" aria-label="Platforms bar chart" role="img"></canvas>
+        <canvas id="barChartMain" aria-label="Platforms bar chart" role="img"></canvas>
         <div class="table-wrap">
           <table id="dataTableMain" class="table">
             <thead>
@@ -233,17 +233,18 @@
       </div>
 
       <div class="grid cols-2 contact-grid">
-        <div class="card" style="display:grid; gap:1rem;">
+        <div class="card contact-card" style="display:grid; gap:1rem;">
+
           <p style="margin:0; color:var(--muted)">Quick brief below and we’ll reply within one business day.</p>
 
-          <form id="contactForm" action="https://formsubmit.co/431afb18b6d29330088207e6478cadc5" method="POST">
+          <form id="contactForm" action="https://formsubmit.co/431afb18b6d29330088207e6478cadc5" method="POST" >
             <input type="hidden" name="_subject" value="New Website Inquiry (Contact form)" />
             <input type="hidden" name="_template" value="table" />
             <input type="hidden" name="_blacklist" value="viagra, crypto, investment, guest post, seo package" />
             <input type="hidden" name="form_name" value="Contact" />
             <input type="hidden" name="_autoresponse" value="Thanks for the message — you’ll hear from us within one business day. – c23m9" />
 
-            <div class="grid cols-2" style="gap:.8rem">
+            <div class="grid cols-2" style="gap:.8rem;">
               <div>
                 <label for="name">Name</label>
                 <input id="name" name="name" required autocomplete="name" placeholder="Your name" />
@@ -287,7 +288,7 @@
             <div class="flex" style="gap:.6rem; flex-wrap: wrap;">
               <button class="btn primary" type="submit">Send inquiry</button>
               <button class="btn ghost" type="button" id="copyEmail">Copy email</button>
-              <a href="/resume.pdf" class="btn ghost">Download résumé</a>
+             
             </div>
             <div class="status" id="formStatus" aria-live="polite">We reply within one business day.</div>
           </form>

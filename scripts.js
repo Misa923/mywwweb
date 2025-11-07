@@ -533,3 +533,112 @@
 
 
   
+       /* fix chart labels */
+
+// Helper: shorten or wrap tick labels
+const wrapTick = (label) => {
+  if (!label) return label;
+  // ejemplo split on space for 2-line labels (Chart.js supports arrays for multi-line ticks)
+  const words = label.split(' ');
+  if (words.join('').length <= 10) return label;
+  // Try to make at most ~10 chars per line
+  let line = '';
+  const lines = [];
+  for (const w of words){
+    if ((line + ' ' + w).trim().length > 10){
+      lines.push(line.trim());
+      line = w;
+    } else {
+      line += ' ' + w;
+    }
+  }
+  if (line) lines.push(line.trim());
+  return lines;
+};
+
+
+let barChartMain; // hold the instance
+
+function initBarChart(labels, dataset) {
+  const ctx = document.getElementById('barChartMain').getContext('2d');
+
+  // Destroy if it exists (prevents “growing” canvases)
+  if (barChartMain) barChartMain.destroy();
+
+  barChartMain = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,                // e.g., ['Facebook','YouTube',...]
+      datasets: [{
+        label: 'Value',
+        data: dataset,       // numbers
+        borderWidth: 0,
+        borderRadius: 6,
+        maxBarThickness: 54, // avoids mega-wide bars on few items
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false, // respect the fixed CSS height
+      animation: false,
+      layout: { padding: { top: 8, right: 8, bottom: 0, left: 8 } },
+      plugins: {
+        legend: { display: false }, // fewer wraps = stable height
+        tooltip: { mode: 'index', intersect: false },
+        // If you use ChartDataLabels, move labels to the top and simplify:
+        // datalabels: {
+        //   anchor: 'end', align: 'end', offset: 4, clamp: true,
+        //   formatter: v => (v >= 1 ? v.toFixed(1) + 'B' : v)
+        // }
+      },
+      scales: {
+        x: {
+          ticks: {
+            autoSkip: true,
+            maxRotation: 0,
+            minRotation: 0,
+            padding: 6,
+            callback: (val, idx) => wrapTick(this.getLabelForValue ? this.getLabelForValue(val) : labels[idx]),
+          },
+          grid: { display: false },
+          offset: true
+        },
+        y: {
+          beginAtZero: true,
+          grace: '5%',
+          grid: { color: 'rgba(255,255,255,0.08)' },
+          ticks: {
+            callback: v => v >= 1 ? v + '' : v // tweak if you want “B”, “M”, etc.
+          }
+        }
+      }
+    }
+  });
+}
+
+function updateBarChart(labels, dataset){
+  // Update in-place (no re-create)
+  barChartMain.data.labels = labels;
+  barChartMain.data.datasets[0].data = dataset;
+  barChartMain.update('none'); // no animation => no height jitter
+}
+
+document.getElementById('filter2bMain').addEventListener('change', applyFilters);
+document.getElementById('filterROIMain').addEventListener('change', applyFilters);
+document.getElementById('metricSelectMain').addEventListener('change', applyFilters);
+document.getElementById('resetFiltersMain').addEventListener('click', () => {
+  document.getElementById('filter2bMain').checked = false;
+  document.getElementById('filterROIMain').checked = false;
+  applyFilters();
+});
+
+function applyFilters(){
+  const twoB = document.getElementById('filter2bMain').checked;
+  const roi  = document.getElementById('filterROIMain').checked;
+  const metric = document.getElementById('metricSelectMain').value;
+
+  // …derive filtered arrays from your source data…
+  const { labels, data } = getFilteredData(twoB, roi, metric);
+
+  updateBarChart(labels, data);
+}
