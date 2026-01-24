@@ -1,12 +1,4 @@
-<!-- File: /index.html (single-file)
-  Cafe Cósmico — Order Online
-  • Bright Campero/McD-inspired UI
-  • Fast add-to-cart, category chips, search
-  • Cart drawer + checkout modal
-  • Two payment flows: Pay at pickup (no card) OR Stripe Checkout (stub)
-  • Works standalone — no /assets paths
-  • Replace STRIPE_PUBLISHABLE_KEY with your real publishable key
--->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +17,7 @@
   <style>
     :root{
       --gold:#FFC72C; --gold-strong:#FFB800; --red:#DA291C;
-      --cream:#FFF9E6; --cream-2:#FFF3B0; --panel:#FFF; --text:#1F2937; --muted:#6B7280; --line:#E5E7EB;
+      --cream:#ffedd4; --cream-2:#FFF3B0; --panel:#FFF; --text:#1F2937; --muted:#6B7280; --line:#E5E7EB;
       --shadow:0 10px 30px rgba(17,24,39,.12); --radius:18px; --radius-sm:12px; --speed:.22s;
     }
     *{box-sizing:border-box} html,body{height:100%}
@@ -87,21 +79,61 @@
     .search input{flex:1; background:transparent; border:none; outline:0; color:var(--text)}
 
     /* GRID & MENU */
-    .grid{display:grid; grid-template-columns:repeat(12, 1fr); gap:16px}
-    .menu-grid{margin-top:12px}
-    .menu-card{grid-column: span 12; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; display:grid; grid-template-columns:120px 1fr; box-shadow:var(--shadow)}
-    .menu-img{background:#fff7eb; min-height:120px}
-    .menu-body{padding:14px}
-    .menu-title{display:flex; gap:8px; align-items:center; justify-content:space-between}
-    .badge{font-size:.72rem; padding:6px 8px; border-radius:999px; background:#ecfeff; border:1px solid #bae6fd; color:#0c4a6e}
-    .price{font-weight:900}
-    .menu-desc{color:#4b5563; font-size:.95rem}
-    .menu-actions{margin-top:10px; display:flex; align-items:center; gap:10px}
-    .qty{display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:999px; padding:6px; background:#fff}
-    .qty button{width:30px; height:30px; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--text)}
-    .add-btn{padding:10px 14px; border-radius:999px}
-    @media (min-width:700px){ .menu-card{grid-column: span 6} }
-    @media (min-width:1024px){ .menu-card{grid-column: span 4} }
+    /* GRID & MENU */
+.grid{display:grid; grid-template-columns:repeat(12, 1fr); gap:16px}
+.menu-grid{margin-top:12px}
+
+.menu-card{
+  grid-column: span 12;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:300px 1fr; /* was 120px 1fr — image 2× wider */
+  box-shadow:var(--shadow);
+}
+
+.menu-img{
+  background:#fff7eb;
+  height:150px;                  /* lock height so card doesn't grow */
+}
+.menu-img img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.menu-body{padding:14px}
+.menu-title{display:flex; gap:8px; align-items:center; justify-content:space-between}
+.badge{font-size:.72rem; padding:6px 8px; border-radius:999px; background:#ecfeff; border:1px solid #bae6fd; color:#0c4a6e}
+.price{font-weight:900}
+.menu-desc{color:#4b5563; font-size:.95rem}
+
+/* Optional: keep text from increasing height */
+.menu-title strong{
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:70%;
+}
+.menu-desc{
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+
+.menu-actions{margin-top:10px; display:flex; align-items:center; gap:10px}
+.qty{display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:999px; padding:6px; background:#fff}
+.qty button{width:30px; height:30px; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--text)}
+
+.add-btn{
+  padding:6px 10px;  /* smaller */
+  font-size:.9rem;
+  line-height:1;
+  border-radius:999px;
+  background:linear-gradient(180deg, Gold, rgb(207, 212, 207));
+}
+
+@media (min-width:700px){ .menu-card{grid-column: span 6} }
+@media (min-width:1024px){ .menu-card{grid-column: span 6} } /* two columns */
+
 
     /* ABOUT / CONTACT */
     .about-grid{gap:16px}
@@ -155,6 +187,12 @@
 
     /* Focus (a11y) */
     :focus-visible{outline:3px solid rgba(255,199,44,.8); outline-offset:2px; border-radius:8px}
+
+    .hidden { display: none !important; }
+
+    .menu-img img{ width:100%; height:100%; object-fit:cover; }
+
+
   </style>
 </head>
 <body>
@@ -331,11 +369,11 @@
       { id: 'cn1', name: 'Cinnamon Roll', cat: 'pastry', price: 400, desc: 'Brown sugar swirl, vanilla glaze.', img: 'https://images.unsplash.com/photo-1509365465985-25d11c17e812?q=80&w=800&auto=format&fit=crop', badge: '' },
       { id: 'sc1', name: 'Sourdough Loaf', cat: 'pastry', price: 800, desc: 'Naturally leavened, crackly crust.', img: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?q=80&w=800&auto=format&fit=crop', badge: '' },
       { id: 'ef1', name: 'Egg & Feta Toast', cat: 'breakfast', price: 950, desc: 'Herb labneh, soft egg, chili crisp.', img: 'https://images.unsplash.com/photo-1542691457-cbe4df041eb2?q=80&w=800&auto=format&fit=crop', badge: '' },
-      { id: 'av1', name: 'Avocado Tartine', cat: 'breakfast', price: 990, desc: 'Citrus, sesame, pickled shallots.', img: 'https://images.unsplash.com/photo-1550525811-e5869dd03032?q=80&w=800&auto=format&fit=crop', badge: '' },
+      { id: 'av1', name: 'Avocado Tartine', cat: 'breakfast', price: 990, desc: 'Citrus, sesame, pickled shallots.', img: 'https://images.unsplash.com/photo-1542691457-cbe4df041eb2?q=80&w=800&auto=format&fit=crop', badge: '' },
       { id: 'bn1', name: 'Breakfast Burrito', cat: 'breakfast', price: 1100, desc: 'Egg, potato, pico, chipotle crema.', img: 'https://images.unsplash.com/photo-1505576399279-565b52d4ac71?q=80&w=800&auto=format&fit=crop', badge: '' },
       { id: 'lc1', name: 'Ham & Swiss Panini', cat: 'lunch', price: 1250, desc: 'Dijon, arugula, rustic bread.', img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=800&auto=format&fit=crop', badge: '' },
       { id: 'lc2', name: 'Tomato Soup', cat: 'lunch', price: 700, desc: 'Roasted tomatoes, basil oil.', img: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?q=80&w=800&auto=format&fit=crop', badge: 'Vegan' },
-      { id: 'co1', name: 'Espresso', cat: 'coffee', price: 300, desc: 'Double shot, caramel‑sweet.', img: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?q=80&w=800&auto=format&fit=crop', badge: '' },
+      { id: 'co1', name: 'Espresso', cat: 'coffee', price: 300, desc: 'Double shot, caramel‑sweet.', img: 'https://images.unsplash.com/photo-1498804103079-a6351b050096?q=80&w=800&auto=format&fit=crop', badge: '' },
       { id: 'co2', name: 'Latte', cat: 'coffee', price: 450, desc: 'Velvety microfoam, house blend.', img: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=800&auto=format&fit=crop', badge: 'Hot/Cold' },
       { id: 'co3', name: 'Cold Brew', cat: 'coffee', price: 475, desc: '12‑hour steep, chocolatey.', img: 'https://images.unsplash.com/photo-1517705008128-361805f42e86?q=80&w=800&auto=format&fit=crop', badge: 'Seasonal' },
       { id: 'co4', name: 'Mocha', cat: 'coffee', price: 500, desc: 'Single origin cacao.', img: 'https://images.unsplash.com/photo-1498804103079-a6351b050096?q=80&w=800&auto=format&fit=crop', badge: '' }
@@ -468,7 +506,24 @@
     // ===== Pay at pickup =====
     function genId(){ return ('CC-'+Date.now().toString(36)+'-'+Math.floor(Math.random()*1e6).toString(36)).toUpperCase(); }
     function validateCommon(){ var n=$('#name'), e=$('#email'), p=$('#phone'); var name=n&&n.value.trim(), email=e&&e.value.trim(), phone=p&&p.value.trim(); if(!name||!email||!phone){ toast('Please complete your contact info'); return null; } return {name:name,email:email,phone:phone}; }
-    function placeOrderPickup(){ var common=validateCommon(); if(!common) return; var modeEl=$('#mode'); if(modeEl && modeEl.value==='delivery'){ toast('Delivery requires card payment'); return; } var order={ id:genId(), paymentMethod:'pay_at_pickup', customer:common, mode:'pickup', schedule:{date:($('#date')||{}).value, time:($('#time')||{}).value}, items:Object.values(state.cart||{}), totals:calcTotals(), promo:state.promo||null };
+    function placeOrderPickup()
+    { var common=validateCommon(); 
+      if(!common) return; 
+      var modeEl=$('#mode'); 
+      if(modeEl && modeEl.value==='delivery'){ toast('Delivery requires card payment'); return; 
+
+      } 
+      
+      var order={ 
+        id:genId(), 
+        paymentMethod:'pay_at_pickup', 
+        customer:common, 
+        mode:'pickup', 
+        schedule:{type: 'asap'}, 
+        items:Object.values(state.cart||{}), 
+        totals:calcTotals(), 
+        promo:state.promo||null 
+      };
       // fetch('/api/place-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(order)}).catch(function(){})
       showOrderConfirmation(order); state.cart={}; save(); updateCartUI(); }
     function showOrderConfirmation(order){ var body=$('.modal-body'); if(!body) return; body.innerHTML='\
@@ -523,10 +578,27 @@
 
     function init(){ load(); renderMenu(MENU); applyFilters(); updateCartUI(); var y=$('#year'); if(y) y.textContent=String(new Date().getFullYear()); bind(); }
     document.addEventListener('DOMContentLoaded', init);
+  
+
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+  ['date','time'].forEach(id => {
+    var el = $('#'+id);
+    if (el){
+      el.value = '';
+      el.disabled = true;       // prevent focus
+      el.closest('label')?.classList.add('hidden'); // if wrapped in a label
+      el.style.display = 'none'; // or just hide directly
+    }
+  });
+});
+  
   </script>
 
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"Restaurant","name":"Cafe Cósmico","servesCuisine":["Bakery","Coffee","Breakfast","Lunch"],"address":{"@type":"PostalAddress","addressLocality":"Santiago Atitlán","addressCountry":"GT"},"openingHours":["Thu-Sat 08:00-18:00"],"priceRange":"$$","url":"https://www.cafecosmico.com/","sameAs":["https://www.facebook.com/CafeCosmicogt/"]}
-  </script>
+  
+</script>
 </body>
 </html>

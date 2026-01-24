@@ -1,348 +1,352 @@
-<!doctype html>
-<html lang="en" data-theme="auto" data-audience="biz">
-<head>
-  <!-- Laser background (non-interactive, sits behind content) -->
-<div id="laser-bg" aria-hidden="true"></div>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>c23m9 — Web & Database</title>
-  <meta name="description" content="Domain, custom email, website, hosting, and simple databases — set up right. We make dependable systems so your team can focus on the work that matters." />
-  <meta name="theme-color" content="#0f172a" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
-  <style>html{scroll-behavior:smooth}</style>
-</head>
-<body>
-  <!-- Price highlights -->
-  <div class="top-notice" role="note" aria-label="Pricing highlights">
-    <div class="container">
-      <span class="pill">Zero monthly fees</span>
-      <span class="pill">No need to pay for extra users</span>
-    </div>
-  </div>
+  <!doctype html>
+  <html lang="en" data-theme="auto" data-audience="biz">
+  <head>
+   
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>c23m9 — Web & Database</title>
+    <meta name="description" content="Domain, custom email, website, hosting, and simple databases — set up right. We make dependable systems so your team can focus on the work that matters." />
+    <meta name="theme-color" content="#0f172a" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+    <style>html{scroll-behavior:smooth}</style>
+  </head>
+  <body>
 
-  <header class="site-header">
-    <div class="container nav" role="navigation" aria-label="Primary">
-      <a class="brand" href="#home" aria-label="Go to home">
-        <svg viewBox="0 0 64 64" aria-hidden="true">
-          <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--brand)"/><stop offset="100%" stop-color="var(--brand-2)"/></linearGradient></defs>
-          <path fill="url(#g)" d="M32 6c12 0 22 4 22 10v20c0 6-10 10-22 10S10 42 10 36V16c0-6 10-10 22-10zm0 8c-9.9 0-18 3-18 6s8.1 6 18 6 18-3 18-6-8.1-6-18-6zm0 16c-9.9 0-18-3-18-6v6c0 3 8.1 6 18 6s18-3 18-6v-6c0 3-8.1 6-18 6z"/>
-        </svg>
-        <span>c23m9</span>
-      </a>
+     <!-- Laser background (non-interactive, sits behind content) -->
+  <div id="laser-bg" aria-hidden="true"></div>
 
-      <ul class="primary" aria-label="Sections">
-        <li><a href="#services">Services</a></li>
-        <li><a href="#work">Work</a></li>
-        <li><a href="#playgroundMain">Playground</a></li>
-        <li><a href="./services.html">Dashboard</a></li>
-        <li><a href="#contact">Contact</a></li>
-        <li><a href="./store.html">Art</a></li>
-       <!-- <li><a href="./doula2/index.html">RobinSong</a></li> -->
-        <li><a href="./cosmic.html">Cosmic</a></li>
-
-      </ul>
-
-      <nav class="nav-controls">
-        <select id="langSelect" class="select" aria-label="Language">
-          <option value="en">EN</option>
-          <option value="es">ES</option>
-        </select>
-        <!-- toggles visible & simple -->
-        <button class="btn ghost" id="themeToggle" aria-label="Toggle light/dark">🌓</button>
-        <button class="btn ghost" id="spideyToggle" aria-label="Toggle Spider palette">🕷️</button>
-      </nav>
-    </div>
-  </header>
-
-  <!-- ====== MAIN (POP) SITE ====== -->
-  <main id="main">
-    <!-- HERO -->
-    <section id="home" class="hero container">
-      <div>
-        <span class="eyebrow"><span class="pill">Available for Q4</span> <span>Web & Database</span></span>
-        <h1 class="headline">
-          <span class="accent">Get online, look great,</span> and stay organized.<br/>
-          <span class="burst">Domain. Email. Website. Database.</span>
-        </h1>
-        <p class="sub">We handle setup and support so your team, board, and customers get a site that’s clear, fast, and dependable.</p>
-
-        <div class="cta" style="display:flex; gap:.6rem; flex-wrap:wrap;">
-          <a class="btn primary" href="#contact" id="scrollToContact">Get a quote</a>
-        </div>
+    <!-- Price highlights -->
+    <div class="top-notice" role="note" aria-label="Pricing highlights">
+      <div class="container">
+        <span class="pill">Zero monthly fees</span>
+        <span class="pill">No need to pay for extra users</span>
       </div>
+    </div>
 
-      <!-- Gold TECH LOVERS button (opens tech overlay) -->
-      <div class="hero-visual">
-          <a id="sealTechBtn" class="seal-btn big" href="tech.html" aria-label="Open Tech lovers page">
-          
-
-          <span class="seal-rim"></span>
-          <span class="seal-core">
-            <span class="seal-stars" aria-hidden="true">✦ ✧ ✦</span>
-            <span class="seal-text">Technical information</span>
-            <span class="seal-stars" aria-hidden="true">✦ ✧ ✦</span>
-          </span>
+    <header class="site-header">
+      <div class="container nav" role="navigation" aria-label="Primary">
+        <a class="brand" href="#home" aria-label="Go to home">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--brand)"/><stop offset="100%" stop-color="var(--brand-2)"/></linearGradient></defs>
+            <path fill="url(#g)" d="M32 6c12 0 22 4 22 10v20c0 6-10 10-22 10S10 42 10 36V16c0-6 10-10 22-10zm0 8c-9.9 0-18 3-18 6s8.1 6 18 6 18-3 18-6-8.1-6-18-6zm0 16c-9.9 0-18-3-18-6v6c0 3 8.1 6 18 6s18-3 18-6v-6c0 3-8.1 6-18 6z"/>
+          </svg>
+          <span>c23m9</span>
         </a>
-      </div>
-    </section>
 
-    <!-- SERVICES -->
-    <section id="services" class="container section-block">
-      <div class="section-title">
-        <div>
-          <h2>Services that make life easier</h2>
-          <span class="kicker">Clear deliverables, no jargon</span>
-        </div>
-        <button class="section-toggle" aria-expanded="true" data-label="Services">Hide</button>
-      </div>
-      <div class="grid cols-3">
-        <article class="card service">
-          <div class="pill">Website Creation</div>
-          <h3>Pages that work</h3>
-          <p>Modern, mobile-first websites with clear navigation and easy updates.</p>
-          <div class="badge-row"><span class="pill">SEO-ready</span><span class="pill">Accessible</span><span class="pill">Copy help</span></div>
-        </article>
-        <article class="card service">
-          <div class="pill">Domain & Email</div>
-          <h3>Own your name</h3>
-          <p>We register your domain and set up custom emails like you@yourdomain.</p>
-          <div class="badge-row"><span class="pill">DNS</span><span class="pill">Google/M365</span><span class="pill">SPF/DKIM</span></div>
-        </article>
-        <article class="card service">
-          <div class="pill">Hosting & Care</div>
-          <h3>Fast & backed up</h3>
-          <p>Secure hosting with SSL, backups, uptime checks, and ongoing support.</p>
-          <div class="badge-row"><span class="pill">SSL</span><span class="pill">Backups</span><span class="pill">Monitoring</span></div>
-        </article>
-        <article class="card service">
-          <div class="pill">Graphic Design</div>
-          <h3>Look professional</h3>
-          <p>Logos, brand kit, and social graphics that match your organization.</p>
-          <div class="badge-row"><span class="pill">Logos</span><span class="pill">Brand kit</span><span class="pill">Social assets</span></div>
-        </article>
-        <article class="card service">
-          <div class="pill">Databases</div>
-          <h3>Simple reporting</h3>
-          <p>We create a clean database and monthly reports your board will understand.</p>
-          <div class="badge-row"><span class="pill">Dashboards</span><span class="pill">Exports</span><span class="pill">Audits</span></div>
-        </article>
-        <article class="card service">
-          <div class="pill">Integrations</div>
-          <h3>No more copy-paste</h3>
-          <p>Connect forms, payments, and tools so data just flows.</p>
-          <div class="badge-row"><span class="pill">Forms</span><span class="pill">Payments</span><span class="pill">Automation</span></div>
-        </article>
-      </div>
-    </section>
+        <ul class="primary" aria-label="Sections">
+          <li><a href="#services">Services</a></li>
+          <li><a href="#work">Work</a></li>
+          <li><a href="#playgroundMain">Playground</a></li>
+          <li><a href="./services.html">Dashboard</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="./store.html">Art</a></li>
+          <li><a href="./cosmic.html">Cosmic</a></li>
 
-    <!-- WORK -->
-    <section id="work" class="container section-block">
-      <div class="section-title">
-        <div>
-          <h2>Recent results</h2>
-          <span class="kicker">Ask for case study details</span>
-        </div>
-        <button class="section-toggle" aria-expanded="true" data-label="Work">Hide</button>
+        </ul>
+
+        <nav class="nav-controls">
+          <!--<select id="langSelect" class="select" aria-label="Language">
+            <option value="en">EN</option>
+            <option value="es">ES</option>-->
+          </select> 
+
+
+          <!-- toggles visible & simple -->
+          <button class="btn ghost" id="themeToggle" aria-label="Toggle light/dark">🌓</button>
+          <button class="btn ghost" id="spideyToggle" aria-label="Toggle Spider palette">🕷️</button>
+        </nav>
       </div>
-      <div class="grid cols-2">
-        <article class="card case">
+    </header>
+
+    <!-- ====== MAIN (POP) SITE ====== -->
+    <main id="main">
+      <!-- HERO -->
+      <section id="home" class="hero container">
+        <div>
+          <span class="eyebrow"><span class="pill">Available for Q1</span> <span>Web & Database</span></span>
+          <h1 class="headline">
+            <span class="accent">Get online, look great,</span> and stay organized.<br/>
+            <span class="burst">Domain. Email. Website. Database.</span>
+          </h1>
+          <p class="sub">We handle setup and support so your team, board, and customers get a site that’s clear, fast, and dependable.</p>
+
+          <div class="cta" style="display:flex; gap:.6rem; flex-wrap:wrap;">
+            <a class="btn primary" href="#contact" id="scrollToContact">Get a quote</a>
+          </div>
+        </div>
+
+        <!-- Gold TECH LOVERS button (opens tech overlay) -->
+        <div class="hero-visual">
+            <a id="sealTechBtn" class="seal-btn big" href="tech.html" aria-label="Open Tech lovers page">
+            
+
+            <span class="seal-rim"></span>
+            <span class="seal-core">
+              <span class="seal-stars" aria-hidden="true">✦ ✧ ✦</span>
+              <span class="seal-text">Technical information</span>
+              <span class="seal-stars" aria-hidden="true">✦ ✧ ✦</span>
+            </span>
+          </a>
+        </div>
+      </section>
+
+      <!-- SERVICES -->
+      <section id="services" class="container section-block">
+        <div class="section-title">
           <div>
-            <h3>Membership site refresh</h3>
-            <p class="meta">Clear navigation, faster load, easier updates</p>
-            <div class="metrics">
-              <div class="metric">Bounce ↓ 31%</div>
-              <div class="metric">Sign-ups ↑ 2.1×</div>
-              <div class="metric">Staff can edit</div>
-            </div>
+            <h2>Services that make life easier</h2>
+            <span class="kicker">Clear deliverables, no jargon</span>
           </div>
-        </article>
-        <article class="card case">
+          <button class="section-toggle" aria-expanded="true" data-label="Services">Hide</button>
+        </div>
+        <div class="grid cols-3">
+          <article class="card service">
+            <div class="pill">Website Creation</div>
+            <h3>Pages that work</h3>
+            <p>Modern, mobile-first websites with clear navigation and easy updates.</p>
+            <div class="badge-row"><span class="pill">SEO-ready</span><span class="pill">Accessible</span><span class="pill">Copy help</span></div>
+          </article>
+          <article class="card service">
+            <div class="pill">Domain & Email</div>
+            <h3>Own your name</h3>
+            <p>We register your domain and set up custom emails like you@yourdomain.</p>
+            <div class="badge-row"><span class="pill">DNS</span><span class="pill">Google/M365</span><span class="pill">SPF/DKIM</span></div>
+          </article>
+          <article class="card service">
+            <div class="pill">Hosting & Care</div>
+            <h3>Fast & backed up</h3>
+            <p>Secure hosting with SSL, backups, uptime checks, and ongoing support.</p>
+            <div class="badge-row"><span class="pill">SSL</span><span class="pill">Backups</span><span class="pill">Monitoring</span></div>
+          </article>
+          <article class="card service">
+            <div class="pill">Graphic Design</div>
+            <h3>Look professional</h3>
+            <p>Logos, brand kit, and social graphics that match your organization.</p>
+            <div class="badge-row"><span class="pill">Logos</span><span class="pill">Brand kit</span><span class="pill">Social assets</span></div>
+          </article>
+          <article class="card service">
+            <div class="pill">Databases</div>
+            <h3>Simple reporting</h3>
+            <p>We create a clean database and monthly reports your board will understand.</p>
+            <div class="badge-row"><span class="pill">Dashboards</span><span class="pill">Exports</span><span class="pill">Audits</span></div>
+          </article>
+          <article class="card service">
+            <div class="pill">Integrations</div>
+            <h3>No more copy-paste</h3>
+            <p>Connect forms, payments, and tools so data just flows.</p>
+            <div class="badge-row"><span class="pill">Forms</span><span class="pill">Payments</span><span class="pill">Automation</span></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- WORK -->
+      <section id="work" class="container section-block">
+        <div class="section-title">
           <div>
-            <h3>Program reporting database</h3>
-            <p class="meta">Monthly exports for board & funders</p>
-            <div class="metrics">
-              <div class="metric">Manual work ↓ 80%</div>
-              <div class="metric">One-click reports</div>
-              <div class="metric">Audit-ready</div>
-            </div>
+            <h2>Recent results</h2>
+            <span class="kicker">Ask for case study details</span>
           </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- PLAYGROUND -->
-    <section id="playgroundMain" class="container section-block full notranslate">
-      <div class="section-title">
-        <div>
-          <h2>Social Media Insights (demo)</h2>
-          <span class="kicker">Filter and sort — sourced, rounded figures</span>
-          <p class="muted pg-help">Change the dropdown or check a box to update the chart (demo data).</p>
+          <button class="section-toggle" aria-expanded="true" data-label="Work">Hide</button>
         </div>
-        <button class="section-toggle" aria-expanded="true" data-label="Playground">Hide</button>
-      </div>
-      <div class="insights insights-compact">
-        <div class="controls">
-          <label><span>Metric</span>
-            <select id="metricSelectMain" class="pill">
-              <option value="mau_bil">Monthly active users (B)</option>
-              <option value="ad_aud_bil">Ad reach (B)</option>
-              <option value="us_news_pct">U.S. adults who get news (%)</option>
-            </select>
-          </label>
-          <label class="chk"><input type="checkbox" id="filter2bMain"> MAU ≥ 2B</label>
-          <label class="chk"><input type="checkbox" id="filterROIMain"> Marketer ROI leaders</label>
-          <button class="btn ghost" id="resetFiltersMain">Reset</button>
-        </div>
-        <canvas id="barChartMain" aria-label="Platforms bar chart" role="img"></canvas>
-        <div class="table-wrap">
-          <table id="dataTableMain" class="table">
-            <thead>
-              <tr>
-                <th data-key="platform">Platform</th>
-                <th data-key="mau_bil">MAU (B)</th>
-                <th data-key="ad_aud_bil">Ad reach (B)</th>
-                <th data-key="us_news_pct">US news (%)</th>
-                <th data-key="roi_top">ROI leader</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <p class="muted">Sources: DataReportal (Feb 2025), Pew Research (2024), platform disclosures. Demo rounding applied.</p>
-      </div>
-    </section>
-
-    <!-- CONTACT -->
-    <section id="contact" class="container section-block full">
-      <div class="section-title">
-        <div>
-          <h2 style="display:flex; align-items:center; gap:.6rem;">
-            <span class="accent-text">Let’s build something dependable</span>
-            <span class="pill" aria-hidden="true">→</span>
-          </h2>
-          <span class="kicker">Tell us about your project</span>
-        </div>
-      </div>
-
-      <div class="trust-strip">
-        <span class="pill trust">Privacy-first</span>
-        <span class="pill trust">NDA-friendly</span>
-        <span class="pill trust">1-business-day reply</span>
-        <span class="pill trust">Backups & SSL</span>
-      </div>
-
-      <div class="grid cols-2 contact-grid">
-        <div class="card contact-card" style="display:grid; gap:1rem;">
-
-          <p style="margin:0; color:var(--muted)">Quick brief below and we’ll reply within one business day.</p>
-
-          <form id="contactForm" action="https://formsubmit.co/431afb18b6d29330088207e6478cadc5" method="POST" >
-            <input type="hidden" name="_subject" value="New Website Inquiry (Contact form)" />
-            <input type="hidden" name="_template" value="table" />
-            <input type="hidden" name="_blacklist" value="viagra, crypto, investment, guest post, seo package" />
-            <input type="hidden" name="form_name" value="Contact" />
-            <input type="hidden" name="_autoresponse" value="Thanks for the message — you’ll hear from us within one business day. – c23m9" />
-
-            <div class="grid cols-2" style="gap:.8rem;">
-              <div>
-                <label for="name">Name</label>
-                <input id="name" name="name" required autocomplete="name" placeholder="Your name" />
-              </div>
-              <div>
-                <label for="email">Email</label>
-                <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@company.com" />
-              </div>
-            </div>
-
-            <div class="grid cols-2" style="gap:.8rem">
-              <div>
-                <label for="budget">Budget</label>
-                <select id="budget" name="budget" class="pill" required>
-                  <option value="">Select a range</option>
-                  <option value="under-10k">Under $10k</option>
-                  <option value="10-25k">$10k – $25k</option>
-                  <option value="25-50k">$25k – $50k</option>
-                  <option value="50k+">$50k+</option>
-                </select>
-              </div>
-              <div>
-                <label for="timeline">Timeline</label>
-                <select id="timeline" name="timeline" class="pill" required>
-                  <option value="">Choose</option>
-                  <option value="asap">ASAP</option>
-                  <option value="4-8w">4–8 weeks</option>
-                  <option value="2-3m">2–3 months</option>
-                  <option value="flexible">Flexible</option>
-                </select>
-              </div>
-            </div>
-
+        <div class="grid cols-2">
+          <article class="card case">
             <div>
-              <label for="message">Project brief</label>
-              <textarea id="message" name="message" rows="6" placeholder="What are we building? Goals, users, integrations…" required></textarea>
+              <h3>Membership site refresh</h3>
+              <p class="meta">Clear navigation, faster load, easier updates</p>
+              <div class="metrics">
+                <div class="metric">Bounce ↓ 31%</div>
+                <div class="metric">Sign-ups ↑ 2.1×</div>
+                <div class="metric">Staff can edit</div>
+              </div>
             </div>
-
-            <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
-
-            <div class="flex" style="gap:.6rem; flex-wrap: wrap;">
-              <button class="btn primary" type="submit">Send inquiry</button>
-              <button class="btn ghost" type="button" id="copyEmail">Copy email</button>
-             
+          </article>
+          <article class="card case">
+            <div>
+              <h3>Program reporting database</h3>
+              <p class="meta">Monthly exports for board & funders</p>
+              <div class="metrics">
+                <div class="metric">Manual work ↓ 80%</div>
+                <div class="metric">One-click reports</div>
+                <div class="metric">Audit-ready</div>
+              </div>
             </div>
-            <div class="status" id="formStatus" aria-live="polite">We reply within one business day.</div>
-          </form>
+          </article>
+        </div>
+      </section>
+
+      <!-- PLAYGROUND -->
+      <section id="playgroundMain" class="container section-block full notranslate">
+        <div class="section-title">
+          <div>
+            <h2>Social Media Insights (demo)</h2>
+            <span class="kicker">Filter and sort — sourced, rounded figures</span>
+            <p class="muted pg-help">Change the dropdown or check a box to update the chart (demo data).</p>
+          </div>
+          <button class="section-toggle" aria-expanded="true" data-label="Playground">Hide</button>
+        </div>
+        <div class="insights insights-compact">
+          <div class="controls">
+            <label><span>Metric</span>
+              <select id="metricSelectMain" class="pill">
+                <option value="mau_bil">Monthly active users (B)</option>
+                <option value="ad_aud_bil">Ad reach (B)</option>
+                <option value="us_news_pct">U.S. adults who get news (%)</option>
+              </select>
+            </label>
+            <label class="chk"><input type="checkbox" id="filter2bMain"> MAU ≥ 2B</label>
+            <label class="chk"><input type="checkbox" id="filterROIMain"> Marketer ROI leaders</label>
+            <button class="btn ghost" id="resetFiltersMain">Reset</button>
+          </div>
+          <canvas id="barChartMain" aria-label="Platforms bar chart" role="img"></canvas>
+          <div class="table-wrap">
+            <table id="dataTableMain" class="table">
+              <thead>
+                <tr>
+                  <th data-key="platform">Platform</th>
+                  <th data-key="mau_bil">MAU (B)</th>
+                  <th data-key="ad_aud_bil">Ad reach (B)</th>
+                  <th data-key="us_news_pct">US news (%)</th>
+                  <th data-key="roi_top">ROI leader</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <p class="muted">Sources: DataReportal (Feb 2025), Pew Research (2024), platform disclosures. Demo rounding applied.</p>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section id="contact" class="container section-block full">
+        <div class="section-title">
+          <div>
+            <h2 style="display:flex; align-items:center; gap:.6rem;">
+              <span class="accent-text">Let’s build something dependable</span>
+              <span class="pill" aria-hidden="true">→</span>
+            </h2>
+            <span class="kicker">Tell us about your project</span>
+          </div>
         </div>
 
-        <!-- Live panel (demo) -->
-        <aside class="card live">
-          <div class="center-between">
-            <div>
-              <div class="kicker">Live snapshot (demo)</div>
-              <strong>Effectiveness in real time</strong>
+        <div class="trust-strip">
+          <span class="pill trust">Privacy-first</span>
+          <span class="pill trust">NDA-friendly</span>
+          <span class="pill trust">1-business-day reply</span>
+          <span class="pill trust">Backups & SSL</span>
+        </div>
+
+        <div class="grid cols-2 contact-grid">
+          <div class="card contact-card" style="display:grid; gap:1rem;">
+
+            <p style="margin:0; color:var(--muted)">Quick brief below and we’ll reply within one business day.</p>
+
+            <form id="contactForm" action="https://formsubmit.co/431afb18b6d29330088207e6478cadc5" method="POST" >
+              <input type="hidden" name="_subject" value="New Website Inquiry (Contact form)" />
+              <input type="hidden" name="_template" value="table" />
+              <input type="hidden" name="_blacklist" value="viagra, crypto, investment, guest post, seo package" />
+              <input type="hidden" name="form_name" value="Contact" />
+              <input type="hidden" name="_autoresponse" value="Thanks for the message — you’ll hear from us within one business day. – c23m9" />
+
+              <div class="grid cols-2" style="gap:.8rem;">
+                <div>
+                  <label for="name">Name</label>
+                  <input id="name" name="name" required autocomplete="name" placeholder="Your name" />
+                </div>
+                <div>
+                  <label for="email">Email</label>
+                  <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@company.com" />
+                </div>
+              </div>
+
+              <div class="grid cols-2" style="gap:.8rem">
+                <div>
+                  <label for="budget">Budget</label>
+                  <select id="budget" name="budget" class="pill" required>
+                    <option value="">Select a range</option>
+                    <option value="under-10k">Under $10k</option>
+                    <option value="10-25k">$10k – $25k</option>
+                    <option value="25-50k">$25k – $50k</option>
+                    <option value="50k+">$50k+</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="timeline">Timeline</label>
+                  <select id="timeline" name="timeline" class="pill" required>
+                    <option value="">Choose</option>
+                    <option value="asap">ASAP</option>
+                    <option value="4-8w">4–8 weeks</option>
+                    <option value="2-3m">2–3 months</option>
+                    <option value="flexible">Flexible</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label for="message">Project brief</label>
+                <textarea id="message" name="message" rows="6" placeholder="What are we building? Goals, users, integrations…" required></textarea>
+              </div>
+
+              <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+
+              <div class="flex" style="gap:.6rem; flex-wrap: wrap;">
+                <button class="btn primary" type="submit">Send inquiry</button>
+                <button class="btn ghost" type="button" id="copyEmail">Copy email address</button>
+              
+              </div>
+              <div class="status" id="formStatus" aria-live="polite">We reply within one business day.</div>
+            </form>
+          </div>
+
+          <!-- Live panel (demo) -->  
+          <aside class="card live">
+            <div class="center-between">
+              <div>
+                <div class="kicker">Live snapshot (demo)</div>
+                <strong>Effectiveness in real time</strong>
+              </div>
+              <div class="badge-row">
+                <span class="pill" id="slaBadge">SLA 99.95%</span>
+                <span class="pill ok" id="svcHealth">Healthy</span>
+              </div>
             </div>
-            <div class="badge-row">
-              <span class="pill" id="slaBadge">SLA 99.95%</span>
-              <span class="pill ok" id="svcHealth">Healthy</span>
+
+            <div class="live-metrics">
+              <div class="lm"><div class="lm-label">Avg first reply</div><div class="lm-value"><span id="lmReply">–</span> min</div></div>
+              <div class="lm"><div class="lm-label">Uptime (90d)</div><div class="lm-value"><span id="lmUptime">–</span>%</div></div>
+              <div class="lm"><div class="lm-label">p95 latency</div><div class="lm-value"><span id="lmP95">–</span> ms</div></div>
+              <div class="lm"><div class="lm-label">Deploys this week</div><div class="lm-value" id="lmDeploys">–</div></div>
+              <div class="lm"><div class="lm-label">Incidents (90d)</div><div class="lm-value" id="lmIncidents">–</div></div>
+              <div class="lm"><div class="lm-label">A/B uplift</div><div class="lm-value"><span id="lmAB">–</span>%</div></div>
             </div>
-          </div>
 
-          <div class="live-metrics">
-            <div class="lm"><div class="lm-label">Avg first reply</div><div class="lm-value"><span id="lmReply">–</span> min</div></div>
-            <div class="lm"><div class="lm-label">Uptime (90d)</div><div class="lm-value"><span id="lmUptime">–</span>%</div></div>
-            <div class="lm"><div class="lm-label">p95 latency</div><div class="lm-value"><span id="lmP95">–</span> ms</div></div>
-            <div class="lm"><div class="lm-label">Deploys this week</div><div class="lm-value" id="lmDeploys">–</div></div>
-            <div class="lm"><div class="lm-label">Incidents (90d)</div><div class="lm-value" id="lmIncidents">–</div></div>
-            <div class="lm"><div class="lm-label">A/B uplift</div><div class="lm-value"><span id="lmAB">–</span>%</div></div>
-          </div>
+            <canvas id="liveSpark" height="70" aria-label="Last minute latency sparkline" role="img"></canvas>
 
-          <canvas id="liveSpark" height="70" aria-label="Last minute latency sparkline" role="img"></canvas>
+            <div class="live-actions">
+              <button class="btn ghost" id="simulateSpike">Simulate traffic spike</button>
+              <button class="btn ghost" id="simulateDeploy">Simulate deploy</button>
+            </div>
+            <p class="muted" style="margin:.5rem 0 0">Synthetic demo data. In production this connects to real APM/uptime and deploy hooks.</p>
+          </aside>
+        </div>
+      </section>
+    </main>
 
-          <div class="live-actions">
-            <button class="btn ghost" id="simulateSpike">Simulate traffic spike</button>
-            <button class="btn ghost" id="simulateDeploy">Simulate deploy</button>
-          </div>
-          <p class="muted" style="margin:.5rem 0 0">Synthetic demo data. In production this connects to real APM/uptime and deploy hooks.</p>
-        </aside>
+    <footer>
+      <div class="container center-between">
+        <div>© <span id="year"></span> c23m9. <span>All rights reserved.</span></div>
+        <div class="flex" style="gap:.6rem;">
+          <!-- <a class="pill" href="#" aria-label="GitHub">GitHub</a>
+          <a class="pill" href="#" aria-label="LinkedIn">LinkedIn</a> -->
+          <a class="pill" href="mailto:misa@c23m9.com" aria-label="Email">Email</a>
+          <a class="btn small back-to-top" href="#main" aria-hidden="true">Back to top</a>
+        </div>
       </div>
-    </section>
-  </main>
+    </footer>
 
-  <footer>
-    <div class="container center-between">
-      <div>© <span id="year"></span> c23m9. <span>All rights reserved.</span></div>
-      <div class="flex" style="gap:.6rem;">
-        <a class="pill" href="#" aria-label="GitHub">GitHub</a>
-        <a class="pill" href="#" aria-label="LinkedIn">LinkedIn</a>
-        <a class="pill" href="mailto:misa@c23m9.com" aria-label="Email">Email</a>
-        <a class="btn small back-to-top" href="#main" aria-hidden="true">Back to top</a>
-      </div>
-    </div>
-  </footer>
+    
 
-  
-
-  <!-- Scripts -->
-  <script src="scripts.js"></script>
-</body>
-</html>
+    <!-- Scripts -->
+    <script src="scripts.js"></script>
+  </body>
+  </html>

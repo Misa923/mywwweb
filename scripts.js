@@ -130,16 +130,22 @@
    */
   const Charts = (() => {
     /** @param {HTMLCanvasElement} canvas */
-    function clear(canvas) {
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = Math.floor(rect.width * dpr);
-      canvas.height = Math.floor(rect.height * dpr);
-      const ctx = canvas.getContext("2d");
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, rect.width, rect.height);
-      return { ctx, w: rect.width, h: rect.height };
-    }
+   function clear(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+
+  // Use CSS size (stable), not backing size or rect that might reflect prior writes
+  const cssW = canvas.clientWidth  || canvas.getBoundingClientRect().width;
+  const cssH = canvas.clientHeight || canvas.getBoundingClientRect().height;
+
+  // Set backing store only; CSS height is fixed via CSS above
+  canvas.width  = Math.max(1, Math.floor(cssW * dpr));
+  canvas.height = Math.max(1, Math.floor(cssH * dpr));
+
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, cssW, cssH);
+  return { ctx, w: cssW, h: cssH };
+}
 
     /** Draw bars with labels. */
     function drawBars(canvas, rows, metricKey, options = {}) {
@@ -325,87 +331,94 @@
    * Why: shows responsiveness without external services.
    */
   const LiveDemo = (() => {
-    const state = {
-      latencies: Array.from({ length: 60 }, () => 120 + Math.random() * 80),
-      replyMin: 8,
-      uptimePct: 99.97,
-      p95: 280,
-      deploys: 3,
-      incidents: 0,
-      abUplift: 5,
-      spikeUntil: 0,
-    };
+  const state = {
+    latencies: Array.from({ length: 60 }, () => 120 + Math.random() * 80),
+    replyMin: 8, uptimePct: 99.97, p95: 280, deploys: 3, incidents: 0,
+    abUplift: 5, spikeUntil: 0,
+  };
 
-    let canvas, els;
+  let canvas, intervalId = null, initialized = false;
 
-    function tick() {
-      const now = Date.now();
-      const base = 120 + Math.random() * 80;
-      const spike = now < state.spikeUntil ? (200 + Math.random() * 400) : 0;
-      const v = base + spike;
-      state.latencies.push(v);
-      state.latencies.shift();
-      state.p95 = Math.round(percentile(state.latencies, 0.95));
+  function percentile(arr, p) {
+    const a = [...arr].sort((x, y) => x - y);
+    const idx = Math.floor((a.length - 1) * p);
+    return a[idx];
+  }
+  function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = String(val);
+  }
+  function updateDom() {
+    setText("lmReply", state.replyMin);
+    setText("lmUptime", state.uptimePct.toFixed(2));
+    setText("lmP95", state.p95);
+    setText("lmDeploys", state.deploys);
+    setText("lmIncidents", state.incidents);
+    setText("lmAB", state.abUplift.toFixed(1));
+  }
+
+  function draw() {
+    if (!canvas) return;
+    // If canvas hasn’t been laid out yet, try next frame
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    if (!w || !h) { requestAnimationFrame(draw); return; }
+    Charts.drawSpark(canvas, state.latencies);
+    updateDom();
+  }
+
+  function tick() {
+    const now = Date.now();
+    const base = 120 + Math.random() * 80;
+    const spike = now < state.spikeUntil ? (200 + Math.random() * 400) : 0;
+    const v = base + spike;
+    state.latencies.push(v);
+    state.latencies.shift();
+    state.p95 = Math.round(percentile(state.latencies, 0.95));
+    draw();
+  }
+
+  function init() {
+    if (initialized) return;
+    initialized = true;
+
+    canvas = document.getElementById("liveSpark");
+    if (!canvas) return;
+
+    // Buttons
+    document.getElementById("simulateSpike")?.addEventListener("click", () => {
+      state.spikeUntil = Date.now() + 12000;
+      state.incidents += 1;
+      const svc = document.getElementById("svcHealth");
+      if (svc) { svc.textContent = "Degraded"; svc.classList.remove('ok'); }
       draw();
-    }
-
-    function draw() {
-      if (!canvas) return;
-      Charts.drawSpark(canvas, state.latencies);
-      updateDom();
-    }
-
-    function updateDom() {
-      setText("lmReply", state.replyMin);
-      setText("lmUptime", state.uptimePct.toFixed(2));
-      setText("lmP95", state.p95);
-      setText("lmDeploys", state.deploys);
-      setText("lmIncidents", state.incidents);
-      setText("lmAB", state.abUplift.toFixed(1));
-    }
-
-    function setText(id, val) {
-      const el = document.getElementById(id);
-      if (el) el.textContent = String(val);
-    }
-
-    function percentile(arr, p) {
-      const a = [...arr].sort((x, y) => x - y);
-      const idx = Math.floor((a.length - 1) * p);
-      return a[idx];
-    }
-
-    function init() {
-      canvas = document.getElementById("liveSpark");
-      if (!canvas) return;
-      // Bind buttons if present (main page only)
-      const spikeBtn = document.getElementById("simulateSpike");
-      const deployBtn = document.getElementById("simulateDeploy");
-      spikeBtn && spikeBtn.addEventListener("click", () => {
-        state.spikeUntil = Date.now() + 12000; // 12s spike
-        state.incidents += 1;
-        const svc = document.getElementById("svcHealth");
-        svc && (svc.textContent = "Degraded");
-        draw();
-      });
-      deployBtn && deployBtn.addEventListener("click", () => {
-        state.deploys += 1;
-        state.replyMin = Math.max(3, state.replyMin - 1);
-        state.abUplift = Math.min(12, state.abUplift + 0.5);
-        draw();
-      });
-
-      // SLA badge
-      const sla = document.getElementById("slaBadge");
-      if (sla) sla.textContent = "SLA 99.95%";
-
+    });
+    document.getElementById("simulateDeploy")?.addEventListener("click", () => {
+      state.deploys += 1;
+      state.replyMin = Math.max(3, state.replyMin - 1);
+      state.abUplift = Math.min(12, state.abUplift + 0.5);
       draw();
-      setInterval(tick, 1000);
-      window.addEventListener("resize", draw);
-    }
+    });
 
-    return { init };
-  })();
+    // SLA badge
+    const sla = document.getElementById("slaBadge");
+    if (sla) sla.textContent = "SLA 99.95%";
+
+    // First paint & start timer
+    requestAnimationFrame(() => { draw(); });
+    if (!intervalId) intervalId = setInterval(tick, 1000);
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) { clearInterval(intervalId); intervalId = null; }
+      else if (!intervalId) intervalId = setInterval(tick, 1000);
+    });
+
+    window.addEventListener("resize", draw);
+  }
+
+  return { init };
+})();
+
+
 
   /**
    * Overlay for the Tech page, opened via "+TECH LOVERS" seal.
