@@ -8,16 +8,16 @@
    Root + Theming
    ========================= */
 :root {
-  /* Base palette (light) */
-  --bg: #0b1220;              /* why: dark header meta theme */
+  /* Base palette / default dark fallback */
+  --bg: #0b1220;
   --bg-elev: #0f172a;
   --surface: #111827;
   --text: #cf16cf;
   --muted: #94a3b8;
   --border: #1f2937;
-  --brand: #60a5fa;           /* blue-400 */
-  --brand-2: #a78bfa;         /* violet-400 */
-  --accent: #22d3ee;          /* cyan-400 */
+  --brand: #60a5fa;
+  --brand-2: #a78bfa;
+  --accent: #22d3ee;
   --ok: #34d399;
   --warn: #f59e0b;
   --bad: #ef4444;
@@ -25,6 +25,9 @@
   --radius: 16px;
   --shadow: 0 10px 30px rgba(0,0,0,.25);
   --wrap: 1100px;
+
+  /* Color for "and stay organized." by default */
+  --in_light: #22da3b;
 
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -42,6 +45,9 @@ html[data-theme="light"] {
   --brand-2: #7c3aed;
   --accent: #b20879;
   --shadow: 0 10px 25px rgba(2,6,23,.08);
+
+  /* This is the light-mode color for "and stay organized." */
+  --in_light: #b20879;
 }
 
 /* Dark mode */
@@ -55,28 +61,40 @@ html[data-theme="dark"] {
   --brand: #60a5fa;
   --brand-2: #a78bfa;
   --accent: #22d3ee;
+
+  /* This is the dark-mode color for "and stay organized." */
+  --in_light: #22da3b;
 }
 
 /* Optional fun palette (spidey) */
 html[data-palette="spidey"] {
-  --brand: #ef4444; /* why: themed alt branding */
+  --brand: #ef4444;
   --brand-2: #3b82f6;
   --accent: #f59e0b;
 }
 
 /* Respect system if auto */
 @media (prefers-color-scheme: light) {
-  html[data-theme="auto"] { color-scheme: light; }
+  html[data-theme="auto"] {
+    color-scheme: light;
+    --in_light: #b20879;
+  }
 }
+
 @media (prefers-color-scheme: dark) {
-  html[data-theme="auto"] { color-scheme: dark; }
+  html[data-theme="auto"] {
+    color-scheme: dark;
+    --in_light: #22da3b;
+  }
 }
 
 /* =========================
    Base Elements
    ========================= */
 * { box-sizing: border-box; }
+
 html, body { height: 100%; }
+
 body {
   margin: 0;
   font-family: var(--font-sans);
@@ -85,38 +103,115 @@ body {
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
 }
-img, svg, video, canvas { display: block; max-width: 100%; }
+
+img, svg, video, canvas {
+  display: block;
+  max-width: 100%;
+}
+
 svg { fill: currentColor; }
 
-h1, h2, h3 { line-height: 1.15; margin: 0 0 .4rem; }
+h1, h2, h3 {
+  line-height: 1.15;
+  margin: 0 0 .4rem;
+}
+
 p { margin: 0 0 1rem; }
 
-:focus-visible { outline: none; box-shadow: var(--focus); border-radius: 10px; }
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: 10px;
+}
 
-.container { width: min(100% - 2rem, var(--wrap)); margin-inline: auto; }
+.container {
+  width: min(100% - 2rem, var(--wrap));
+  margin-inline: auto;
+}
+
 .flex { display: flex; }
-.center-between { display: flex; align-items: center; justify-content: space-between; gap: .8rem; }
-.grid { display: grid; gap: 1rem; }
-.grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.center-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .8rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.grid.cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid.cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 
 /* =========================
    Tokens & Utilities
    ========================= */
 .pill {
-  display: inline-flex; align-items: center; justify-content: center;
-  gap: .4rem; padding: .35rem .6rem; border-radius: 999px;
-  border: 1px solid var(--border); background: var(--bg-elev); color: var(--text);
-  font-size: .85rem; white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  padding: .35rem .6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text);
+  font-size: .85rem;
+  white-space: nowrap;
 }
-.pill.trust { background: transparent; }
-.badge-row { display: flex; gap: .4rem; flex-wrap: wrap; }
-.kicker { color: var(--muted); font-size: .95rem; }
-.muted { color: var(--muted); }
-.eyebrow { display: flex; gap: .6rem; align-items: center; color: var(--muted); }
-.accent { color: var(--brand); }
-.accent-text { color: var(--brand); }
-.burst { background: linear-gradient(90deg, var(--brand), var(--brand-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+.pill.trust {
+  background: transparent;
+}
+
+.badge-row {
+  display: flex;
+  gap: .4rem;
+  flex-wrap: wrap;
+}
+
+.kicker {
+  color: var(--muted);
+  font-size: .95rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.eyebrow {
+  display: flex;
+  gap: .6rem;
+  align-items: center;
+  color: var(--muted);
+}
+
+.accent {
+  color: var(--brand);
+}
+
+.accent-text {
+  color: var(--brand);
+}
+
+.burst {
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.in_light {
+  color: var(--in_light);
+}
 
 /* Buttons & inputs */
 .btn { display: inline-flex; align-items: center; gap: .5rem; padding: .6rem .9rem; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-elev); color: var(--text); text-decoration: none; cursor: pointer; box-shadow: none; }
@@ -413,8 +508,6 @@ html::after{
 
 /* 5) Headline gradient + animated underline (accessibly decorative) */
 .headline{
-  background: linear-gradient(90deg,#fff, #c7d2fe 40%, #7dd3fc);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
   position: relative;
 }
 .headline::after{
@@ -555,6 +648,17 @@ footer{
 
 
 
+/*cneter contact form */
+#contact .contact-card-centered{
+  display:flex;
+  justify-content:center;
+  align-items: flex-start;
+}
+
+#contact .contact-card {
+  width: 100%;
+  max-width: 760px;
+}
 
 
 

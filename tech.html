@@ -517,57 +517,87 @@ type Query   { products(sku: String): [Product]! }</code></pre>
     </section>
 
     <!-- CONTACT -->
-    <section  id="contactTech" class="section-block">
-      <div class="section-title">
-        <div>
-          <h2 style="display:flex; align-items:center; gap:.6rem;">
-            <span class="accent-text">Let’s build something dependable</span>
-            <span class="pill" aria-hidden="true">→</span>
-          </h2>
-          <span class="kicker">Tell us about your project</span>
+      <section id="contact" class="container section-block full">
+        <div class="section-title">
+          <div>
+            <h2 style="display:flex; align-items:center; gap:.6rem;">
+              <span class="accent-text">Let’s build something dependable</span>
+              <span class="pill" aria-hidden="true">→</span>
+            </h2>
+            <span class="kicker">Tell us about your project</span>
+          </div>
         </div>
-      </div>
-      <div class="grid cols-2 contact-grid">
-        <div class="card" style="display:grid; gap:1rem;">
-          <p class="muted" style="margin:0">Quick brief below and we’ll reply within one business day.</p>
-          <form id="contactFormTech" action="https://formsubmit.co/431afb18b6d29330088207e6478cadc5" method="POST">
-            <input type="hidden" name="_subject" value="New Website Inquiry (Tech page)" />
-            <input type="hidden" name="_template" value="table" />
-            <input type="hidden" name="_blacklist" value="viagra, crypto, investment, guest post, seo package" />
-            <input type="hidden" name="form_name" value="Contact" />
-            <input type="hidden" name="_autoresponse" value="Thanks for the message — you’ll hear from us within one business day. – c23m9" />
-            <div class="grid cols-2" style="gap:.8rem">
-              <div><label for="nameTech">Name</label><input id="nameTech" name="name" required autocomplete="name" placeholder="Your name" /></div>
-              <div><label for="emailTech">Email</label><input id="emailTech" name="email" type="email" required autocomplete="email" placeholder="you@company.com" /></div>
-            </div>
-            <div class="grid cols-2" style="gap:.8rem">
-              <div>
-                <label for="budgetTech">Budget</label>
-                <select id="budgetTech" name="budget" class="pill" required>
-                  <option value="">Select a range</option>
-                  <option value="under-10k">Under $10k</option>
-                  <option value="10-25k">$10k – $25k</option>
-                  <option value="25-50k">$25k – $50k</option>
-                  <option value="50k+">$50k+</option>
-                </select>
+
+        <div class="trust-strip">
+          <span class="pill trust">Privacy-first</span>
+          <span class="pill trust">NDA-friendly</span>
+          <span class="pill trust">1-business-day reply</span>
+          <span class="pill trust">Backups & SSL</span>
+        </div>
+
+        <div class='contact-grid contact-grid-centered'>
+          <div class="card contact-card" style="display:grid; gap:1rem;">
+
+            <p style="margin:0; color:var(--muted)">Quick brief below and we’ll reply within one business day.</p>
+
+            <form id="contactForm" action="https://formsubmit.co/431afb18b6d29330088207e6478cadc5" method="POST" >
+              <input type="hidden" name="_subject" value="New Website Inquiry (Contact form)" />
+              <input type="hidden" name="_template" value="table" />
+              <input type="hidden" name="_blacklist" value="viagra, crypto, investment, guest post, seo package" />
+              <input type="hidden" name="form_name" value="Contact" />
+              <input type="hidden" name="_autoresponse" value="Thanks for the message — you’ll hear from us within one business day. – c23m9" />
+
+              <div class="grid cols-2" style="gap:.8rem;">
+                <div>
+                  <label for="name">Name</label>
+                  <input id="name" name="name" required autocomplete="name" placeholder="Your name" />
+                </div>
+                <div>
+                  <label for="email">Email</label>
+                  <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@company.com" />
+                </div>
               </div>
-              <div>
-                <label for="timelineTech">Timeline</label>
-                <select id="timelineTech" name="timeline" class="pill" required>
-                  <option value="">Choose</option>
-                  <option value="asap">ASAP</option>
-                  <option value="4-8w">4–8 weeks</option>
-                  <option value="2-3m">2–3 months</option>
-                  <option value="flexible">Flexible</option>
-                </select>
+
+              <div class="grid cols-2" style="gap:.8rem">
+                <div>
+                  <label for="budget">Budget</label>
+                  <select id="budget" name="budget" class="pill" required>
+                    <option value="">Select a range</option>
+                    <option value="under-10k">Under $10k</option>
+                    <option value="10-25k">$10k – $25k</option>
+                    <option value="25-50k">$25k – $50k</option>
+                    <option value="50k+">$50k+</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="timeline">Timeline</label>
+                  <select id="timeline" name="timeline" class="pill" required>
+                    <option value="">Choose</option>
+                    <option value="asap">ASAP</option>
+                    <option value="4-8w">4–8 weeks</option>
+                    <option value="2-3m">2–3 months</option>
+                    <option value="flexible">Flexible</option>
+                  </select>
+                </div>
               </div>
-            </div>
-            <div><label for="messageTech">Project brief</label><textarea id="messageTech" name="message" rows="6" placeholder="What are we building? Goals, users, integrations…" required></textarea></div>
-            <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
-            <div class="flex" style="gap:.6rem; flex-wrap: wrap;">
-              <button class="btn primary" type="submit">Send inquiry</button>
+
+              <div>
+                <label for="message">Project brief</label>
+                <textarea id="message" name="message" rows="6" placeholder="What are we building? Goals, users, integrations…" required></textarea>
+              </div>
+
+              <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+
+              <div class="flex" style="gap:.6rem; flex-wrap: wrap;">
+                <button class="btn primary" type="submit">Send inquiry</button>
+                <button class="btn ghost" type="button" id="copyEmail">Copy email address</button>
+              
+              </div>
+              <div class="status" id="formStatus" aria-live="polite">We reply within one business day.</div>
+            </form>
+          </div>
               <!-- parked <a href="/resume.pdf" class="btn ghost">Download résumé</a> -->
-            </div>
+            <!--</div>
             <div class="status" id="formStatusTech" aria-live="polite">We reply within one business day.</div>
           </form>
         </div>
@@ -575,9 +605,9 @@ type Query   { products(sku: String): [Product]! }</code></pre>
           <div class="center-between">
             <div><div class="kicker">Live snapshot (demo)</div><strong>Effectiveness in real time</strong></div>
             <div class="badge-row"><span class="pill">SLA 99.95%</span><span class="pill ok">Healthy</span></div>
-          </div>
+          </div> 
           <p class="muted" style="margin:.5rem 0 0">Hook this to APM/uptime in production.</p>
-        </aside>
+        </aside> -->
       </div>
     </section>
   </main>
